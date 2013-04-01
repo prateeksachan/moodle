@@ -1026,13 +1026,7 @@ class mod_quiz_renderer extends plugin_renderer_base {
         }
     }
 
-    /**
-     * Prints the students best score
-     *
-     * @param mod_quiz_view_object $viewobj
-     */
-    /**
-     * Generates data pertaining to quiz results
+    /* Generates data pertaining to quiz results
      *
      * @param array $quiz Array containing quiz data
      * @param int $context The page context ID
