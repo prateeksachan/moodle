@@ -1031,7 +1031,6 @@ class mod_quiz_renderer extends plugin_renderer_base {
      *
      * @param mod_quiz_view_object $viewobj
      */
-    
     /**
      * Generates data pertaining to quiz results
      *
