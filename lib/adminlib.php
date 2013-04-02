@@ -2667,7 +2667,7 @@ class admin_setting_configmultiselect extends admin_setting_configselect {
         $defaults = array();
         $size = min(10, count($this->choices));
         $return = '<div class="form-select"><input type="hidden" name="'.$this->get_full_name().'[xxxxx]" value="1" />'; // something must be submitted even if nothing selected
-        $return .= '<select id="'.$this->get_id().'" name="'.$this->get_full_name().'[]" size="'.$size.'" multiple="multiple">';
+        $return .= '<select id="'.$this->get_id().'" name="'.$this->get_full_name().'[]" size="'.$size.'">';
         foreach ($this->choices as $key => $description) {
             if (in_array($key, $data)) {
                 $selected = 'selected="selected"';
