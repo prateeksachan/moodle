@@ -433,6 +433,7 @@ class question_category_object {
         // If moving to another context, check permissions some more.
         if ($oldcat->contextid != $tocontextid) {
             $tocontext = context::instance_by_id($tocontextid);
+            $tosortorder = 0;
             require_capability('moodle/question:managecategory', $tocontext);
         }
 
@@ -443,6 +444,7 @@ class question_category_object {
         $cat->info = $newinfo;
         $cat->parent = $parentid;
         $cat->contextid = $tocontextid;
+        $cat->sortorder = $tosortorder;
         $DB->update_record('question_categories', $cat);
 
         // If the category name has changed, rename any random questions in that category.
