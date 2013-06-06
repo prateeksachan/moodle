@@ -40,6 +40,7 @@ function page_supports($feature) {
         case FEATURE_GRADE_OUTCOMES:          return false;
         case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_SHOW_DESCRIPTION:        return true;
+        case FEATURE_GLOBAL_SEARCH:           return true;
 
         default: return null;
     }
@@ -474,4 +475,57 @@ function page_dndupload_handle($uploadinfo) {
     $data->printintro = $config->printintro;
 
     return page_add_instance($data, null);
+}
+
+/**
+* Global Search functions
+* @var $DB mysqli_native_moodle_database
+* @var $OUTPUT core_renderer
+* @var $PAGE moodle_page
+*/
+
+function page_search_iterator($from = 0) {
+  global $DB;
+
+  $sql = "SELECT id, timemodified AS modified FROM {page} WHERE timemodified > ? ORDER BY timemodified ASC";
+
+  return $DB->get_recordset_sql($sql, array($from));
+}
+
+function page_search_get_documents($id) {
+  global $DB;
+
+  $docs = array();
+  $page = $DB->get_record('page', array('id' => $id), '*', MUST_EXIST);
+  $course = $DB->get_record('course', array('id' => $page->course), '*', MUST_EXIST);
+  $cm = get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
+  $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+  // Declare a new Solr Document and insert fields into it from DB
+  $doc = new SolrInputDocument();
+  $doc->addField('type', $page->contentformat);
+  $doc->addField('id', 'page_' . $page->id);
+  $doc->addField('modified', $page->timemodified);
+  $doc->addField('title', $page->name);
+  $doc->addField('content', $page->content);
+  $doc->addField('courseid', $page->course);
+  $doc->addField('mime', SEARCH_TYPE_HTML);
+  $doc->addField('contextlink', '/mod/page/view.php?id=' . $page->id);
+  $doc->addField('module', 'page');
+  $docs[] = $doc;
+
+  return $docs;
+}
+
+function page_search_access($id) {
+  global $DB;
+    if (!$page = $DB->get_record('page', array('id'=>$p))) {
+        print_error('invalidaccessparameter');
+    }
+    $cm = get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
+    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+
+// User must login in order to see search results
+require_course_login($course, true, $cm);
+$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+require_capability('mod/page:view', $context);
 }

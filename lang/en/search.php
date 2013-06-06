@@ -78,3 +78,20 @@ $string['uncompleteindexingerror'] = 'Indexing was not successfully completed, p
 $string['versiontoolow'] = 'Sorry, global search requires PHP 5.0.0 or later';
 $string['whichmodulestosearch?'] = 'Which modules to search?';
 $string['wordsintitle'] = 'Words in title';
+
+/**
+ * Strings for Global Search
+ * To be merged later
+*/
+
+$string['authorfilterquery'] = 'From records having this author';
+$string['delete'] = 'Delete';
+$string['emptyqueryfield'] = 'Please enter a query to search';
+$string['filterquery'] = 'Enter Filter Queries below. Insert a comma between multiple values.';
+$string['filterqueryheader'] = 'Filter Query';
+$string['globalsearch'] = 'Global Search';
+$string['index'] = 'Index';
+$string['modulefilterquery'] = 'From records belonging to this module';
+$string['query'] = 'Enter Query';
+$string['optimize'] = 'Optimize';
+$string['titlefilterquery'] = 'From records having this title';
