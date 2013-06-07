@@ -11,4 +11,4 @@ $client = new SolrClient($options);
 
 if (!$client->ping()) {
     exit ('Solr service not responding');
-}  
+}
