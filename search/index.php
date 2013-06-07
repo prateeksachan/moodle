@@ -10,7 +10,7 @@ require_once('../config.php');
 require_once('connection.php');
 require_once('lib.php');
 //To be removed later
-require_once('test_search.php');
+require_once('tests/test_search.php');
 
 require_login();
 $PAGE->set_context(get_system_context());
