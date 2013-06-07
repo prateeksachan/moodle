@@ -57,7 +57,7 @@ function search_get_iterators() {
  * solr function:: optimize() does this.
  * To be done later
  */
-function search_optimize_index() {
+function search_optimize_index(SolrClient $client) {
     $client->optimize();
 }
 
@@ -65,7 +65,7 @@ function search_optimize_index() {
 /**
  * Index all documents.
  */
-function search_index() {
+function search_index(SolrClient $client) {
     mtrace("Memory usage:" . memory_get_usage(), '<br/>');
     set_time_limit(576000);
     

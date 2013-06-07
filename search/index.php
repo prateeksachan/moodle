@@ -17,8 +17,8 @@ $PAGE->set_context(get_system_context());
 
 @set_time_limit(0);
 
-search_index();
-search_optimize_index();
+search_index($client);
+search_optimize_index($client);
 
 //@TODO: Proper search forms
-test_solr_query();
+test_solr_query($client);
