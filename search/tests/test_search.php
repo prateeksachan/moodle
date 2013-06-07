@@ -1,5 +1,5 @@
 <?php
-function test_solr_query(){
+function test_solr_query(SolrClient $client){
 	$query = new SolrQuery();
 	$query->setQuery('Geography');
 
