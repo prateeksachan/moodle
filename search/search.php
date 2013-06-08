@@ -10,22 +10,33 @@ class search_form extends moodleform {
 
     function definition() {
 
-        $mform =& $this->_form;
+		$mform =& $this->_form;
 		$mform->addElement('header', 'search', get_string('search', 'search'));
 
-        $mform->addElement('text', 'queryfield', get_string('query', 'search'));
-        $mform->setType('queryfield', PARAM_TEXT);
-        $mform->addRule('queryfield', get_string('emptyqueryfield', 'search'), 'required', null, 'client');
-        
-        $this->add_action_buttons($cancel = false, $submitlabel='Search');
-        $mform->addElement('hidden', 'action');
-        $mform->setType('action', PARAM_ALPHANUMEXT);
-        $mform->setDefault('action', '');
+		$mform->addElement('text', 'queryfield', get_string('query', 'search'));
+		$mform->setType('queryfield', PARAM_TEXT);
+		$mform->addRule('queryfield', get_string('emptyqueryfield', 'search'), 'required', null, 'client');
+
+		$this->add_action_buttons($cancel = false, $submitlabel='Search');
+		$mform->setDefault('action', '');
 
 	}
 
 }
 $PAGE->set_context(get_system_context());
 
-$solr_search_form = new search_form();
-$solr_search_form->display();
+function solr_display_search_form(){
+	$solr_search_form = new search_form();
+	$solr_search_form->display();
+}
+
+
+function solr_search_execute_query(SolrClient $client, $q){
+	//solr_display_search_form();
+	$query = new SolrQuery();
+	$query->setQuery($q);
+	$query->addField('id')->addField('title')->addField('content');
+	$query_response = $client->query($query);
+	$response = $query_response->getResponse();
+	print_r($response);
+}
