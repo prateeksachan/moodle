@@ -78,3 +78,11 @@ $string['uncompleteindexingerror'] = 'Indexing was not successfully completed, p
 $string['versiontoolow'] = 'Sorry, global search requires PHP 5.0.0 or later';
 $string['whichmodulestosearch?'] = 'Which modules to search?';
 $string['wordsintitle'] = 'Words in title';
+
+/**
+ * Strings for Global Search
+ * To be merged later
+*/
+
+$string['query'] = 'Enter Query';
+$string['emptyqueryfield'] = 'Please enter a query to search';
