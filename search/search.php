@@ -25,9 +25,8 @@ class search_form extends moodleform {
 }
 $PAGE->set_context(get_system_context());
 
-function solr_display_search_form(){
-	$solr_search_form = new search_form();
-	$solr_search_form->display();
+function solr_display_search_form($mform){
+	$mform->display();
 }
 
 
