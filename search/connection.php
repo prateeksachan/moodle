@@ -7,8 +7,7 @@
 require_once('settings.php');
 
 $options = array( 'hostname' => SOLR_SERVER_HOSTNAME );
-$client = new SolrClient($options);
+$object = new SolrClient($options);
+$client = new SolrWrapper($object);
 
-if (!$client->ping()) {
-    exit ('Solr service not responding');
-}
+solr_check_server($client);

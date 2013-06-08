@@ -30,7 +30,7 @@ function solr_display_search_form($mform){
 }
 
 
-function solr_search_execute_query(SolrClient $client, $q){
+function solr_search_execute_query(SolrWrapper $client, $q){
 	//solr_display_search_form();
 	$query = new SolrQuery();
 	$query->setQuery($q);
