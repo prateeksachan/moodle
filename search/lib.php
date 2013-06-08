@@ -18,6 +18,44 @@ define('SEARCH_ACCESS_DENIED', 0);
 define('SEARCH_ACCESS_GRANTED', 1);
 define('SEARCH_ACCESS_DELETED', 2);
 
+class SolrWrapper {
+    private $client;
+
+    public function __construct(SolrClient $object) {
+        $this->client = $object;
+    }
+
+    /**
+     * Exposed Functions of SolrClient Class
+     */
+    public function ping() {
+        return $this->client->ping();
+    }
+
+    public function addDocument(SolrInputDocument $doc){
+        return $this->client->addDocument($doc);
+    }
+
+    public function commit(){
+        return $this->client->commit();
+    }
+
+    public function optimize(){
+        return $this->client->optimize();
+    }
+
+    public function query(SolrParams $query){
+        return $this->client->query($query);
+    }
+
+}
+
+function solr_check_server(SolrWrapper $client) {
+    if (!$client->ping()) {
+    exit ('Solr service not responding');
+    }
+}
+
 function search_get_iterators() {
     global $DB;
     $mods = $DB->get_records('modules', null, 'name', 'id,name');
@@ -57,7 +95,7 @@ function search_get_iterators() {
  * solr function:: optimize() does this.
  * To be done later
  */
-function search_optimize_index(SolrClient $client) {
+function search_optimize_index(SolrWrapper $client) {
     $client->optimize();
 }
 
@@ -65,7 +103,7 @@ function search_optimize_index(SolrClient $client) {
 /**
  * Index all documents.
  */
-function search_index(SolrClient $client) {
+function search_index(SolrWrapper $client) {
     mtrace("Memory usage:" . memory_get_usage(), '<br/>');
     set_time_limit(576000);
     
