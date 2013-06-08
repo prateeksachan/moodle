@@ -7,7 +7,7 @@
 <?php
 
 require_once('../config.php');
-require_once('solr/lib.php');
+require_once('lib.php');
 require_once('connection.php');
 require_once('search.php');
 
