@@ -22,6 +22,7 @@ class search_form extends moodleform {
         $mform->addElement('hidden', 'action');
         $mform->setType('action', PARAM_ALPHANUMEXT);
         $mform->setDefault('action', '');
+
 	}
 
 }
