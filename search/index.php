@@ -9,8 +9,6 @@
 require_once('../config.php');
 require_once('connection.php');
 require_once('lib.php');
-//To be removed later
-//require_once('tests/test_search.php');
 require_once('search.php');
 
 require_login();
