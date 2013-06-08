@@ -21,6 +21,9 @@ $PAGE->set_context(get_system_context());
 search_index($client);
 search_optimize_index($client);
 
-solr_display_search_form();
+$solr_search_form = new search_form();
+solr_display_search_form($solr_search_form);
 $q = required_param('queryfield', PARAM_TEXT);
-solr_search_execute_query($client, $q);
+if ($data = $solr_search_form->get_data()) {
+	solr_search_execute_query($client, $q);
+}
