@@ -10,7 +10,8 @@ require_once('../config.php');
 require_once('connection.php');
 require_once('lib.php');
 //To be removed later
-require_once('tests/test_search.php');
+//require_once('tests/test_search.php');
+require_once('search.php');
 
 require_login();
 $PAGE->set_context(get_system_context());
@@ -20,5 +21,6 @@ $PAGE->set_context(get_system_context());
 search_index($client);
 search_optimize_index($client);
 
-//@TODO: Proper search forms
-test_solr_query($client);
+solr_display_search_form();
+$q = required_param('queryfield', PARAM_TEXT);
+solr_search_execute_query($client, $q);
