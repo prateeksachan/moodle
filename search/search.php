@@ -16,8 +16,7 @@ class search_form extends moodleform {
         $mform->addElement('text', 'queryfield', get_string('query', 'search'));
         $mform->setType('queryfield', PARAM_TEXT);
         $mform->addRule('queryfield', get_string('emptyqueryfield', 'search'), 'required', null, 'client');
-        $mform->addRule('queryfield', get_string('maximumchars', '', 128), 'maxlength', 128, 'client');
-
+        
         $this->add_action_buttons($cancel = false, $submitlabel='Search');
         $mform->addElement('hidden', 'action');
         $mform->setType('action', PARAM_ALPHANUMEXT);
