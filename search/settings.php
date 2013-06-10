@@ -6,6 +6,9 @@ define('SOLR_SERVER_HOSTNAME', '127.0.0.1');
 /* Whether or not to run in secure mode */
 define('SOLR_SECURE', true);
 
+/* Define the Solr verson */
+define('SOLR_VERSION', 4.0);
+
 /* HTTP Port to connection */
 define('SOLR_SERVER_PORT', ((SOLR_SECURE) ? 8443 : 8983));
 

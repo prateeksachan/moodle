@@ -7,7 +7,7 @@
 require_once('settings.php');
 
 $options = array( 'hostname' => SOLR_SERVER_HOSTNAME );
-$object = new SolrClient($options);
+$object = new SolrClient($options, SOLR_VERSION);
 $client = new SolrWrapper($object);
 
 solr_check_server($client);
