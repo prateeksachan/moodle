@@ -543,7 +543,7 @@ function page_search_get_documents($id) {
   // Declare a new Solr Document and insert fields into it from DB
   $doc = new SolrInputDocument();
   $doc->addField('type', $page->contentformat);
-  $doc->addField('id', $page->id);
+  $doc->addField('id', 'page_' . $page->id);
   $doc->addField('modified', $page->timemodified);
   $doc->addField('title', $page->name);
   $doc->addField('content', $page->content);
