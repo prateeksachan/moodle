@@ -21,10 +21,11 @@ search_optimize_index($client);
 
 $mform = new search_form();
 solr_display_search_form($mform);
-$q = required_param('queryfield', PARAM_TEXT);
+//$q = required_param('queryfield', PARAM_TEXT);
 
-$data->$query = $q;
 
 if ($data = $mform->get_data()) {
+	$q = required_param('queryfield', PARAM_TEXT);
+	$data->query = $q;
 	solr_search_execute_query($client, $q);
 }
