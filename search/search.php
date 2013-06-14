@@ -14,7 +14,6 @@ function solr_search_execute_query(SolrWrapper $client, $data){
 	$query = new SolrQuery();
 	$query->setQuery($data->q);
 	$query->addField('id')->addField('title')->addField('content');
-	$data = solr_check_filter_query($data);
 	if (!empty($data->fq_title)){
 		$query->addFilterQuery('title:' . $data->fq_title);
 	}
