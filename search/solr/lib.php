@@ -1,10 +1,8 @@
 <?php
 
-/* @var $DB mysqli_native_moodle_database */
-/* @var $OUTPUT core_renderer */
-/* @var $PAGE moodle_page */
-?>
-<?php
+/** Solr Wraper class
+ *  Listing down the exposed functions of SolrClient class to be used here in Global Search
+ */
 
 class SolrWrapper {
     private $client;

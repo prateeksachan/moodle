@@ -25,7 +25,15 @@ solr_display_search_form($mform);
 
 
 if ($data = $mform->get_data()) {
-	$q = required_param('queryfield', PARAM_TEXT);
-	$data->query = $q;
-	solr_search_execute_query($client, $q);
+	$q  = required_param('queryfield', PARAM_TEXT);
+	$fq_title = optional_param('titlefilterqueryfield', '', PARAM_TEXT);
+	$fq_author = optional_param('authorfilterqueryfield', '', PARAM_TEXT);
+	$fq_module = optional_param('modulefilterqueryfield', '', PARAM_TEXT);
+	
+	$data->q  = $q;
+	$data->fq_title  = $fq_title;
+	$data->fq_author = $fq_author;
+	$data->fq_module = $fq_module;
+	
+	solr_search_execute_query($client, $data);
 }

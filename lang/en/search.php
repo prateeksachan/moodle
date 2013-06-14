@@ -84,5 +84,9 @@ $string['wordsintitle'] = 'Words in title';
  * To be merged later
 */
 
-$string['query'] = 'Enter Query';
+$string['authorfilterquery'] = 'From records having this author';
 $string['emptyqueryfield'] = 'Please enter a query to search';
+$string['filterquery'] = 'Enter Filter Queries below. Insert a comma between multiple values.';
+$string['modulefilterquery'] = 'From records belonging to this module';
+$string['query'] = 'Enter Query';
+$string['titlefilterquery'] = 'From records having this title';
