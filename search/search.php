@@ -9,21 +9,34 @@ function solr_display_search_form($mform){
 	$mform->display();
 }
 
-function solr_search_execute_query(SolrWrapper $client, $data){
+function solr_execute_query(SolrWrapper $client, $data){
 	//solr_display_search_form();
 	$query = new SolrQuery();
-	$query->setQuery($data->q);
+	$query->setQuery($data->queryfield);
 	$query->addField('id')->addField('title')->addField('content');
-	if (!empty($data->fq_title)){
-		$query->addFilterQuery('title:' . $data->fq_title);
+	if (!empty($data->titlefilterqueryfield)){
+		$query->addFilterQuery($data->titlefilterqueryfield);
 	}
-	if (!empty($data->fq_author)){
-		$query->addFilterQuery('author:' . $data->fq_author);
+	if (!empty($data->authorfilterqueryfield)){
+		$query->addFilterQuery($data->authorfilterqueryfield);
 	}
-	if (!empty($data->fq_module)){
-		$query->addFilterQuery('module:' . $data->fq_module);
+	if (!empty($data->modulefilterqueryfield)){
+		$query->addFilterQuery($data->modulefilterqueryfield);
 	}
 	$query_response = $client->query($query);
 	$response = $query_response->getResponse();
 	print_r($response);
+}
+
+function solr_prepare_query(SolrWrapper $client, $data){
+	if (!empty($data->titlefilterqueryfield)){
+		$data->titlefilterqueryfield = 'title:' . $data->titlefilterqueryfield;
+	}
+	if (!empty($data->authorfilterqueryfield)){
+		$data->authorfilterqueryfield = 'author:' . $data->authorfilterqueryfield;
+	}
+	if (!empty($data->modulefilterqueryfield)){
+		$data->modulefilterqueryfield = 'module:' . $data->modulefilterqueryfield;
+	}
+	solr_execute_query($client, $data);
 }
