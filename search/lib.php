@@ -112,7 +112,7 @@ function search_index(SolrWrapper $client) {
 
 function search_delete_index(SolrWrapper $client, $data){
     if (!empty($data->module)){
-        $client->deleteByQuery('module:' . $data->module);
+            $client->deleteByQuery('module:' . $data->module);
     }
     else{
         $client->deleteByQuery('*:*');   
