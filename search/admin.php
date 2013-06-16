@@ -8,6 +8,7 @@ require_once('connection.php');
 
 
 admin_externalpage_setup('globalsearch');
+global $DB;
 
 class search_admin_form extends moodleform {
 
@@ -48,6 +49,8 @@ class search_admin_form extends moodleform {
 
 require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
 
+$mods = $DB->get_records('modules', null, 'name', 'id,name');
+
 $mform = new search_admin_form();
 //$mform->display();
 
@@ -61,8 +64,17 @@ if ($data = $mform->get_data()) {
   if (!empty($data->delete)) {
     if (!empty($data->all)){
     	$data->module = NULL;
-    	search_delete_index($client, $data);
     }
+    else{
+    	$a = '';
+    	foreach ($data as $key => $value) {
+ 		   if ($value && $key!='delete' && $key!='submitbutton') {
+				$a .= $key . ',';
+    		}
+		}
+		$data->module = substr($a, 0, strlen($a) - 1);
+    }
+    search_delete_index($client, $data);
   }
 }
 
