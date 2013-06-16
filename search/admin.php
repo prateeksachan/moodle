@@ -5,7 +5,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/search/lib.php');
 
-//admin_externalpage_setup('globalsearch');
+admin_externalpage_setup('globalsearch');
 
 class search_admin_form extends moodleform {
 
@@ -20,16 +20,16 @@ class search_admin_form extends moodleform {
 	$mform->closeHeaderBefore('indexcheckbox');
 	
 	$modcheckboxarray = array();
-	$modcheckboxarray[] =& $mform->createElement('checkbox', 'all', '', 'All Modules');
-	$modcheckboxarray[] =& $mform->createElement('checkbox', 'book', '', 'Book');
-	$modcheckboxarray[] =& $mform->createElement('checkbox', 'glossary', '', 'Glossary');
-	$modcheckboxarray[] =& $mform->createElement('checkbox', 'page', '', 'Page');
-	$modcheckboxarray[] =& $mform->createElement('checkbox', 'forum', '', 'Forum');
-	$modcheckboxarray[] =& $mform->createElement('checkbox', 'wiki', '', 'Wiki');
-	$mform->addGroup($modcheckboxarray, 'modcheckbox', '', array(' '), false);
-	$mform->closeHeaderBefore('modcheckbox');
+	$modcheckboxarray[] =& $mform->createElement('advcheckbox', 'all', '', 'All Modules', array('group' => 1));
+	$modcheckboxarray[] =& $mform->createElement('advcheckbox', 'book', '', 'Book', array('group' => 2));
+	$modcheckboxarray[] =& $mform->createElement('advcheckbox', 'glossary', '', 'Glossary', array('group' => 2));
+	$modcheckboxarray[] =& $mform->createElement('advcheckbox', 'page', '', 'Page', array('group' => 2));
+	$modcheckboxarray[] =& $mform->createElement('advcheckbox', 'forum', '', 'Forum', array('group' => 2));
+	$modcheckboxarray[] =& $mform->createElement('advcheckbox', 'wiki', '', 'Wiki', array('group' => 2));
+	$mform->addGroup($modcheckboxarray, 'modadvcheckbox', '', array(' '), false);
+	$mform->closeHeaderBefore('modadvcheckbox');
 
-	$mform->disabledIf('modcheckbox', 'indexcheckbox', 'checked');
+	$mform->disabledIf('modadvcheckbox', 'delete', 'notchecked');
 	
 	$this->add_action_buttons($cancel = false);
 	$mform->setDefault('action', '');
@@ -37,3 +37,20 @@ class search_admin_form extends moodleform {
   }
 
 }
+
+require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
+
+$mform = new search_admin_form();
+//$mform->display();
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading('Index statistics');
+echo $OUTPUT->box_start();
+echo $OUTPUT->box_end();
+//echo $OUTPUT->heading('Last indexing statistics');
+echo $OUTPUT->box_start();
+echo $OUTPUT->box_end();
+echo $OUTPUT->container_start();
+echo $mform->display();
+echo $OUTPUT->container_end();
+echo $OUTPUT->footer();
