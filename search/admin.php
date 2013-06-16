@@ -4,6 +4,8 @@ require_once('../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/search/lib.php');
+require_once('connection.php');
+
 
 admin_externalpage_setup('globalsearch');
 
@@ -38,7 +40,7 @@ class search_admin_form extends moodleform {
 	$mform->disabledIf('optimize', 'index', 'checked');
 	
 	$this->add_action_buttons($cancel = false);
-	$mform->setDefault('action', '');
+	$mform->setDefault('action', '');	
 
   }
 
@@ -48,6 +50,22 @@ require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
 
 $mform = new search_admin_form();
 //$mform->display();
+
+if ($data = $mform->get_data()) {
+  if (!empty($data->index)) {
+    search_index();
+  }
+  if (!empty($data->optimize)) {
+    search_optimize_index();
+  }
+  if (!empty($data->delete)) {
+    if (!empty($data->all)){
+    	$data->module = NULL;
+    	search_delete_index($client, $data);
+    }
+  }
+}
+
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading('Index statistics');
