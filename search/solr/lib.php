@@ -34,6 +34,10 @@ class SolrWrapper {
         return $this->client->query($query);
     }
 
+    public function deleteByQuery($query){
+        return $this->client->deleteByQuery($query);
+    }
+
 }
 
 function solr_check_server(SolrWrapper $client) {
