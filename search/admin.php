@@ -56,10 +56,10 @@ $mform = new search_admin_form();
 
 if ($data = $mform->get_data()) {
   if (!empty($data->index)) {
-    search_index();
+    search_index($client);
   }
   if (!empty($data->optimize)) {
-    search_optimize_index();
+    search_optimize_index($client);
   }
   if (!empty($data->delete)) {
     if (!empty($data->all)){
