@@ -1,11 +1,5 @@
 <?php
 
-/* @var $DB mysqli_native_moodle_database */
-/* @var $OUTPUT core_renderer */
-/* @var $PAGE moodle_page */
-?>
-<?php
-
 require_once('../config.php');
 require_once('lib.php');
 require_once('connection.php');

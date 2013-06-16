@@ -49,10 +49,7 @@ class search_admin_form extends moodleform {
 
 require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
 
-$mods = $DB->get_records('modules', null, 'name', 'id,name');
-
 $mform = new search_admin_form();
-//$mform->display();
 
 if ($data = $mform->get_data()) {
   if (!empty($data->index)) {
