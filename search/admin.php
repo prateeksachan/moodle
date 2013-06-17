@@ -61,6 +61,7 @@ if ($data = $mform->get_data()) {
   if (!empty($data->delete)) {
     if (!empty($data->all)){
     	$data->module = NULL;
+    	search_delete_index($client, $data);
     }
     else{
     	$a = '';
@@ -69,9 +70,9 @@ if ($data = $mform->get_data()) {
 				$a .= $key . ',';
     		}
 		}
-		$data->module = substr($a, 0, strlen($a) - 1);
+		$data->module = substr($a, 0, -1);
+		search_delete_index($client, $data);
     }
-    search_delete_index($client, $data);
   }
 }
 

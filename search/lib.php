@@ -18,14 +18,27 @@ define('SEARCH_ACCESS_DENIED', 0);
 define('SEARCH_ACCESS_GRANTED', 1);
 define('SEARCH_ACCESS_DELETED', 2);
 
-function search_get_iterators() {
+/**
+ * Modules activated for Global Search.
+ * @return array $mods
+ */
+function search_get_modules(){
     global $DB;
     $mods = $DB->get_records('modules', null, 'name', 'id,name');
-    foreach ($mods as $k => $mod) {
+    foreach ($mods as $key => $mod) {
         if (!plugin_supports('mod', $mod->name, FEATURE_GLOBAL_SEARCH)) {
-            unset($mods[$k]);
+            unset($mods[$key]);
         }
     }
+    return $mods;
+}
+
+/**
+ * Search API functions for modules.
+ * @return stdClass object $functions
+ */
+function search_get_iterators() {
+    $mods = search_get_modules();
     $functions = array();
     foreach ($mods as $mod) {
         if (!function_exists($mod->name . '_search_iterator')) {
@@ -37,10 +50,6 @@ function search_get_iterators() {
         if (!function_exists($mod->name . '_search_access')) {
             throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' . $mod->name . '_search_access' . '\' is missing.');
         }
-        /*
-         * Store the respective core search functions for each module to be called later.
-         * when committing the documents.
-        */ 
         $functions[$mod->name] = new stdClass();
         $functions[$mod->name]->iterator = $mod->name . '_search_iterator';
         $functions[$mod->name]->documents = $mod->name . '_search_get_documents';
@@ -54,8 +63,7 @@ function search_get_iterators() {
 
 /**
  * Merge separate index segments into one.
- * solr function:: optimize() does this.
- * To be done later
+ * @param SolrWrapper $client
  */
 function search_optimize_index(SolrWrapper $client) {
     $client->optimize();
@@ -64,6 +72,7 @@ function search_optimize_index(SolrWrapper $client) {
 
 /**
  * Index all documents.
+ * @param SolrWrapper $client
  */
 function search_index(SolrWrapper $client) {
     mtrace("Memory usage:" . memory_get_usage(), '<br/>');
@@ -128,16 +137,53 @@ function search_index(SolrWrapper $client) {
     }
 }
 
+/**
+ * Resets config_plugin table after index deletion as re-indexing will be done from start.
+ * optional @param string $s containing modules whose index was chosen to be deleted.
+ */
+function search_reset_config($s = NULL){
+    if (!empty($s)){
+        $mods = explode(',', $s);
+    }
+    else{
+        $get_mods = search_get_modules();
+        $mods = array();
+        foreach ($get_mods as $mod){
+            $mods[] = $mod->name;
+        }
+    }
+    foreach ($mods as $key => $name) {
+        set_config($name . '_indexingstart', 0, 'search');
+        set_config($name . '_indexingend', 0, 'search');
+        set_config($name . '_lastindexrun', 0, 'search');
+        set_config($name . '_docsignored', 0, 'search');
+        set_config($name . '_docsprocessed', 0, 'search');
+        set_config($name . '_recordsprocessed', 0, 'search');
+    }
+}
+
+/**
+ * Deletes index.
+ * @param SolrWrapper $client
+ * @param stdClass object $data
+ */
 function search_delete_index(SolrWrapper $client, $data){
     if (!empty($data->module)){
         $client->deleteByQuery('module:' . $data->module);
+        search_reset_config($data->module);
     }
     else{
-        $client->deleteByQuery('*:*');   
+        $client->deleteByQuery('*:*');
+        search_reset_config();   
     }
     $client->commit();
 }
 
+/**
+ * Returns Global Search configuration settings from config_plugin table.
+ * @param array $mods
+ * @return array $configsettings
+ */
 function search_get_config($mods) {
     $all = get_config('search');
     $configvars = array('indexingstart', 'indexingend', 'lastindexrun', 'docsignored', 'docsprocessed', 'recordsprocessed');
