@@ -512,7 +512,7 @@ function page_search_get_documents($id) {
   $doc->addField('contextlink', '/mod/page/view.php?id=' . $page->id);
   $doc->addField('module', 'page');
   $docs[] = $doc;
-
+  
   return $docs;
 }
 
