@@ -10,9 +10,9 @@ require_once($CFG->dirroot . '/lib/accesslib.php');
 require_once('solr/lib.php');
 
 define('SEARCH_INDEX_PATH', $CFG->dataroot . '/search');
-define('SEARCH_TYPE_TEXT', 0);
-define('SEARCH_TYPE_FILE', 1);
-define('SEARCH_TYPE_HTML', 2);
+define('SEARCH_TYPE_HTML', 1);
+define('SEARCH_TYPE_TEXT', 2);
+define('SEARCH_TYPE_FILE', 3);
 
 define('SEARCH_ACCESS_DENIED', 0);
 define('SEARCH_ACCESS_GRANTED', 1);
@@ -68,7 +68,6 @@ function search_optimize_index(SolrWrapper $client) {
 function search_index(SolrWrapper $client) {
     mtrace("Memory usage:" . memory_get_usage(), '<br/>');
     set_time_limit(576000);
-    
     $iterators = search_get_iterators();
     mtrace("Memory usage:" . memory_get_usage(), '<br/>');
     foreach ($iterators as $name => $iterator) {
@@ -76,35 +75,54 @@ function search_index(SolrWrapper $client) {
         $indexingstart = time();
         $iterfunction = $iterator->iterator;
         $getdocsfunction = $iterator->documents;
-        //@TODO: get the timestamp of the last commited run and put here
-        $lastrun = 0;
-        $recordset = $iterfunction($lastrun);
-        $norecords = 0;
-        $nodocuments = 0;
-        $nodocumentsignored = 0;
+        $lastindexrun = get_config('search', $name . '_lastindexrun');
+        $recordset = $iterfunction($lastindexrun);
+        $numrecords = 0;
+        $numdocs = 0;
+        $numdocsignored = 0;
         foreach ($recordset as $record) {
             mtrace("$name,{$record->id}", '<br/>');
             mtrace("Memory usage:" . memory_get_usage(), '<br/>');
-            ++$norecords;
-            echo 'norecords: '.$norecords;
+            ++$numrecords;
+            echo 'norecords: '.$numrecords;
             $timestart = microtime(true);
             $documents = $getdocsfunction($record->id);
             
             foreach ($documents as $solrdocument) {
-                if ($solrdocument) {
-                    $client->addDocument($solrdocument);
-                    mtrace("Memory usage: (doc added)" . memory_get_usage(), '<br/>');
-                    ++$nodocuments;
-                } else {
-                    ++$nodocumentsignored;
+                switch (($solrdocument->getField('type')->values[0])) {
+                    case SEARCH_TYPE_HTML:
+                        $client->addDocument($solrdocument);
+                        mtrace("Memory usage: (doc added)" . memory_get_usage(), '<br/>');
+                        ++$numdocs;
+                        break;
+                    case SEARCH_TYPE_TEXT:
+                        $client->addDocument($solrdocument);
+                        mtrace("Memory usage: (doc added)" . memory_get_usage(), '<br/>');
+                        ++$numdocs;
+                        break;
+                    case SEARCH_TYPE_FILE:
+                        //TODO Ingtegrate Apache Tika here
+                        ++$numdocs;
+                        break;
+                    default:
+                        ++$numdocsignored;
+                        throw new search_ex("Incorrect document format encountered");
                 }
             }
             $timetaken = microtime(true) - $timestart;
-            mtrace("Time $norecords: $timetaken", '<br/>');
+            mtrace("Time $numrecords: $timetaken", '<br/>');
         }
         $recordset->close();
-        if ($norecords > 0) {
+        if ($numrecords > 0) {
             $client->commit();
+            $indexingend = time();
+            set_config($name . '_indexingstart', $indexingstart, 'search');
+            set_config($name . '_indexingend', $indexingend, 'search');
+            set_config($name . '_lastindexrun', $record->modified, 'search');
+            set_config($name . '_docsignored', $numdocsignored, 'search');
+            set_config($name . '_docsprocessed', $numdocs, 'search');
+            set_config($name . '_recordsprocessed', $numrecords, 'search');
+            mtrace("Processed $numrecords records containing $numdocs documents for " . $iterator->module);
             echo 'commits completed'.'<br>';
         }
     }
@@ -112,10 +130,35 @@ function search_index(SolrWrapper $client) {
 
 function search_delete_index(SolrWrapper $client, $data){
     if (!empty($data->module)){
-            $client->deleteByQuery('module:' . $data->module);
+        $client->deleteByQuery('module:' . $data->module);
     }
     else{
         $client->deleteByQuery('*:*');   
     }
     $client->commit();
+}
+
+function search_get_config($mods) {
+    $all = get_config('search');
+    $configvars = array('indexingstart', 'indexingend', 'lastindexrun', 'docsignored', 'docsprocessed', 'recordsprocessed');
+
+    $configsettings =  array();
+    foreach ($mods as $mod) {
+        $configsettings[$mod] = new stdClass();
+        foreach ($configvars as $var) {
+            $name = "{$mod}_$var";
+            if (!empty($all->$name)) {
+                $configsettings[$mod]->$var = $configsettings->$name;
+            }
+            else {
+                $configsettings[$mod]->$var = 0;
+            }
+        }
+        if (!empty($configsettings[$mod]->lastindexrun)) {
+            $configsettings[$mod]->lastindexrun = userdate($configsettings[$mod]->lastindexrun);
+        } else {
+            $configsettings[$mod]->lastindexrun = "never";
+        }
+    }
+    return $configsettings;
 }
