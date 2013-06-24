@@ -15,8 +15,6 @@ class search_admin_form extends moodleform {
 
     $mform = & $this->_form;
     $checkboxarray = array();
-	$checkboxarray[] =& $mform->createElement('checkbox', 'index', '', get_string('index', 'search'));
-	$checkboxarray[] =& $mform->createElement('checkbox', 'optimize', '', get_string('optimize', 'search'));
 	$checkboxarray[] =& $mform->createElement('checkbox', 'delete', '', get_string('delete', 'search'));
 	$mform->addGroup($checkboxarray, 'indexcheckbox', '', array(' '), false);
 	$mform->closeHeaderBefore('indexcheckbox');
@@ -51,12 +49,6 @@ require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
 $mform = new search_admin_form();
 
 if ($data = $mform->get_data()) {
-  if (!empty($data->index)) {
-    search_index($client);
-  }
-  if (!empty($data->optimize)) {
-    search_optimize_index($client);
-  }
   if (!empty($data->delete)) {
     if (!empty($data->all)){
     	$data->module = NULL;
