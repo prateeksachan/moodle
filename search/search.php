@@ -1,7 +1,7 @@
 <?php
 
 require_once($CFG->libdir . '/formslib.php');
-require_once('search_form.php');
+require_once($CFG->dirroot . '/search/search_form.php');
 
 require_login();
 

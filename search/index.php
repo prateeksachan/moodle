@@ -1,9 +1,9 @@
 <?php
 
 require_once('../config.php');
-require_once('lib.php');
-require_once('connection.php');
-require_once('search.php');
+require_once($CFG->dirroot . '/search/connection.php');
+require_once($CFG->dirroot . '/search/lib.php');
+require_once($CFG->dirroot . '/search/search.php');
 
 require_login();
 $PAGE->set_context(get_system_context());
