@@ -7,7 +7,6 @@
 <?php
 
 require_once($CFG->dirroot . '/lib/accesslib.php');
-require_once('solr/lib.php');
 
 define('SEARCH_INDEX_PATH', $CFG->dataroot . '/search');
 define('SEARCH_TYPE_HTML', 1);
