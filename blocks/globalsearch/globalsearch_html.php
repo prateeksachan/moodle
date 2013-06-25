@@ -1,13 +1,14 @@
 <?php
 
 require_once($CFG->libdir . '/formslib.php');
-
-class search_form extends moodleform {
-
+ 
+class globalsearch_form extends moodleform {
+ 
     function definition() {
 
 		$mform =& $this->_form;
 		$mform->addElement('header', 'search', get_string('search', 'search'));
+
 		$mform->addElement('text', 'queryfield', get_string('query', 'search'));
 		$mform->addHelpButton('queryfield', 'globalsearch', 'search');
 		$mform->setType('queryfield', PARAM_TEXT);
@@ -28,5 +29,4 @@ class search_form extends moodleform {
 		$mform->setDefault('action', '');
 
 	}
-
 }

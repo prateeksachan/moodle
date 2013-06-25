@@ -24,3 +24,4 @@
  */
 
 $string['pluginname'] = 'Global Search';
+
