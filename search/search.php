@@ -10,7 +10,6 @@ function solr_display_search_form($mform){
 }
 
 function solr_execute_query(SolrWrapper $client, $data){
-	//solr_display_search_form();
 	$query = new SolrQuery();
 	$query->setQuery($data->queryfield);
 	$query->addField('id')->addField('title')->addField('content');

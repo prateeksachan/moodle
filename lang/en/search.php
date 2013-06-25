@@ -84,11 +84,13 @@ $string['wordsintitle'] = 'Words in title';
  * To be merged later
 */
 
+$string['advancequeries'] = 'Advance Queries';
 $string['authorfilterquery'] = 'From records having this author';
 $string['delete'] = 'Delete';
 $string['emptyqueryfield'] = 'Please enter a query to search';
 $string['filterquery'] = 'Enter Filter Queries below. Insert a comma between multiple values.';
 $string['filterqueryheader'] = 'Filter Query';
+$string['globalsearch_help'] = 'Global Search help text popup. This will be updated with syntax of entering search queries';
 $string['globalsearch'] = 'Global Search';
 $string['index'] = 'Index';
 $string['modulefilterquery'] = 'From records belonging to this module';
