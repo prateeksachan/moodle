@@ -22,9 +22,14 @@ class globalsearch_form extends moodleform {
 		$mform->addElement('text', 'authorfilterqueryfield', get_string('authorfilterquery', 'search'));
 		$mform->setType('authorfilterqueryfield', PARAM_TEXT);
 		
-		$mform->addElement('text', 'modulefilterqueryfield', get_string('modulefilterquery', 'search'));
-		$mform->setType('modulefilterqueryfield', PARAM_TEXT);
-
+		$mods = search_get_modules();
+		$modules = array();
+		$modules [] = "All modules";
+		foreach ($mods as $mod){
+			$modules[$mod->name] = ucfirst($mod->name);
+		}
+		$mform->addElement('select', 'modulefilterqueryfield', get_string('modulefilterquery', 'search'), $modules);
+		
 		$this->add_action_buttons($cancel = false, $submitlabel='Search');
 		$mform->setDefault('action', '');
 
