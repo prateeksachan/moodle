@@ -1,13 +1,14 @@
 <?php
 
 require_once($CFG->libdir . '/formslib.php');
-
+ 
 class search_form extends moodleform {
-
+ 
     function definition() {
 
 		$mform =& $this->_form;
 		$mform->addElement('header', 'search', get_string('search', 'search'));
+
 		$mform->addElement('text', 'queryfield', get_string('query', 'search'));
 		$mform->addHelpButton('queryfield', 'globalsearch', 'search');
 		$mform->setType('queryfield', PARAM_TEXT);
@@ -21,12 +22,16 @@ class search_form extends moodleform {
 		$mform->addElement('text', 'authorfilterqueryfield', get_string('authorfilterquery', 'search'));
 		$mform->setType('authorfilterqueryfield', PARAM_TEXT);
 		
-		$mform->addElement('text', 'modulefilterqueryfield', get_string('modulefilterquery', 'search'));
-		$mform->setType('modulefilterqueryfield', PARAM_TEXT);
-
+		$mods = search_get_modules();
+		$modules = array();
+		$modules [] = "All modules";
+		foreach ($mods as $mod){
+			$modules[$mod->name] = ucfirst($mod->name);
+		}
+		$mform->addElement('select', 'modulefilterqueryfield', get_string('modulefilterquery', 'search'), $modules);
+		
 		$this->add_action_buttons($cancel = false, $submitlabel='Search');
 		$mform->setDefault('action', '');
 
 	}
-
 }
