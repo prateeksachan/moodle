@@ -257,7 +257,8 @@ function book_supports($feature) {
         case FEATURE_GRADE_OUTCOMES:          return false;
         case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_SHOW_DESCRIPTION:        return true;
-
+        case FEATURE_GLOBAL_SEARCH:           return true;
+        
         default: return null;
     }
 }
@@ -432,4 +433,63 @@ function book_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
 function book_page_type_list($pagetype, $parentcontext, $currentcontext) {
     $module_pagetype = array('mod-book-*'=>get_string('page-mod-book-x', 'mod_book'));
     return $module_pagetype;
+}
+
+/**
+* Global Search functions
+* @var $DB mysqli_native_moodle_database
+* @var $OUTPUT core_renderer
+* @var $PAGE moodle_book
+*/
+
+function book_search_iterator($from = 0) {
+    global $DB;
+
+    $sql = "SELECT id, timemodified AS modified FROM {book} WHERE timemodified > ? ORDER BY timemodified ASC";
+
+    return $DB->get_recordset_sql($sql, array($from));
+}
+
+function book_search_get_documents($id) {
+    global $DB;
+
+    $docs = array();
+    $book = $DB->get_record('book', array('id' => $id), '*', MUST_EXIST);
+    $chapters = $DB->get_records('book_chapters', array('id' => $book->id));
+    $course = $DB->get_record('course', array('id' => $book->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('book', $book->id, $book->course, false, MUST_EXIST);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+    // Declare a new Solr Document and insert fields into it from DB
+    
+    foreach($chapters as $chapter){
+        $doc = new SolrInputDocument();
+        $doc->addField('id', 'book_' . $chapter->id);
+        $doc->addField('created', $chapter->timecreated);
+        $doc->addField('modified', $chapter->timemodified);
+        $doc->addField('name', $book->name);
+        $doc->addField('intro', format_text($book->intro, $book->introformat, array('nocache' => true, 'para' => false)));
+        $doc->addField('title', $chapter->title);
+        $doc->addField('content', format_text($chapter->content, $chapter->contentformat, array('nocache' => true, 'para' => false)));
+        $doc->addField('type', SEARCH_TYPE_HTML);
+        $doc->addField('courseid', $book->course);
+        $doc->addField('contextlink', '/mod/book/view.php?id=' . $book->id);
+        $doc->addField('module', 'book');
+        $docs[] = $doc;
+    }
+    return $docs;
+}
+
+//@TODO
+function book_search_access($id) {
+    global $DB;
+    if (!$book = $DB->get_record('book', array('id'=>$p))) {
+        print_error('invalidaccessparameter');
+    }
+    $cm = get_coursemodule_from_instance('book', $book->id, $book->course, false, MUST_EXIST);
+    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+
+    // User must login in order to see search results
+    require_course_login($course, true, $cm);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    require_capability('mod/book:view', $context);
 }

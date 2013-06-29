@@ -747,6 +747,8 @@ function lesson_supports($feature) {
         case FEATURE_GRADE_HAS_GRADE:         return true;
         case FEATURE_GRADE_OUTCOMES:          return true;
         case FEATURE_BACKUP_MOODLE2:          return true;
+        case FEATURE_GLOBAL_SEARCH:           return true;
+
         default: return null;
     }
 }
@@ -1002,4 +1004,63 @@ function lesson_update_media_file($lessonid, $context, $draftitemid) {
         // Set the mediafile column in the lessons table.
         $DB->set_field('lesson', 'mediafile', '', array('id' => $lessonid));
     }
+}
+
+/**
+* Global Search functions
+* @var $DB mysqli_native_moodle_database
+* @var $OUTPUT core_renderer
+* @var $PAGE moodle_lesson
+*/
+
+function lesson_search_iterator($from = 0) {
+    global $DB;
+
+    $sql = "SELECT id, timemodified AS modified FROM {lesson} WHERE timemodified > ? ORDER BY timemodified ASC";
+
+    return $DB->get_recordset_sql($sql, array($from));
+}
+
+function lesson_search_get_documents($id) {
+    global $DB;
+
+    $docs = array();
+    $lesson = $DB->get_record('lesson', array('id' => $id), '*', MUST_EXIST);
+    $lessonpages = $DB->get_records('lesson_pages', array('lessonid' => $lesson->id));
+    $course = $DB->get_record('course', array('id' => $lesson->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+    // Declare a new Solr Document and insert fields into it from DB
+    
+    foreach($lessonpages as $lessonpage){
+        $doc = new SolrInputDocument();
+        $doc->addField('id', 'lesson_' . $lessonpage->id);
+        $doc->addField('modified', $lesson->timemodified);
+        $doc->addField('name', $lesson->name);
+        $doc->addField('title', $lessonpage->title);
+        $doc->addField('content', format_text($lessonpage->contents, $lessonpage->contentsformat, array('nocache' => true, 'para' => false)));
+        $doc->addField('type', SEARCH_TYPE_HTML);
+        $doc->addField('courseid', $lesson->course);
+        $doc->addField('contextlink', '/mod/lesson/view.php?id=' . $lesson->id);
+        $doc->addField('module', 'lesson');
+        
+        $docs[] = $doc;
+    }
+
+    return $docs;
+}
+
+//@TODO
+function lesson_search_access($id) {
+    global $DB;
+    if (!$lesson = $DB->get_record('lesson', array('id'=>$p))) {
+        print_error('invalidaccessparameter');
+    }
+    $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
+    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+
+    // User must login in order to see search results
+    require_course_login($course, true, $cm);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    require_capability('mod/lesson:view', $context);
 }

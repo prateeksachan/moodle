@@ -328,6 +328,7 @@ function forum_supports($feature) {
         case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_SHOW_DESCRIPTION:        return true;
         case FEATURE_PLAGIARISM:              return true;
+        case FEATURE_GLOBAL_SEARCH:           return true;
 
         default: return null;
     }
@@ -7489,4 +7490,106 @@ function forum_get_context($forumid, $context = null) {
     }
 
     return $context;
+}
+
+/**
+ * Global Search functions
+ * @var $DB mysqli_native_moodle_database
+ * @var $OUTPUT core_renderer
+ * @var $PAGE moodle_forum
+ */
+function forum_search_iterator($from = 0) {
+    global $DB;
+
+    $sql = "SELECT id, modified FROM {forum_posts} WHERE modified > ? ORDER BY modified ASC";
+
+    return $DB->get_recordset_sql($sql, array($from));
+}
+
+function forum_search_get_documents($id) {
+    global $CFG, $DB;
+
+    $docs = array();
+    $post = forum_get_post_full2($id);
+    $cm = get_coursemodule_from_instance('forum', $post->forum, $post->course);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    //$user = $DB->get_record('user', array('id' => $post->userid));
+    //Declare a new Solr Document and insert fields into it from DB
+    
+    $doc = new SolrInputDocument();
+    $doc->addField('id', 'forum_' . $post->id);
+    $doc->addField('user', $post->userid);
+    $doc->addField('created', $post->created);
+    $doc->addField('modified', $post->modified);
+    $doc->addField('title', $post->subject);
+    $doc->addField('type', SEARCH_TYPE_HTML);
+    $doc->addField('content', format_text($post->message, $post->messageformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('courseid', $post->course);
+    $doc->addField('contextlink', '/mod/forum/discuss.php?d=' . $post->discussion . '#p' . $post->id);
+    $doc->addField('module', 'forum');
+    $docs[] = $doc;
+
+    $fs = get_file_storage();
+    $files = $fs->get_area_files($context->id, 'mod_forum', 'attachment', $id, "timemodified", false);
+    foreach ($files as $file) {
+        $filename = $file->get_filename();
+        //$path = $file->get_content_file_location();//@TODO: protected type.
+        $url = file_encode_url('/pluginfile.php', '/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename);
+
+        $doc = clone $doc;
+        $doc->addField('directlink', $url);
+        //$doc->addField('type', SEARCH_TYPE_FILE);//@TODO After Apache Tika
+        //$doc->addField('filepath', $path);
+        $doc->addField('mime', $file->get_mimetype());
+        $docs[] = $doc;
+    }
+
+    return $docs;
+}
+
+//@TODO
+function forum_search_access($id) {
+    global $DB, $USER;
+
+    try {
+        $post = $DB->get_record('forum_posts', array('id' => $id), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forum_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
+        $forum = $DB->get_record('forum', array('id' => $discussion->forum), '*', MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('forum', $forum->id, $course->id, false, MUST_EXIST);
+    } catch (dml_missing_record_exception $ex) {
+        return SEARCH_ACCESS_DELETED;
+    }
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+
+    // Make sure groups allow this user to see the item they're rating
+    if ($discussion->groupid > 0 and $groupmode = groups_get_activity_groupmode($cm, $course)) {   // Groups are being used
+        if (!groups_group_exists($discussion->groupid)) { // Can't find group
+            return SEARCH_ACCESS_DENIED;
+        }
+
+        if (!groups_is_member($discussion->groupid) and !has_capability('moodle/site:accessallgroups', $context)) {
+        // do not allow viewing of posts from other groups when in SEPARATEGROUPS or VISIBLEGROUPS
+            return SEARCH_ACCESS_DENIED;
+        }
+    }
+
+    // perform some final capability checks
+    if (!forum_user_can_see_post($forum, $discussion, $post, $USER, $cm)) {
+        return SEARCH_ACCESS_DENIED;
+    }
+
+    //forum_user_can_view_post($post, $course, $cm, $forum, $discussion)  
+    return SEARCH_ACCESS_GRANTED;
+}
+
+function forum_get_post_full2($postid) {
+    global $CFG, $DB;
+
+    return $DB->get_record_sql("SELECT p.*, d.course, d.forum, u.firstname, u.lastname, u.email, u.picture, u.imagealt
+                                FROM {forum_posts} p
+                                JOIN {forum_discussions} d ON p.discussion = d.id
+                                LEFT JOIN {user} u ON p.userid = u.id
+                                WHERE p.id = ?",
+                            array($postid));
 }
