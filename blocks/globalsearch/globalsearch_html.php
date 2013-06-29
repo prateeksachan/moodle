@@ -1,6 +1,7 @@
 <?php
 
 require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->dirroot . '/search/lib.php');
  
 class globalsearch_form extends moodleform {
  
