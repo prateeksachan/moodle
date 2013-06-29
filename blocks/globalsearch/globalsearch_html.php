@@ -17,7 +17,7 @@ class globalsearch_form extends moodleform {
 
 		//-------------------------------------------------------
 		$mform->addElement('header', 'filterquerysection', get_string('filterqueryheader', 'search'));
-        $mform->addElement('text', 'titlefilterqueryfield', get_string('titlefilterquery', 'search'));
+	    $mform->addElement('text', 'titlefilterqueryfield', get_string('titlefilterquery', 'search'));
 		$mform->setType('titlefilterqueryfield', PARAM_TEXT);
 		
 		$mform->addElement('text', 'authorfilterqueryfield', get_string('authorfilterquery', 'search'));
