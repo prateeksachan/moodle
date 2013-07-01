@@ -445,7 +445,7 @@ function book_page_type_list($pagetype, $parentcontext, $currentcontext) {
 function book_search_iterator($from = 0) {
     global $DB;
 
-    $sql = "SELECT id, timemodified AS modified FROM {book} WHERE timemodified > ? ORDER BY timemodified ASC";
+    $sql = "SELECT id, timemodified AS modified FROM {book_chapters} WHERE timemodified > ? ORDER BY timemodified ASC";
 
     return $DB->get_recordset_sql($sql, array($from));
 }
@@ -454,28 +454,27 @@ function book_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $book = $DB->get_record('book', array('id' => $id), '*', MUST_EXIST);
-    $chapters = $DB->get_records('book_chapters', array('id' => $book->id));
+    $chapter = $DB->get_record('book_chapters', array('id' => $id), '*', MUST_EXIST);
+    $book = $DB->get_record('book', array('id' => $chapter->bookid), '*', MUST_EXIST);
     $course = $DB->get_record('course', array('id' => $book->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('book', $book->id, $book->course, false, MUST_EXIST);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
     // Declare a new Solr Document and insert fields into it from DB
-    
-    foreach($chapters as $chapter){
-        $doc = new SolrInputDocument();
-        $doc->addField('id', 'book_' . $chapter->id);
-        $doc->addField('created', $chapter->timecreated);
-        $doc->addField('modified', $chapter->timemodified);
-        $doc->addField('name', $book->name);
-        $doc->addField('intro', format_text($book->intro, $book->introformat, array('nocache' => true, 'para' => false)));
-        $doc->addField('title', $chapter->title);
-        $doc->addField('content', format_text($chapter->content, $chapter->contentformat, array('nocache' => true, 'para' => false)));
-        $doc->addField('type', SEARCH_TYPE_HTML);
-        $doc->addField('courseid', $book->course);
-        $doc->addField('contextlink', '/mod/book/view.php?id=' . $book->id);
-        $doc->addField('module', 'book');
-        $docs[] = $doc;
-    }
+
+    $doc = new SolrInputDocument();
+    $doc->addField('id', 'book_' . $chapter->id);
+    $doc->addField('created', $chapter->timecreated);
+    $doc->addField('modified', $chapter->timemodified);
+    $doc->addField('name', $book->name);
+    $doc->addField('intro', format_text($book->intro, $book->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('title', $chapter->title);
+    $doc->addField('content', format_text($chapter->content, $chapter->contentformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('type', SEARCH_TYPE_HTML);
+    $doc->addField('courseid', $book->course);
+    $doc->addField('contextlink', '/mod/book/view.php?id=' . $book->id);
+    $doc->addField('module', 'book');
+    $docs[] = $doc;
+
     return $docs;
 }
 
