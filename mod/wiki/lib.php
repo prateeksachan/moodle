@@ -230,6 +230,8 @@ function wiki_supports($feature) {
         return true;
     case FEATURE_SHOW_DESCRIPTION:
         return true;
+    case FEATURE_GLOBAL_SEARCH:
+        return true;
 
     default:
         return null;
@@ -635,4 +637,62 @@ function wiki_page_type_list($pagetype, $parentcontext, $currentcontext) {
         'mod-wiki-map'=>get_string('page-mod-wiki-map', 'wiki')
     );
     return $module_pagetype;
+}
+
+/**
+* Global Search functions
+* @var $DB mysqli_native_moodle_database
+* @var $OUTPUT core_renderer
+* @var $PAGE moodle_wiki
+*/
+
+function wiki_search_iterator($from = 0) {
+    global $DB;
+
+    $sql = "SELECT id, timemodified AS modified FROM {wiki_pages} WHERE timemodified > ? ORDER BY timemodified ASC";
+
+    return $DB->get_recordset_sql($sql, array($from));
+}
+
+function wiki_search_get_documents($id) {
+    global $DB;
+
+    $docs = array();
+    $wikipage = $DB->get_record('wiki_pages', array('id' => $id), '*', MUST_EXIST);
+    $wiki = $DB->get_record('wiki', array('id' => $wikipage->subwikiid), '*', MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $wiki->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+    // Declare a new Solr Document and insert fields into it from DB
+    
+    $doc = new SolrInputDocument();
+    $doc->addField('type', SEARCH_TYPE_HTML);
+    $doc->addField('id', 'wiki_' . $wikipage->id);
+    $doc->addField('created', $wikipage->timecreated);
+    $doc->addField('modified', $wikipage->timemodified);
+    $doc->addField('intro', format_text($wiki->intro, $wiki->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('name', $wiki->name);
+    $doc->addField('content', format_text($wikipage->cachedcontent, array('nocache' => true, 'para' => false)));
+    $doc->addField('title', $wikipage->title);
+    $doc->addField('courseid', $wiki->course);
+    $doc->addField('contextlink', '/mod/wiki/view.php?pageid=' . $wikipage->id);
+    $doc->addField('module', 'wiki');
+    $docs[] = $doc;
+    
+    return $docs;
+}
+
+//@TODO
+function wiki_search_access($id) {
+    global $DB;
+    if (!$wiki = $DB->get_record('wiki', array('id'=>$p))) {
+        print_error('invalidaccessparameter');
+    }
+    $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
+    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+
+    // User must login in order to see search results
+    require_course_login($course, true, $cm);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    require_capability('mod/wiki:view', $context);
 }
