@@ -184,16 +184,16 @@ function search_delete_index(SolrWrapper $client, $data){
  * @return array $configsettings
  */
 function search_get_config($mods) {
-    $all = get_config('search');
-    $configvars = array('indexingstart', 'indexingend', 'lastindexrun', 'docsignored', 'docsprocessed', 'recordsprocessed');
-
+    $allconfigs = get_config('search');
+    $vars = array('indexingstart', 'indexingend', 'lastindexrun', 'docsignored', 'docsprocessed', 'recordsprocessed');
+    
     $configsettings =  array();
     foreach ($mods as $mod) {
         $configsettings[$mod] = new stdClass();
-        foreach ($configvars as $var) {
+        foreach ($vars as $var) {
             $name = "{$mod}_$var";
-            if (!empty($all->$name)) {
-                $configsettings[$mod]->$var = $configsettings->$name;
+            if (!empty($allconfigs->$name)) {
+                $configsettings[$mod]->$var = $allconfigs->$name;
             }
             else {
                 $configsettings[$mod]->$var = 0;
@@ -202,7 +202,7 @@ function search_get_config($mods) {
         if (!empty($configsettings[$mod]->lastindexrun)) {
             $configsettings[$mod]->lastindexrun = userdate($configsettings[$mod]->lastindexrun);
         } else {
-            $configsettings[$mod]->lastindexrun = "never";
+            $configsettings[$mod]->lastindexrun = "Never";
         }
     }
     return $configsettings;
