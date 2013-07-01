@@ -510,7 +510,7 @@ function page_search_get_documents($id) {
     $doc->addField('name', $page->name);
     $doc->addField('content', format_text($page->content, $page->contentformat, array('nocache' => true, 'para' => false)));
     $doc->addField('courseid', $page->course);
-    $doc->addField('contextlink', '/mod/page/view.php?id=' . $page->id);
+    $doc->addField('contextlink', '/mod/page/view.php?id=' . $cm->id);
     $doc->addField('module', 'page');
     $docs[] = $doc;
 
