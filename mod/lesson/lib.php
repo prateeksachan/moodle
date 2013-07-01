@@ -1016,7 +1016,7 @@ function lesson_update_media_file($lessonid, $context, $draftitemid) {
 function lesson_search_iterator($from = 0) {
     global $DB;
 
-    $sql = "SELECT id, timemodified AS modified FROM {lesson} WHERE timemodified > ? ORDER BY timemodified ASC";
+    $sql = "SELECT id, timemodified AS modified FROM {lesson_pages} WHERE timemodified > ? ORDER BY timemodified ASC";
 
     return $DB->get_recordset_sql($sql, array($from));
 }
@@ -1025,27 +1025,25 @@ function lesson_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $lesson = $DB->get_record('lesson', array('id' => $id), '*', MUST_EXIST);
-    $lessonpages = $DB->get_records('lesson_pages', array('lessonid' => $lesson->id));
+    $lessonpage = $DB->get_record('lesson_pages', array('id' => $id), '*', MUST_EXIST);
+    $lesson = $DB->get_record('lesson', array('id' => $lessonpage->lessonid), '*', MUST_EXIST);
     $course = $DB->get_record('course', array('id' => $lesson->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
     // Declare a new Solr Document and insert fields into it from DB
     
-    foreach($lessonpages as $lessonpage){
-        $doc = new SolrInputDocument();
-        $doc->addField('id', 'lesson_' . $lessonpage->id);
-        $doc->addField('modified', $lesson->timemodified);
-        $doc->addField('name', $lesson->name);
-        $doc->addField('title', $lessonpage->title);
-        $doc->addField('content', format_text($lessonpage->contents, $lessonpage->contentsformat, array('nocache' => true, 'para' => false)));
-        $doc->addField('type', SEARCH_TYPE_HTML);
-        $doc->addField('courseid', $lesson->course);
-        $doc->addField('contextlink', '/mod/lesson/view.php?id=' . $cm->id);
-        $doc->addField('module', 'lesson');
-        
-        $docs[] = $doc;
-    }
+    $doc = new SolrInputDocument();
+    $doc->addField('type', SEARCH_TYPE_HTML);
+    $doc->addField('id', 'lesson_' . $lessonpage->id);
+    $doc->addField('created', $lessonpage->timecreated);
+    $doc->addField('modified', $lessonpage->timemodified);
+    $doc->addField('name', $lesson->name);
+    $doc->addField('content', format_text($lessonpage->contents, $lessonpage->contentsformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('title', $lessonpage->title);
+    $doc->addField('courseid', $lesson->course);
+    $doc->addField('contextlink', '/mod/lesson/view.php?id=' . $cm->id . '&pageid=' . $lessonpage->id);
+    $doc->addField('module', 'lesson');
+    $docs[] = $doc;
 
     return $docs;
 }
