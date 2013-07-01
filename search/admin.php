@@ -67,15 +67,32 @@ if ($data = $mform->get_data()) {
   }
 }
 
+$gstable = new html_table();
+$gstable->id = 'gs-control-panel';
+$gstable->head = array(
+	"Name", "Newest document indexed", "Last run <br /> (time, # docs, # records, # ignores)"
+);
+$gstable->colclasses = array(
+	'displayname', 'lastrun', 'timetaken'
+);
+
+$mods = search_get_iterators();
+$config = search_get_config(array_keys($mods));
+
+foreach ($mods as $name => $mod) {
+	$cname = new html_table_cell(ucfirst($name));
+	$clastrun = new html_table_cell($config[$name]->lastindexrun);
+	$ctimetaken = new html_table_cell($config[$name]->indexingend - $config[$name]->indexingstart . ' , ' . $config[$name]->docsprocessed . ' , ' . $config[$name]->recordsprocessed . ' , ' . $config[$name]->docsignored);
+	$row = new html_table_row(array($cname, $clastrun, $ctimetaken));
+	$gstable->data[] = $row;
+}
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading('Index statistics');
-echo $OUTPUT->box_start();
-echo $OUTPUT->box_end();
-//echo $OUTPUT->heading('Last indexing statistics');
-echo $OUTPUT->box_start();
-echo $OUTPUT->box_end();
+echo $OUTPUT->heading('Last indexing statistics');
+echo html_writer::table($gstable);
 echo $OUTPUT->container_start();
+echo $OUTPUT->box_start();
 echo $mform->display();
+echo $OUTPUT->box_end();
 echo $OUTPUT->container_end();
 echo $OUTPUT->footer();
