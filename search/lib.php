@@ -17,6 +17,11 @@ define('SEARCH_ACCESS_DENIED', 0);
 define('SEARCH_ACCESS_GRANTED', 1);
 define('SEARCH_ACCESS_DELETED', 2);
 
+define('SEARCH_MAX_RESULTS', 100);
+define('SEARCH_SET_START', 0);
+define('SEARCH_SET_ROWS', 1000);
+
+
 /**
  * Modules activated for Global Search.
  * @return array $mods
@@ -175,6 +180,11 @@ function search_delete_index(SolrWrapper $client, $data){
         $client->deleteByQuery('*:*');
         search_reset_config();   
     }
+    $client->commit();
+}
+
+function search_delete_index_by_id(SolrWrapper $client, $id){
+    $client->deleteById($id);
     $client->commit();
 }
 

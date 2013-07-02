@@ -520,14 +520,24 @@ function page_search_get_documents($id) {
 //@TODO
 function page_search_access($id) {
     global $DB;
-    if (!$page = $DB->get_record('page', array('id'=>$p))) {
-        print_error('invalidaccessparameter');
+    try {
+        $page = $DB->get_record('page', array('id'=>$id), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('page', $page->id, $page->course, MUST_EXIST);
+        $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
     }
-    $cm = get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
-    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+    catch (dml_missing_record_exception $ex) {
+        return SEARCH_ACCESS_DELETED;
+    }
+    
+    try {
+        //require_course_login($course, false, $cm);
+        $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+        require_capability('mod/page:view', $context);
+    }
+    catch (moodle_exception $ex) {
+        echo $ex;
+        return SEARCH_ACCESS_DENIED;
+    }
 
-    // User must login in order to see search results
-    require_course_login($course, true, $cm);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-    require_capability('mod/page:view', $context);
+    return SEARCH_ACCESS_GRANTED;
 }
