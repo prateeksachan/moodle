@@ -34,6 +34,10 @@ class SolrWrapper {
         return $this->client->query($query);
     }
 
+    public function deleteById($id){
+        return $this->client->deleteById($id);
+    }
+
     public function deleteByQuery($query){
         return $this->client->deleteByQuery($query);
     }
