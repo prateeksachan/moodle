@@ -182,6 +182,7 @@ function label_supports($feature) {
         case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_RESOURCE;
         case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_NO_VIEW_LINK:            return true;
+        case FEATURE_GLOBAL_SEARCH:           return true;
 
         default: return null;
     }
@@ -329,4 +330,58 @@ function label_generate_resized_image(stored_file $file, $maxwidth, $maxheight) 
     } else {
         return $img;
     }
+}
+
+/**
+* Global Search functions
+* @var $DB mysqli_native_moodle_database
+* @var $OUTPUT core_renderer
+* @var $PAGE moodle_label
+*/
+
+function label_search_iterator($from = 0) {
+    global $DB;
+
+    $sql = "SELECT id, timemodified AS modified FROM {label} WHERE timemodified > ? ORDER BY timemodified ASC";
+
+    return $DB->get_recordset_sql($sql, array($from));
+}
+
+function label_search_get_documents($id) {
+    global $DB;
+
+    $docs = array();
+    $label = $DB->get_record('label', array('id' => $id), '*', MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $label->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('label', $label->id, $label->course, false, MUST_EXIST);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+    // Declare a new Solr Document and insert fields into it from DB
+    
+    $doc = new SolrInputDocument();
+    $doc->addField('type', SEARCH_TYPE_HTML);
+    $doc->addField('id', 'label_' . $label->id);
+    $doc->addField('modified', $label->timemodified);
+    $doc->addField('intro', format_text($label->intro, $label->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('name', $label->name);
+    $doc->addField('courseid', $label->course);
+    $doc->addField('contextlink', '/course/view.php?id=' . $course->id);
+    $doc->addField('module', 'label');
+    $docs[] = $doc;
+
+    return $docs;
+}
+
+//@TODO
+function label_search_access($id) {
+    global $DB;
+    if (!$label = $DB->get_record('label', array('id'=>$p))) {
+        print_error('invalidaccessparameter');
+    }
+    $cm = get_coursemodule_from_instance('label', $label->id, $label->course, false, MUST_EXIST);
+    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+
+    // User must login in order to see search results
+    require_course_login($course, true, $cm);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    require_capability('mod/label:view', $context);
 }
