@@ -7533,13 +7533,11 @@ function forum_search_get_documents($id) {
     $files = $fs->get_area_files($context->id, 'mod_forum', 'attachment', $id, "timemodified", false);
     foreach ($files as $file) {
         $filename = $file->get_filename();
-        //$path = $file->get_content_file_location();//@TODO: protected type.
         $url = file_encode_url('/pluginfile.php', '/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename);
 
         $doc = clone $doc;
         $doc->addField('directlink', $url);
         //$doc->addField('type', SEARCH_TYPE_FILE);//@TODO After Apache Tika
-        //$doc->addField('filepath', $path);
         $doc->addField('mime', $file->get_mimetype());
         $docs[] = $doc;
     }

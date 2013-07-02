@@ -678,6 +678,19 @@ function wiki_search_get_documents($id) {
     $doc->addField('contextlink', '/mod/wiki/view.php?pageid=' . $wikipage->id);
     $doc->addField('module', 'wiki');
     $docs[] = $doc;
+
+    $fs = get_file_storage();
+    $files = $fs->get_area_files($context->id, 'mod_wiki', 'attachments', $id, 'timemodified', false);
+    foreach ($files as $file) {
+        $filename = $file->get_filename();
+        $url = file_encode_url('/pluginfile.php', '/' . $context->id . '/mod_wiki/attachments/' . $id . '/' . $filename);
+
+        $doc = clone $doc;
+        $doc->addField('directlink', $url);
+        //$doc->addField('type', SEARCH_TYPE_FILE);//@TODO After Apache Tika
+        $doc->addField('mime', $file->get_mimetype());
+        $docs[] = $doc;
+    }
     
     return $docs;
 }

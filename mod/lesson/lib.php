@@ -1045,6 +1045,19 @@ function lesson_search_get_documents($id) {
     $doc->addField('module', 'lesson');
     $docs[] = $doc;
 
+    $fs = get_file_storage();
+    $files = $fs->get_area_files($context->id, 'mod_lesson', 'mediafile', $id, 'timemodified', false);
+    foreach ($files as $file) {
+        $filename = $file->get_filename();
+        $url = file_encode_url('/mod/lesson/mediafile.php?id=' . $context->id);
+
+        $doc = clone $doc;
+        $doc->addField('directlink', $url);
+        //$doc->addField('type', SEARCH_TYPE_FILE);//@TODO After Apache Tika
+        $doc->addField('mime', $file->get_mimetype());
+        $docs[] = $doc;
+    }
+
     return $docs;
 }
 
