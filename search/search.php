@@ -48,7 +48,7 @@ function solr_execute_query(SolrWrapper $client, $data) {
         $query->addFilterQuery($data->modulefilterqueryfield);
     }
 
-    solr_query_response($client, $client->query($query));
+    return solr_query_response($client, $client->query($query));
 }
 
 function solr_prepare_query(SolrWrapper $client, $data) {
@@ -61,7 +61,7 @@ function solr_prepare_query(SolrWrapper $client, $data) {
     if (!empty($data->modulefilterqueryfield)) {
         $data->modulefilterqueryfield = 'module:' . $data->modulefilterqueryfield;
     }
-    solr_execute_query($client, $data);
+    return solr_execute_query($client, $data);
 }
 
 function solr_addFields($query) {
@@ -102,5 +102,5 @@ function solr_query_response(SolrWrapper $client, $query_response) {
             break;
         }
     }
-    return ($docs);
+    return $docs;
 }

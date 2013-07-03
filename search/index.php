@@ -46,6 +46,7 @@ echo $OUTPUT->header();
 solr_display_search_form($mform);
 
 $data = new stdClass();
+$results = array();
 
 if (!empty($search)) {
     $data->queryfield = $search;
@@ -56,4 +57,9 @@ if (!empty($search)) {
 if ($data = $mform->get_data()) {
     $results = solr_prepare_query($client, $data);
 }
+
+if (!empty($results)){
+    print_r($results); // debug.
+}
+
 echo $OUTPUT->footer();
