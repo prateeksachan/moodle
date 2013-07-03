@@ -1,10 +1,26 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/* @var $DB mysqli_native_moodle_database */
-/* @var $OUTPUT core_renderer */
-/* @var $PAGE moodle_page */
-?>
-<?php
+/**
+ * Global Search library code
+ *
+ * @package   search
+ * @copyright 
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 require_once($CFG->dirroot . '/lib/accesslib.php');
 
@@ -26,7 +42,7 @@ define('SEARCH_SET_ROWS', 1000);
  * Modules activated for Global Search.
  * @return array $mods
  */
-function search_get_modules(){
+function search_get_modules() {
     global $DB;
     $mods = $DB->get_records('modules', null, 'name', 'id,name');
     foreach ($mods as $key => $mod) {
@@ -46,13 +62,16 @@ function search_get_iterators() {
     $functions = array();
     foreach ($mods as $mod) {
         if (!function_exists($mod->name . '_search_iterator')) {
-            throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' . $mod->name . '_search_iterator' . '\' is missing.');
+            throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' .
+                                        $mod->name . '_search_iterator' . '\' is missing.');
         }
         if (!function_exists($mod->name . '_search_get_documents')) {
-            throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' . $mod->name . '_search_get_documents' . '\' is missing.');
+            throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' .
+                                        $mod->name . '_search_get_documents' . '\' is missing.');
         }
         if (!function_exists($mod->name . '_search_access')) {
-            throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' . $mod->name . '_search_access' . '\' is missing.');
+            throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' .
+                                        $mod->name . '_search_access' . '\' is missing.');
         }
         $functions[$mod->name] = new stdClass();
         $functions[$mod->name]->iterator = $mod->name . '_search_iterator';
@@ -100,7 +119,7 @@ function search_index(SolrWrapper $client) {
             echo 'norecords: '.$numrecords;
             $timestart = microtime(true);
             $documents = $getdocsfunction($record->id);
-            
+
             foreach ($documents as $solrdocument) {
                 switch (($solrdocument->getField('type')->values[0])) {
                     case SEARCH_TYPE_HTML:
@@ -114,7 +133,7 @@ function search_index(SolrWrapper $client) {
                         ++$numdocs;
                         break;
                     case SEARCH_TYPE_FILE:
-                        //TODO Ingtegrate Apache Tika here
+                        // TODO Ingtegrate Apache Tika here.
                         ++$numdocs;
                         break;
                     default:
@@ -145,14 +164,13 @@ function search_index(SolrWrapper $client) {
  * Resets config_plugin table after index deletion as re-indexing will be done from start.
  * optional @param string $s containing modules whose index was chosen to be deleted.
  */
-function search_reset_config($s = NULL){
-    if (!empty($s)){
+function search_reset_config($s = null) {
+    if (!empty($s)) {
         $mods = explode(',', $s);
-    }
-    else{
+    } else {
         $get_mods = search_get_modules();
         $mods = array();
-        foreach ($get_mods as $mod){
+        foreach ($get_mods as $mod) {
             $mods[] = $mod->name;
         }
     }
@@ -171,19 +189,18 @@ function search_reset_config($s = NULL){
  * @param SolrWrapper $client
  * @param stdClass object $data
  */
-function search_delete_index(SolrWrapper $client, $data){
-    if (!empty($data->module)){
+function search_delete_index(SolrWrapper $client, $data) {
+    if (!empty($data->module)) {
         $client->deleteByQuery('module:' . $data->module);
         search_reset_config($data->module);
-    }
-    else{
+    } else {
         $client->deleteByQuery('*:*');
-        search_reset_config();   
+        search_reset_config();
     }
     $client->commit();
 }
 
-function search_delete_index_by_id(SolrWrapper $client, $id){
+function search_delete_index_by_id(SolrWrapper $client, $id) {
     $client->deleteById($id);
     $client->commit();
 }
@@ -196,7 +213,7 @@ function search_delete_index_by_id(SolrWrapper $client, $id){
 function search_get_config($mods) {
     $allconfigs = get_config('search');
     $vars = array('indexingstart', 'indexingend', 'lastindexrun', 'docsignored', 'docsprocessed', 'recordsprocessed');
-    
+
     $configsettings =  array();
     foreach ($mods as $mod) {
         $configsettings[$mod] = new stdClass();
@@ -204,8 +221,7 @@ function search_get_config($mods) {
             $name = "{$mod}_$var";
             if (!empty($allconfigs->$name)) {
                 $configsettings[$mod]->$var = $allconfigs->$name;
-            }
-            else {
+            } else {
                 $configsettings[$mod]->$var = 0;
             }
         }

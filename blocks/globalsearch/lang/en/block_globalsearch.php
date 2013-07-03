@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,10 +17,13 @@
 /**
  * Strings for component 'block_globalsearch', language 'en', branch 'MOODLE_25_STABLE'
  *
- * @package   block_globalsearch
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block
+ * @subpackage globalsearch
+ * @copyright  2011 Moodle
+ * @author     
+ *             
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 
 $string['pluginname'] = 'Global Search';
-

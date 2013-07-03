@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,6 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Global Search version details.
+ *
+ * @package    block
+ * @subpackage globalsearch
+ * @copyright  2011 Moodle
+ * @author     
+ *             
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ */
 
 $plugin->version = 2013061900;
 $plugin->cron = 300;

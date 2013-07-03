@@ -15,26 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Search forums block caps.
+ * Global Search Block caps.
  *
- * @package    block_globalsearch
+ * @package    block
+ * @subpackage globalsearch
+ * @copyright  2011 Moodle
+ * @author     
+ *             
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
- 
+
     'block/globalsearch:addinstance' => array(
         'riskbitmask' => RISK_SPAM | RISK_XSS,
- 
+
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         ),
- 
+
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
     ),
 );
