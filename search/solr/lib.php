@@ -18,27 +18,27 @@ class SolrWrapper {
         return $this->client->ping();
     }
 
-    public function addDocument(SolrInputDocument $doc){
+    public function addDocument(SolrInputDocument $doc) {
         return $this->client->addDocument($doc);
     }
 
-    public function commit(){
+    public function commit() {
         return $this->client->commit();
     }
 
-    public function optimize(){
+    public function optimize() {
         return $this->client->optimize();
     }
 
-    public function query(SolrParams $query){
+    public function query(SolrParams $query) {
         return $this->client->query($query);
     }
 
-    public function deleteById($id){
+    public function deleteById($id) {
         return $this->client->deleteById($id);
     }
 
-    public function deleteByQuery($query){
+    public function deleteByQuery($query) {
         return $this->client->deleteByQuery($query);
     }
 
@@ -46,6 +46,6 @@ class SolrWrapper {
 
 function solr_check_server(SolrWrapper $client) {
     if (!$client->ping()) {
-    exit ('Solr service not responding');
+        exit ('Solr service not responding');
     }
 }
