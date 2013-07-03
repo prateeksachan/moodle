@@ -23,6 +23,7 @@
  */
 
 require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->libdir . '/enrollib.php');
 require_once($CFG->dirroot . '/search/search_form.php');
 
 require_login();
@@ -37,6 +38,8 @@ function solr_execute_query(SolrWrapper $client, $data) {
     $query->setStart(SEARCH_SET_START);
     $query->setRows(SEARCH_SET_ROWS);
     solr_addFields($query);
+
+    $query->addFilterQuery(solr_primary_filter());
 
     if (!empty($data->titlefilterqueryfield)) {
         $query->addFilterQuery($data->titlefilterqueryfield);
@@ -103,4 +106,15 @@ function solr_query_response(SolrWrapper $client, $query_response) {
         }
     }
     return $docs;
+}
+
+function solr_primary_filter(){
+    global $USER;
+    $courses = enrol_get_all_users_courses($USER->id);
+    $courseid = array();
+    foreach ($courses as $key => $value) {
+        $courseid[] = $value->id;
+    }
+    $primary_f = 'courseid: ' . implode(',', $courseid);
+    return $primary_f;
 }

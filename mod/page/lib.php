@@ -519,7 +519,7 @@ function page_search_get_documents($id) {
 
 //@TODO
 function page_search_access($id) {
-    global $DB;
+    global $DB, $PAGE;
     try {
         $page = $DB->get_record('page', array('id'=>$id), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('page', $page->id, $page->course, MUST_EXIST);
@@ -530,9 +530,9 @@ function page_search_access($id) {
     }
     
     try {
-        require_course_login($course, true, $cm);
+        //require_course_login($course, true, $cm);
         $context = context_module::instance($cm->id);
-        has_capability('mod/page:view', $context);
+        require_capability('mod/page:view', $context);
     }
     catch (moodle_exception $ex) {
         echo $ex; // debug.
