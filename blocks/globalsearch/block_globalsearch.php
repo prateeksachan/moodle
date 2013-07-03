@@ -47,9 +47,7 @@ class block_globalsearch extends block_base {
             return $this->content;
         }
 
-        require_once('globalsearch_html.php');
         require_once($CFG->dirroot . '/search/lib.php');
-        $block_mform = new globalsearch_form();
 
         $this->content         =  new stdClass;
         $this->content->footer = '';

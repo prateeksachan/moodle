@@ -530,12 +530,12 @@ function page_search_access($id) {
     }
     
     try {
-        //require_course_login($course, true, $cm);
+        require_course_login($course, true, $cm);
         $context = context_module::instance($cm->id);
         has_capability('mod/page:view', $context);
     }
     catch (moodle_exception $ex) {
-        echo $ex; //debug.
+        echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }
 
