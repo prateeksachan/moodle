@@ -24,9 +24,6 @@
 
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->libdir . '/enrollib.php');
-require_once($CFG->dirroot . '/search/search_form.php');
-
-require_login();
 
 function solr_display_search_form($mform) {
     $mform->display();

@@ -22,12 +22,13 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 require_once($CFG->libdir . '/formslib.php');
 
 class search_form extends moodleform {
 
     function definition() {
-
         $mform =& $this->_form;
         $mform->addElement('header', 'search', get_string('search', 'search'));
 
@@ -52,8 +53,7 @@ class search_form extends moodleform {
         }
         $mform->addElement('select', 'modulefilterqueryfield', get_string('modulefilterquery', 'search'), $modules);
 
-        $this->add_action_buttons($cancel = false, $submitlabel='Search');
-        $mform->setDefault('action', '');
+        $mform->addElement('submit', 'submitbutton', get_string('search', 'search'));
 
     }
 }
