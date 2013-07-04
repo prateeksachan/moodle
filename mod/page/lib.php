@@ -519,7 +519,7 @@ function page_search_get_documents($id) {
 
 //@TODO
 function page_search_access($id) {
-    global $DB, $PAGE;
+    global $DB;
     try {
         $page = $DB->get_record('page', array('id'=>$id), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('page', $page->id, $page->course, MUST_EXIST);
@@ -530,7 +530,7 @@ function page_search_access($id) {
     }
     
     try {
-        //require_course_login($course, true, $cm);
+        require_course_login($course, false, $cm, true, true);
         $context = context_module::instance($cm->id);
         require_capability('mod/page:view', $context);
     }
