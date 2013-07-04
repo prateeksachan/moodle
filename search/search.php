@@ -37,9 +37,12 @@ function solr_execute_query(SolrWrapper $client, $data) {
     $query->setQuery($data->queryfield);
     $query->setStart(SEARCH_SET_START);
     $query->setRows(SEARCH_SET_ROWS);
-    solr_addFields($query);
+    solr_add_fields($query);
 
-    $query->addFilterQuery(solr_primary_filter());
+    $primary_f = solr_primary_filter();
+    if(!empty($primary_f)) {
+        $query->addFilterQuery($primary_f);
+    }
 
     if (!empty($data->titlefilterqueryfield)) {
         $query->addFilterQuery($data->titlefilterqueryfield);
@@ -67,7 +70,7 @@ function solr_prepare_query(SolrWrapper $client, $data) {
     return solr_execute_query($client, $data);
 }
 
-function solr_addFields($query) {
+function solr_add_fields($query) {
     $fields = array('type', 'id', 'user', 'created', 'modified', 'author', 'name', 'title', 'intro',
                     'content', 'courseid', 'mime', 'contextlink', 'directlink', 'filepath', 'module');
 
@@ -110,11 +113,15 @@ function solr_query_response(SolrWrapper $client, $query_response) {
 
 function solr_primary_filter(){
     global $USER;
+    $primary_f = '';
     $courses = enrol_get_all_users_courses($USER->id);
-    $courseid = array();
-    foreach ($courses as $key => $value) {
-        $courseid[] = $value->id;
+    if (!empty($courses)){
+        $courseid = array();
+        foreach ($courses as $key => $value) {
+            $courseid[] = $value->id;
+        }
+        $primary_f = 'courseid: ' . implode(',', $courseid);
     }
-    $primary_f = 'courseid: ' . implode(',', $courseid);
+
     return $primary_f;
 }
