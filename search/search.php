@@ -39,11 +39,6 @@ function solr_execute_query(SolrWrapper $client, $data) {
     $query->setRows(SEARCH_SET_ROWS);
     solr_add_fields($query);
 
-    $primary_f = solr_primary_filter();
-    if(!empty($primary_f)) {
-        $query->addFilterQuery($primary_f);
-    }
-
     if (!empty($data->titlefilterqueryfield)) {
         $query->addFilterQuery($data->titlefilterqueryfield);
     }
@@ -111,6 +106,7 @@ function solr_query_response(SolrWrapper $client, $query_response) {
     return $docs;
 }
 
+// Initial solr filter by looking into enrolled courses - removed.
 function solr_primary_filter(){
     global $USER;
     $primary_f = '';
