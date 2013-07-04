@@ -80,29 +80,32 @@ function solr_query_response(SolrWrapper $client, $query_response) {
     $docs = $response->response->docs;
     $numgranted = 0;
 
-    foreach ($docs as $key => $value) {
-        $solr_id = explode("_", $value->id);
-        $access_func = $solr_id[0] . '_search_access';
-        $acc = $access_func($solr_id[1]);
+    if (!empty($totalnumfound)) {
+        foreach ($docs as $key => $value) {
+            $solr_id = explode("_", $value->id);
+            $access_func = $solr_id[0] . '_search_access';
+            $acc = $access_func($solr_id[1]);
 
-        switch ($acc) {
-            case SEARCH_ACCESS_DELETED:
-                search_delete_index_by_id($client, $value->id);
-                unset($docs[$key]);
-                break;
-            case SEARCH_ACCESS_DENIED:
-                unset($docs[$key]);
-                break;
-            case SEARCH_ACCESS_GRANTED:
-                $numgranted++;
-                break;
-        }
+            switch ($acc) {
+                case SEARCH_ACCESS_DELETED:
+                    search_delete_index_by_id($client, $value->id);
+                    unset($docs[$key]);
+                    break;
+                case SEARCH_ACCESS_DENIED:
+                    unset($docs[$key]);
+                    break;
+                case SEARCH_ACCESS_GRANTED:
+                    $numgranted++;
+                    break;
+            }
 
-        if ($numgranted == SEARCH_MAX_RESULTS) {
-            $docs = array_slice($docs, 0, SEARCH_MAX_RESULTS, true);
-            break;
+            if ($numgranted == SEARCH_MAX_RESULTS) {
+                $docs = array_slice($docs, 0, SEARCH_MAX_RESULTS, true);
+                break;
+            }
         }
     }
+    
     return $docs;
 }
 
