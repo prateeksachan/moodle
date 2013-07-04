@@ -27,3 +27,4 @@
  */
 
 $string['pluginname'] = 'Global Search';
+$string['globalsearch:addinstance'] = 'Add a new Global Search block';

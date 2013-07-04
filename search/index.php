@@ -33,6 +33,7 @@ require_login();
 @set_time_limit(0);
 
 $PAGE->set_context(context_system::instance());
+//$PAGE->set_cm();
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('globalsearch', 'search'));
 $PAGE->set_heading(get_string('globalsearch', 'search'));
