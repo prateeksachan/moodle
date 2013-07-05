@@ -371,17 +371,22 @@ function label_search_get_documents($id) {
     return $docs;
 }
 
-//@TODO
+//@TODO-done.
 function label_search_access($id) {
     global $DB;
-    if (!$label = $DB->get_record('label', array('id'=>$p))) {
-        print_error('invalidaccessparameter');
+    try {
+        $label = $DB->get_record('label', array('id'=>$id), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('label', $label->id, $label->course, MUST_EXIST);
+        $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
     }
-    $cm = get_coursemodule_from_instance('label', $label->id, $label->course, false, MUST_EXIST);
-    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+    catch (dml_missing_record_exception $ex) {
+        return SEARCH_ACCESS_DELETED;
+    }
 
-    // User must login in order to see search results
-    require_course_login($course, true, $cm);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-    require_capability('mod/label:view', $context);
+    $context = context_course::instance($label->course);
+    if (!is_enrolled($context) and !is_viewing($context)) {
+        return SEARCH_ACCESS_DENIED;
+    }
+
+    return SEARCH_ACCESS_GRANTED;
 }
