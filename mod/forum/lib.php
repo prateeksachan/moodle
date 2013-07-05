@@ -7510,7 +7510,7 @@ function forum_search_get_documents($id) {
     global $CFG, $DB;
 
     $docs = array();
-    $post = forum_get_post_full2($id);
+    $post = forum_get_all_post($id);
     $cm = get_coursemodule_from_instance('forum', $post->forum, $post->course);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id);
     //$user = $DB->get_record('user', array('id' => $post->userid));
@@ -7518,7 +7518,7 @@ function forum_search_get_documents($id) {
     
     $doc = new SolrInputDocument();
     $doc->addField('id', 'forum_' . $post->id);
-    $doc->addField('user', $post->userid);
+    $doc->addField('author', $post->userid);
     $doc->addField('created', $post->created);
     $doc->addField('modified', $post->modified);
     $doc->addField('title', $post->subject);
@@ -7545,7 +7545,7 @@ function forum_search_get_documents($id) {
     return $docs;
 }
 
-//@TODO
+//@TODO-done.
 function forum_search_access($id) {
     global $DB, $USER;
 
@@ -7558,30 +7558,27 @@ function forum_search_access($id) {
     } catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    
+    $context = context_module::instance($cm->id);
 
-    // Make sure groups allow this user to see the item they're rating
-    if ($discussion->groupid > 0 and $groupmode = groups_get_activity_groupmode($cm, $course)) {   // Groups are being used
-        if (!groups_group_exists($discussion->groupid)) { // Can't find group
+    if ($discussion->groupid > 0 and $groupmode = groups_get_activity_groupmode($cm, $course)) {
+        if (!groups_group_exists($discussion->groupid)) {
             return SEARCH_ACCESS_DENIED;
         }
 
         if (!groups_is_member($discussion->groupid) and !has_capability('moodle/site:accessallgroups', $context)) {
-        // do not allow viewing of posts from other groups when in SEPARATEGROUPS or VISIBLEGROUPS
             return SEARCH_ACCESS_DENIED;
         }
     }
 
-    // perform some final capability checks
     if (!forum_user_can_see_post($forum, $discussion, $post, $USER, $cm)) {
         return SEARCH_ACCESS_DENIED;
     }
 
-    //forum_user_can_view_post($post, $course, $cm, $forum, $discussion)  
     return SEARCH_ACCESS_GRANTED;
 }
 
-function forum_get_post_full2($postid) {
+function forum_get_all_post($postid) {
     global $CFG, $DB;
 
     return $DB->get_record_sql("SELECT p.*, d.course, d.forum, u.firstname, u.lastname, u.email, u.picture, u.imagealt
