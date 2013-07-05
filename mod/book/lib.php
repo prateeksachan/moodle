@@ -482,8 +482,8 @@ function book_search_get_documents($id) {
 function book_search_access($id) {
     global $DB;
     try {
-        $bookchapter = $DB->get_record('book_chapters', array('id'=>$id), '*', MUST_EXIST);
-        $book = $DB->get_record('book', array('id'=>$bookchapter->id), '*', MUST_EXIST);
+        $chapter = $DB->get_record('book_chapters', array('id'=>$id), '*', MUST_EXIST);
+        $book = $DB->get_record('book', array('id'=>$chapter->bookid), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('book', $book->id, $book->course, MUST_EXIST);
         $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
     }
@@ -497,7 +497,7 @@ function book_search_access($id) {
         require_capability('mod/book:read', $context);
     }
     catch (moodle_exception $ex) {
-        echo $ex; // debug.
+        //echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }
 
