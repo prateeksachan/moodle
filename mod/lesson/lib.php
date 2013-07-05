@@ -1061,17 +1061,97 @@ function lesson_search_get_documents($id) {
     return $docs;
 }
 
-//@TODO
+//@TODO-done.
 function lesson_search_access($id) {
-    global $DB;
-    if (!$lesson = $DB->get_record('lesson', array('id'=>$p))) {
-        print_error('invalidaccessparameter');
+    global $DB, $USER;
+    try {
+        $lessonpage = $DB->get_record('lesson_pages', array('id'=>$id), '*', MUST_EXIST);
+        $lesson = $DB->get_record('lesson', array('id'=>$lessonpage->lessonid), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, MUST_EXIST);
+        $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
     }
-    $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
-    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+    catch (dml_missing_record_exception $ex) {
+        return SEARCH_ACCESS_DELETED;
+    }
+    
+    try {
+        require_course_login($course, false, $cm, true, true);
+        $context = context_module::instance($cm->id);
+    }
+    catch (moodle_exception $ex) {
+        echo $ex; // debug.
+        return SEARCH_ACCESS_DENIED;
+    }
+    
+    // give access to search results to teacher or editing-teacher or manager
+    $viewableuser = has_capability('mod/lesson:manage', $context);
+    
+    if (!$viewableuser){
+        // checks for time boundation
+        if (!empty($lesson->available) or !empty($lesson->deadline)) {
+            if (empty($lesson->available) and time() > $lesson->deadline) {
+                return SEARCH_ACCESS_DENIED;
+            } else if (empty($lesson->deadline) and time() < $lesson->available) {
+                return SEARCH_ACCESS_DENIED;
+            } else if (time() < $lesson->available or time() > $lesson->deadline) {
+                return SEARCH_ACCESS_DENIED;
+            }
+        }
 
-    // User must login in order to see search results
-    require_course_login($course, true, $cm);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-    require_capability('mod/lesson:view', $context);
+        // if timed lesson - deny access as time gets activated when students click on lesson link.
+        // if password-protected lesson - deny access.
+        if (!empty($lesson->timed) or !empty($lesson->usepassword)){
+            return SEARCH_ACCESS_DENIED;
+        }
+        
+        // check for dependencies
+        if ($lesson->dependency) {
+            if ($dependentlesson = $DB->get_record('lesson', array('id' => $lesson->dependency))) {
+                $conditions = unserialize($lesson->conditions);
+                
+                // check for the timespent condition
+                if ($conditions->timespent) {
+                    $timespent = false;
+                    if ($attempttimes = $DB->get_records('lesson_timer', array("userid"=>$USER->id, "lessonid"=>$dependentlesson->id))) {
+                        foreach($attempttimes as $attempttime) {
+                            $duration = $attempttime->lessontime - $attempttime->starttime;
+                            if ($conditions->timespent < $duration/60) {
+                                $timespent = true;
+                            }
+                        }
+                    }
+                    if (!$timespent) {
+                        return SEARCH_ACCESS_DENIED;
+                    }
+                }
+
+                // check for the gradebetterthan condition
+                if($conditions->gradebetterthan) {
+                    $gradebetterthan = false;
+                    if ($studentgrades = $DB->get_records('lesson_grades', array("userid"=>$USER->id, "lessonid"=>$dependentlesson->id))) {
+                        foreach($studentgrades as $studentgrade) {
+                            if ($studentgrade->grade >= $conditions->gradebetterthan) {
+                                $gradebetterthan = true;
+                            }
+                        }
+                    }
+                    if (!$gradebetterthan) {
+                        return SEARCH_ACCESS_DENIED;
+                    }
+                }
+
+                // check for the completed condition
+                if ($conditions->completed) {
+                    if (!$DB->count_records('lesson_grades', array('userid'=>$USER->id, 'lessonid'=>$dependentlesson->id))) {
+                        return SEARCH_ACCESS_DENIED;
+                    }
+                }
+            }
+
+            // if reaches here means that dependency found but no dependent lesson
+            // dependent lesson might have been deleted- access granted
+        }
+    }
+
+    return SEARCH_ACCESS_GRANTED;
 }
