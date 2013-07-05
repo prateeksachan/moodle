@@ -41,6 +41,7 @@ $search = trim(optional_param('search', '', PARAM_NOTAGS));
 $fq_module = trim(optional_param('fq_module', '', PARAM_NOTAGS));
 
 $mform = new search_form();
+$data = new stdClass();
 
 if (!empty($search)) {
     $data->queryfield = $search;
