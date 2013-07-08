@@ -32,10 +32,11 @@ $options = array(
     'port'     => $CFG->SOLR_SERVER_PORT,
 );
 
-if (solr_get_version() == '1.0.3') {
+if (solr_get_version() == '1.0.3-alpha') {
 	if ($CFG->SOLR_VERSION == 0) {
 		$object = new SolrClient($options, '4.0');
 	} else {
+		echo 'here';
 		$object = new SolrClient($options, '3.0');
 	}
 } else {
