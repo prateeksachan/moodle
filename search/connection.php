@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Connecting the Solr server as defined by parameters in bootstrap.php
+ * Running the Solr server according to admin settings. 
  * Throws an error if the solr server is not running
  *
  * @package   search
@@ -23,11 +23,25 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once($CFG->dirroot . '/search/settings.php');
 require_once($CFG->dirroot . '/search/solr/lib.php');
 
-$options = array( 'hostname' => SOLR_SERVER_HOSTNAME );
-$object = new SolrClient($options, SOLR_VERSION);
+$options = array(
+    'hostname' => $CFG->SOLR_SERVER_HOSTNAME,
+    'login'    => $CFG->SOLR_SERVER_USERNAME,
+    'password' => $CFG->SOLR_SERVER_PASSWORD,
+    'port'     => $CFG->SOLR_SERVER_PORT,
+);
+
+if (solr_get_version() == '1.0.3') {
+	if ($CFG->SOLR_VERSION == 0) {
+		$object = new SolrClient($options, '4.0');
+	} else {
+		$object = new SolrClient($options, '3.0');
+	}
+} else {
+	$object = new SolrClient($options);
+}
+
 $client = new SolrWrapper($object);
 
 solr_check_server($client);

@@ -28,7 +28,7 @@ require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/search/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
 
-admin_externalpage_setup('globalsearch');
+admin_externalpage_setup('statistics');
 global $DB;
 
 class search_admin_form extends moodleform {
