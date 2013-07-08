@@ -1150,3 +1150,35 @@ $string['cachesession'] = 'Session cache';
 $string['cachesessionhelp'] = 'User specific cache that expires when the user\'s session ends. Designed to alleviate session bloat/strain.';
 $string['cacheapplication'] = 'Application cache';
 $string['cacheapplicationhelp'] = ' Cached items are shared amoung all users and expire by a determined ttl.';
+
+
+/* Global Search admin settings page string values */
+$string['globalsearch'] = 'Global Search';
+$string['solrauthpassword'] = 'Password';
+$string['solrauthpassword_desc'] = 'HTTP Basic Authentication Password';
+$string['solrauthuser'] = 'Username';
+$string['solrauthuser_desc'] = 'HTTP Basic Authentication Username';
+$string['solrhttpconnectionport'] = 'HTTP Port';
+$string['solrhttpconnectionport_desc'] = 'HTTP Port to connection';
+$string['solrhttpconnectiontimeout'] = 'Timeout';
+$string['solrhttpconnectiontimeout_desc'] = 'This is maximum time in seconds allowed for the http data transfer operation.';
+$string['solrserverhostname'] = 'Host Name';
+$string['solrserverhostname_desc'] = 'Domain name of the Solr server.';
+$string['solrsecuremode'] = 'Secure Mode';
+$string['solrsecuremode_desc'] = 'Whether or not to run in secure mode';
+$string['solrsetting'] = 'Solr Settings';
+$string['solrsslcainfo'] = 'SOLR_SSL_CAINFO';
+$string['solrsslcainfo_desc'] = 'Name of file holding one or more CA certificates to verify peer with';
+$string['solrsslcapath'] = 'SOLR_SSL_CAPATH';
+$string['solrsslcapath_desc'] = 'Name of directory holding multiple CA certificates to verify peer with';
+$string['solrsslcert'] = 'SOLR_SSL_CERT';
+$string['solrsslcert_desc'] = 'File name to a PEM-formatted private key + private certificate (concatenated in that order)';
+$string['solrsslcertonly'] = 'SOLR_SSL_CERT_ONLY';
+$string['solrsslcertonly_desc'] = 'File name to a PEM-formatted private certificate only';
+$string['solrsslkey'] = 'SSL Key';
+$string['solrsslkey_desc'] = 'File name to a PEM-formatted private key';
+$string['solrsslkeypassword'] = 'SOLR_SSL_KEYPASSWORD';
+$string['solrsslkeypassword_desc'] = 'Password for PEM-formatted private key file';
+$string['solrversion'] = 'Version';
+$string['solrversion_desc'] = 'Define the Solr version. The current Apache Solr extension installed on your system is <code>{$a}</code>';
+$string['statistics'] = 'Statistics';

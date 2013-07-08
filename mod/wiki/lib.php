@@ -231,7 +231,7 @@ function wiki_supports($feature) {
     case FEATURE_SHOW_DESCRIPTION:
         return true;
     case FEATURE_GLOBAL_SEARCH:
-        return true;
+        return false;
 
     default:
         return null;
@@ -698,14 +698,24 @@ function wiki_search_get_documents($id) {
 //@TODO
 function wiki_search_access($id) {
     global $DB;
-    if (!$wiki = $DB->get_record('wiki', array('id'=>$p))) {
-        print_error('invalidaccessparameter');
+    try {
+        $wikipage = $DB->get_record('wiki_pages', array('id'=>$id), '*', MUST_EXIST);
+        $wiki = $DB->get_record('wiki', array('id'=>$wikipage->subwikiid), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, MUST_EXIST);
+        $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
     }
-    $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
-    $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+    catch (dml_missing_record_exception $ex) {
+        return SEARCH_ACCESS_DELETED;
+    }
+    
+    try {
+        require_course_login($course, false, $cm, true, true);
+        $context = context_module::instance($cm->id);
+        require_capability('mod/wiki:viewpage', $context);
+    } catch (moodle_exception $ex) {
+        echo $ex; // debug.
+        return SEARCH_ACCESS_DENIED;
+    }
 
-    // User must login in order to see search results
-    require_course_login($course, true, $cm);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-    require_capability('mod/wiki:view', $context);
+    return SEARCH_ACCESS_GRANTED;
 }

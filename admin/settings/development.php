@@ -94,6 +94,4 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
 
     $ADMIN->add('development', new admin_externalpage('thirdpartylibs', new lang_string('thirdpartylibs','admin'), "$CFG->wwwroot/$CFG->admin/thirdpartylibs.php"));
 
-    $ADMIN->add('development', new admin_externalpage('globalsearch', new lang_string('globalsearch','search'), "$CFG->wwwroot/search/admin.php"));
-
 } // end of speedup
