@@ -48,6 +48,7 @@ function search_get_modules() {
     foreach ($mods as $key => $mod) {
         $modname = 'gs_support_' . $mod->name;
         if (empty($CFG->$modname)) {
+        //if (!plugin_supports('mod', $mod->name, FEATURE_GLOBAL_SEARCH)) {
             unset($mods[$key]);
         }
     }
@@ -59,26 +60,32 @@ function search_get_modules() {
  * @return stdClass object $functions
  */
 function search_get_iterators() {
+    global $CFG;
     $mods = search_get_modules();
     $functions = array();
     foreach ($mods as $mod) {
-        if (!function_exists($mod->name . '_search_iterator')) {
-            throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' .
-                                        $mod->name . '_search_iterator' . '\' is missing.');
+        if (file_exists("$CFG->dirroot/mod/{$mod->name}/lib.php")) {
+            include_once("$CFG->dirroot/mod/{$mod->name}/lib.php");
+            if (!function_exists($mod->name . '_search_iterator')) {
+                throw new coding_exception('Module supports GLOBAL_SEARCH but function \'' .
+                                            $mod->name . '_search_iterator' . '\' is missing.');
+            }
+            if (!function_exists($mod->name . '_search_get_documents')) {
+                throw new coding_exception('Module supports GLOBAL_SEARCH but function \'' .
+                                            $mod->name . '_search_get_documents' . '\' is missing.');
+            }
+            if (!function_exists($mod->name . '_search_access')) {
+                throw new coding_exception('Module supports GLOBAL_SEARCH but function \'' .
+                                            $mod->name . '_search_access' . '\' is missing.');
+            }
+            $functions[$mod->name] = new stdClass();
+            $functions[$mod->name]->iterator = $mod->name . '_search_iterator';
+            $functions[$mod->name]->documents = $mod->name . '_search_get_documents';
+            $functions[$mod->name]->access = $mod->name . '_search_access';
+            $functions[$mod->name]->module = $mod->name;
+        } else {
+            throw new coding_exception('Library file for module \'' . $mod->name . '\' is missing.');
         }
-        if (!function_exists($mod->name . '_search_get_documents')) {
-            throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' .
-                                        $mod->name . '_search_get_documents' . '\' is missing.');
-        }
-        if (!function_exists($mod->name . '_search_access')) {
-            throw new coding_exception('Module declared FEATURE_GLOBAL_SEARCH but function \'' .
-                                        $mod->name . '_search_access' . '\' is missing.');
-        }
-        $functions[$mod->name] = new stdClass();
-        $functions[$mod->name]->iterator = $mod->name . '_search_iterator';
-        $functions[$mod->name]->documents = $mod->name . '_search_get_documents';
-        $functions[$mod->name]->access = $mod->name . '_search_access';
-        $functions[$mod->name]->module = $mod->name;
     }
 
     return $functions;

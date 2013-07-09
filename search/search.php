@@ -72,6 +72,7 @@ function solr_add_fields($query) {
 }
 
 function solr_query_response(SolrWrapper $client, $query_response) {
+    global $CFG;
     $response = $query_response->getResponse();
     $totalnumfound = $response->response->numFound;
     $docs = $response->response->docs;
@@ -80,6 +81,11 @@ function solr_query_response(SolrWrapper $client, $query_response) {
     if (!empty($totalnumfound)) {
         foreach ($docs as $key => $value) {
             $solr_id = explode("_", $value->id);
+            if (file_exists("$CFG->dirroot/mod/{$solr_id[0]}/lib.php")) {
+                include_once("$CFG->dirroot/mod/{$solr_id[0]}/lib.php");
+            } else {
+                throw new coding_exception('Library file for module \'' . $solr_id[0] . '\' is missing.');
+            }
             $access_func = $solr_id[0] . '_search_access';
             $acc = $access_func($solr_id[1]);
 
