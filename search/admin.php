@@ -29,6 +29,9 @@ require_once($CFG->dirroot . '/search/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
 
 admin_externalpage_setup('statistics');
+$PAGE->set_title(get_string('statistics', 'admin'));
+$PAGE->set_heading(get_string('statistics', 'admin'));
+
 global $DB;
 
 class search_admin_form extends moodleform {
