@@ -32,14 +32,14 @@ $options = array(
     'port'     => $CFG->SOLR_SERVER_PORT,
 );
 
+// if php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page. 
 if (solr_get_version() == '1.0.3-alpha') {
 	if ($CFG->SOLR_VERSION == 0) {
 		$object = new SolrClient($options, '4.0');
 	} else {
-		echo 'here';
 		$object = new SolrClient($options, '3.0');
 	}
-} else {
+} else { // no choice if php solr extension <=1.0.2 is installed.
 	$object = new SolrClient($options);
 }
 
