@@ -45,23 +45,16 @@ class search_admin_form extends moodleform {
         $mform->closeHeaderBefore('indexcheckbox');
 
         $modcheckboxarray = array();
+        $mods = search_get_modules();
         $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'all', '', 'All Modules', array('group' => 1));
-        $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'book', '', 'Book', array('group' => 2));
-        $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'glossary', '', 'Glossary', array('group' => 2));
-        $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'page', '', 'Page', array('group' => 2));
-        $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'forum', '', 'Forum', array('group' => 2));
-        $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'wiki', '', 'Wiki', array('group' => 2));
+        foreach ($mods as $mod) {
+            $modcheckboxarray[] =& $mform->createElement('advcheckbox', $mod->name, '', ucfirst($mod->name), array('group' => 2));
+        }
         $mform->addGroup($modcheckboxarray, 'modadvcheckbox', '', array(' '), false);
         $mform->closeHeaderBefore('modadvcheckbox');
 
         $mform->disabledIf('modadvcheckbox', 'delete', 'notchecked');
-        $mform->disabledIf('index', 'delete', 'checked');
-        $mform->disabledIf('optimize', 'delete', 'checked');
-        $mform->disabledIf('index', 'optimize', 'checked');
-        $mform->disabledIf('delete', 'optimize', 'checked');
-        $mform->disabledIf('delete', 'index', 'checked');
-        $mform->disabledIf('optimize', 'index', 'checked');
-
+        
         $this->add_action_buttons($cancel = false);
         $mform->setDefault('action', '');
 
