@@ -694,7 +694,7 @@ function wiki_search_get_documents($id) {
     return $docs;
 }
 
-//@TODO
+//@TODO-done. 
 function wiki_search_access($id) {
     global $DB;
     try {
@@ -708,14 +708,20 @@ function wiki_search_access($id) {
         return SEARCH_ACCESS_DELETED;
     }
     
-    try {
-        require_course_login($course, false, $cm, true, true);
-        $context = context_module::instance($cm->id);
-        require_capability('mod/wiki:viewpage', $context);
-    } catch (moodle_exception $ex) {
-        echo $ex; // debug.
+    $context = context_module::instance($cm->id);
+    if (!has_capability('mod/wiki:viewpage', $context)){
         return SEARCH_ACCESS_DENIED;
     }
 
+    if ($subwiki->groupid > 0 and $groupmode = groups_get_activity_groupmode($cm, $course)) {
+        if (!groups_group_exists($subwiki->groupid)) {
+            return SEARCH_ACCESS_DENIED;
+        }
+
+        if (!groups_is_member($subwiki->groupid) and !has_capability('moodle/site:accessallgroups', $context)) {
+            return SEARCH_ACCESS_DENIED;
+        }
+    }
+    
     return SEARCH_ACCESS_GRANTED;
 }
