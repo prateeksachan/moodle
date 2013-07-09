@@ -48,7 +48,6 @@ function search_get_modules() {
     foreach ($mods as $key => $mod) {
         $modname = 'gs_support_' . $mod->name;
         if (empty($CFG->$modname)) {
-        //if (!plugin_supports('mod', $mod->name, FEATURE_GLOBAL_SEARCH)) {
             unset($mods[$key]);
         }
     }

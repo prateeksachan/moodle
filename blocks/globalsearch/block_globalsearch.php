@@ -36,11 +36,6 @@ class block_globalsearch extends block_base {
         $this->title = get_string('pluginname', 'block_globalsearch');
     }
 
-    // This block has a settings.php file @TODO settings.php
-    function has_config() {
-        return true;
-    }
-
     function get_content() {
         global $CFG, $OUTPUT;
         if ($this->content !== null) {
