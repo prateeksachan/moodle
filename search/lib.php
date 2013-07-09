@@ -43,10 +43,11 @@ define('SEARCH_SET_ROWS', 1000);
  * @return array $mods
  */
 function search_get_modules() {
-    global $DB;
+    global $CFG, $DB;
     $mods = $DB->get_records('modules', null, 'name', 'id,name');
     foreach ($mods as $key => $mod) {
-        if (!plugin_supports('mod', $mod->name, FEATURE_GLOBAL_SEARCH)) {
+        $modname = 'gs_support_' . $mod->name;
+        if (empty($CFG->$modname)) {
             unset($mods[$key]);
         }
     }

@@ -34,8 +34,8 @@ $options = array(
 
 // if php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page. 
 if (solr_get_version() == '1.0.3-alpha') {
-	if ($CFG->SOLR_VERSION == 0) {
-		$object = new SolrClient($options, '4.0');
+	if ($CFG->SOLR_VERSION == '4.0') {
+		$object = new SolrClient($options, $CFG->SOLR_VERSION);
 	} else {
 		$object = new SolrClient($options, '3.0');
 	}
