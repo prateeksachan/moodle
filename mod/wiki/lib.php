@@ -705,7 +705,8 @@ function wiki_search_get_documents($id) {
 
     $docs = array();
     $wikipage = $DB->get_record('wiki_pages', array('id' => $id), '*', MUST_EXIST);
-    $wiki = $DB->get_record('wiki', array('id' => $wikipage->subwikiid), '*', MUST_EXIST);
+    $subwiki = $DB->get_record('wiki_subwikis', array('id' => $wikipage->subwikiid), '*', MUST_EXIST);
+    $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), '*', MUST_EXIST);
     $course = $DB->get_record('course', array('id' => $wiki->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
@@ -745,8 +746,9 @@ function wiki_search_get_documents($id) {
 function wiki_search_access($id) {
     global $DB;
     try {
-        $wikipage = $DB->get_record('wiki_pages', array('id'=>$id), '*', MUST_EXIST);
-        $wiki = $DB->get_record('wiki', array('id'=>$wikipage->subwikiid), '*', MUST_EXIST);
+        $wikipage = $DB->get_record('wiki_pages', array('id' => $id), '*', MUST_EXIST);
+        $subwiki = $DB->get_record('wiki_subwikis', array('id' => $wikipage->subwikiid), '*', MUST_EXIST);
+        $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, MUST_EXIST);
         $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
     }
