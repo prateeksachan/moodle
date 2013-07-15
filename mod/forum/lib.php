@@ -7516,7 +7516,7 @@ function forum_search_get_documents($id) {
     
     $doc = new SolrInputDocument();
     $doc->addField('id', 'forum_' . $post->id);
-    $doc->addField('author', $user->firstname . ' ' . $user->lastname);
+    $doc->addField('user', $user->firstname . ' ' . $user->lastname);
     $doc->addField('created', $post->created);
     $doc->addField('modified', $post->modified);
     $doc->addField('title', $post->subject);

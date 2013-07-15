@@ -1154,20 +1154,8 @@ $string['cacheapplicationhelp'] = ' Cached items are shared amoung all users and
 
 /* Global Search admin settings page string values */
 $string['globalsearch'] = 'Global Search';
-$string['gs_support_book'] = 'Book';
-$string['gs_support_book_desc'] = 'Allow indexing and searches of the Book module';
-$string['gs_support_forum'] = 'Forum';
-$string['gs_support_forum_desc'] = 'Allow indexing and searches of the Forum module';
-$string['gs_support_lesson'] = 'Lesson';
-$string['gs_support_lesson_desc'] = 'Allow indexing and searches of the Lesson module';
-$string['gs_support_label'] = 'Label';
-$string['gs_support_label_desc'] = 'Allow indexing and searches of the Label resource';
-$string['gs_support_page'] = 'Page';
-$string['gs_support_page_desc'] = 'Allow indexing and searches of the Page resource';
-$string['gs_support_url'] = 'Url';
-$string['gs_support_url_desc'] = 'Allow indexing and searches of the Url resource';
-$string['gs_support_wiki'] = 'Wiki';
-$string['gs_support_wiki_desc'] = 'Allow indexing and searches of the Wiki module';
+$string['gs_support_mod'] = '{$a}';
+$string['gs_support_mod_desc'] = 'Allow indexing and searches of the {$a}';
 $string['solrauthpassword'] = 'Password';
 $string['solrauthpassword_desc'] = 'HTTP Basic Authentication Password';
 $string['solrauthuser'] = 'Username';

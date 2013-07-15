@@ -144,7 +144,6 @@ function search_index(SolrWrapper $client) {
         $recordset->close();
         if ($numrecords > 0) {
             $client->commit();
-            $client->optimize();
             $indexingend = time();
             set_config($name . '_indexingstart', $indexingstart, 'search');
             set_config($name . '_indexingend', $indexingend, 'search');
@@ -156,6 +155,7 @@ function search_index(SolrWrapper $client) {
             echo 'commits completed'.'<br>';
         }
     }
+    $client->optimize();
 }
 
 /**
