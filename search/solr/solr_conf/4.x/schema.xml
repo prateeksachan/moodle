@@ -141,12 +141,13 @@
         NOTE: This field is not indexed by default, since it is also copied to "text"
         using copyField below. This is to save space. Use this field for returning and
         highlighting document content. Use the "text" field to search the content. -->
+   
    <!-- Configured fields for Moodle's Global Search -->
 
    <field name="type" type="int" indexed="true" stored="false" required="true"/>
    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
-   <field name="created" type="tlong" indexed="true" stored="true" />
-   <field name="modified" type="tlong" indexed="true" stored="true" required="true"/>
+   <field name="created" type="string" indexed="true" stored="true" />
+   <field name="modified" type="string" indexed="true" stored="true" required="true"/>
    <field name="author" type="text_general" indexed="true" stored="true" multiValued="true"/>
    <field name="name" type="text_general" indexed="true" stored="true"/>
    <field name="title" type="text_general" indexed="true" stored="true" />
@@ -159,9 +160,6 @@
    <field name="filepath" type="text_general" indexed="false" stored="true"/>
    <field name="module" type="string" indexed="true" stored="true" required="true"/>
    
-
-
-
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
    <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>

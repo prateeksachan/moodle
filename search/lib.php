@@ -90,16 +90,6 @@ function search_get_iterators() {
     return $functions;
 }
 
-
-/**
- * Merge separate index segments into one.
- * @param SolrWrapper $client
- */
-function search_optimize_index(SolrWrapper $client) {
-    $client->optimize();
-}
-
-
 /**
  * Index all documents.
  * @param SolrWrapper $client
@@ -154,6 +144,7 @@ function search_index(SolrWrapper $client) {
         $recordset->close();
         if ($numrecords > 0) {
             $client->commit();
+            $client->optimize();
             $indexingend = time();
             set_config($name . '_indexingstart', $indexingstart, 'search');
             set_config($name . '_indexingend', $indexingend, 'search');
@@ -239,4 +230,15 @@ function search_get_config($mods) {
         }
     }
     return $configsettings;
+}
+
+
+/** 
+ * Builds the cURL object's url for indexing Rich Documents
+ * @return string $url
+ */ 
+function search_curl_url(){
+    global $CFG;
+    $url = $CFG->SOLR_SERVER_HOSTNAME . ':' . $CFG->SOLR_SERVER_PORT . '/solr/update/extract?';
+    return $url;
 }

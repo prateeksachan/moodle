@@ -7507,17 +7507,16 @@ function forum_search_iterator($from = 0) {
 
 function forum_search_get_documents($id) {
     global $CFG, $DB;
-
     $docs = array();
     $post = forum_get_all_post($id);
     $cm = get_coursemodule_from_instance('forum', $post->forum, $post->course);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-    //$user = $DB->get_record('user', array('id' => $post->userid));
+    $user = $DB->get_record('user', array('id' => $post->userid));
     //Declare a new Solr Document and insert fields into it from DB
     
     $doc = new SolrInputDocument();
     $doc->addField('id', 'forum_' . $post->id);
-    $doc->addField('author', $post->userid);
+    $doc->addField('author', $user->firstname . ' ' . $user->lastname);
     $doc->addField('created', $post->created);
     $doc->addField('modified', $post->modified);
     $doc->addField('title', $post->subject);
@@ -7532,11 +7531,17 @@ function forum_search_get_documents($id) {
     $files = $fs->get_area_files($context->id, 'mod_forum', 'attachment', $id, "timemodified", false);
     foreach ($files as $file) {
         $filename = $file->get_filename();
-        $url = file_encode_url('/pluginfile.php', '/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename);
+        $curl = new curl();
+        $url = search_curl_url();
+        $url .= 'literal.id=' . 'forum_file_' . $id . '&literal.module=forum&literal.type=3&literal.courseid=' . $post->course;
+        $params = array();
+        $params[$id] = $file;
+        $curl->post($url, $params);
+
+        $directurl = file_encode_url('/pluginfile.php', '/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename);
 
         $doc = clone $doc;
-        $doc->addField('directlink', $url);
-        //$doc->addField('type', SEARCH_TYPE_FILE);//@TODO After Apache Tika
+        $doc->addField('directlink', $directurl);
         $doc->addField('mime', $file->get_mimetype());
         $docs[] = $doc;
     }
