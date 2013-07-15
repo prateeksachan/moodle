@@ -31,14 +31,11 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
     $ADMIN->add('globalsearch', $temp);
 
     $temp = new admin_settingpage('supportedmods', new lang_string('supportedmods', 'admin'));
-    $temp->add(new admin_setting_configcheckbox('gs_support_book', new lang_string('gs_support_book', 'admin'), new lang_string('gs_support_book_desc', 'admin'), 1, 1, 0));
-    $temp->add(new admin_setting_configcheckbox('gs_support_forum', new lang_string('gs_support_forum', 'admin'), new lang_string('gs_support_forum_desc', 'admin'), 1, 1, 0));
-    $temp->add(new admin_setting_configcheckbox('gs_support_label', new lang_string('gs_support_label', 'admin'), new lang_string('gs_support_label_desc', 'admin'), 1, 1, 0));
-    $temp->add(new admin_setting_configcheckbox('gs_support_lesson', new lang_string('gs_support_lesson', 'admin'), new lang_string('gs_support_lesson_desc', 'admin'), 1, 1, 0));
-    $temp->add(new admin_setting_configcheckbox('gs_support_page', new lang_string('gs_support_page', 'admin'), new lang_string('gs_support_page_desc', 'admin'), 1, 1, 0));
-    $temp->add(new admin_setting_configcheckbox('gs_support_url', new lang_string('gs_support_url', 'admin'), new lang_string('gs_support_url_desc', 'admin'), 1, 1, 0));
-    $temp->add(new admin_setting_configcheckbox('gs_support_wiki', new lang_string('gs_support_wiki', 'admin'), new lang_string('gs_support_wiki_desc', 'admin'), 1, 1, 0));
-    
+    $supported_mods = array('book', 'forum', 'label', 'lesson', 'page', 'url', 'wiki'); // add a module here to make it gs_supported
+    foreach ($supported_mods as $mod) {
+        $temp->add(new admin_setting_configcheckbox('gs_support_' . $mod, new lang_string('gs_support_mod', 'admin', ucfirst($mod)), new lang_string('gs_support_mod_desc', 'admin', ucfirst($mod)), 1, 1, 0));
+    }
+
     $ADMIN->add('globalsearch', $temp);    
 
     $ADMIN->add('globalsearch', new admin_externalpage('statistics', new lang_string('statistics','admin'), "$CFG->wwwroot/search/admin.php"));
