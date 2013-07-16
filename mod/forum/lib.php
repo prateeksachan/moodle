@@ -7512,6 +7512,7 @@ function forum_search_get_documents($id) {
     $cm = get_coursemodule_from_instance('forum', $post->forum, $post->course);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id);
     $user = $DB->get_record('user', array('id' => $post->userid));
+    $contextlink = '/mod/forum/discuss.php?d=' . $post->discussion . '#p' . $post->id;
     //Declare a new Solr Document and insert fields into it from DB
     
     $doc = new SolrInputDocument();
@@ -7523,28 +7524,27 @@ function forum_search_get_documents($id) {
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('content', format_text($post->message, $post->messageformat, array('nocache' => true, 'para' => false)));
     $doc->addField('courseid', $post->course);
-    $doc->addField('contextlink', '/mod/forum/discuss.php?d=' . $post->discussion . '#p' . $post->id);
+    $doc->addField('contextlink', $contextlink);
     $doc->addField('module', 'forum');
     $docs[] = $doc;
 
     $fs = get_file_storage();
     $files = $fs->get_area_files($context->id, 'mod_forum', 'attachment', $id, "timemodified", false);
+    $numfile = 1;
     foreach ($files as $file) {
         if (strpos($mime = $file->get_mimetype(), 'image') === false) {
             $filename = $file->get_filename();
+            $directlink = '/pluginfile.php/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename;
+
             $curl = new curl();
             $url = search_curl_url();
-            $url .= 'literal.id=' . 'forum_file_' . $id . '&literal.module=forum&literal.type=3&literal.courseid=' . $post->course;
+            $url .= 'literal.id=' . 'forum_' . $id . '_file_' . $numfile . '&literal.module=forum&literal.type=3' .
+                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $post->course . '&literal.contextlink=' . $contextlink;
             $params = array();
-            $params[$id] = $file;
+            $params[$filename] = $file;
             $curl->post($url, $params);
 
-            $directurl = file_encode_url('/pluginfile.php', '/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename);
-
-            $doc = clone $doc;
-            $doc->addField('directlink', $directurl);
-            $doc->addField('mime', $file->get_mimetype());
-            $docs[] = $doc;
+            $numfile++;
         }
     }
 

@@ -261,7 +261,9 @@ function search_display_results($result){
     if (!empty($result->created)) {
         $s .='<b>Created: </b>' . userdate($result->created) . '<br/>';
     }
-    $s .='<b>Modified: </b>' . userdate($result->modified) . '<br/>';
+    if (!empty($result->modified)) {
+        $s .='<b>Modified: </b>' . userdate($result->modified) . '<br/>';
+    }
     if (!empty($result->name)) {
         $s .='<b>Name: </b>' . $result->name . '<br/>';
     }
@@ -274,7 +276,12 @@ function search_display_results($result){
     if (!empty($result->content)) {
         $s .='<b>Content: </b>' . $result->content . '<br/>';
     }
+    $result->contextlink = new moodle_url($result->contextlink);
     $s .='<b>Contextlink: </b>' . $result->contextlink . '<br/>';
+    if (!empty($result->directlink)) {
+        $result->directlink = new moodle_url($result->directlink);
+        $s .='<b>Directlink: </b>' . $result->directlink . '<br/>';
+    }
     $s .= html_writer::end_tag('div'); // end
     
     echo $s;

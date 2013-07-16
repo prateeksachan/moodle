@@ -662,6 +662,7 @@ function wiki_search_get_documents($id) {
     $course = $DB->get_record('course', array('id' => $wiki->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+    $contextlink = '/mod/wiki/view.php?pageid=' . $wikipage->id;
     // Declare a new Solr Document and insert fields into it from DB
     
     $doc = new SolrInputDocument();
@@ -674,21 +675,29 @@ function wiki_search_get_documents($id) {
     $doc->addField('content', format_text($wikipage->cachedcontent, array('nocache' => true, 'para' => false)));
     $doc->addField('title', $wikipage->title);
     $doc->addField('courseid', $wiki->course);
-    $doc->addField('contextlink', '/mod/wiki/view.php?pageid=' . $wikipage->id);
+    $doc->addField('contextlink', $contextlink);
     $doc->addField('module', 'wiki');
     $docs[] = $doc;
 
     $fs = get_file_storage();
-    $files = $fs->get_area_files($context->id, 'mod_wiki', 'attachments', $id, 'timemodified', false);
+    $files = $fs->get_area_files($context->id, 'mod_wiki', 'attachments', $wiki->id, 'timemodified', false);
+    $numfile = 1;
+    print_r($files); // debug.
     foreach ($files as $file) {
-        $filename = $file->get_filename();
-        $url = file_encode_url('/pluginfile.php', '/' . $context->id . '/mod_wiki/attachments/' . $id . '/' . $filename);
+        if (strpos($mime = $file->get_mimetype(), 'image') === false) {
+            $filename = $file->get_filename();
+            $directlink = '/pluginfile.php/' . $context->id . '/mod_wiki/attachments/' . $id . '/' . $filename;
 
-        $doc = clone $doc;
-        $doc->addField('directlink', $url);
-        //$doc->addField('type', SEARCH_TYPE_FILE);//@TODO After Apache Tika
-        $doc->addField('mime', $file->get_mimetype());
-        $docs[] = $doc;
+            $curl = new curl();
+            $url = search_curl_url();
+            $url .= 'literal.id=' . 'wiki_' . $id . '_file_' . $numfile . '&literal.module=wiki&literal.type=3' .
+                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $wiki->course . '&literal.contextlink=' . $contextlink;
+            $params = array();
+            $params[$filename] = $file;
+            $curl->post($url, $params);
+            
+            $numfile++;
+        }
     }
     
     return $docs;
