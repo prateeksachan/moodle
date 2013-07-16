@@ -242,3 +242,39 @@ function search_curl_url(){
     $url = $CFG->SOLR_SERVER_HOSTNAME . ':' . $CFG->SOLR_SERVER_PORT . '/solr/update/extract?';
     return $url;
 }
+
+/** 
+ * Temorary page for displaying search results 
+ * @param stdClass object $result containing a single search response to be displayed (ACCESS_GRANTED)
+ */ 
+function search_display_results($result){
+    global $OUTPUT;
+    $OUTPUT->box_start();
+    
+    $s = '';
+    $s .= html_writer::start_tag('div', array('class'=>'forumpost clearfix'));
+    $s .='<b>ID: </b>' . $result->id . '<br/>';
+    $s .='<b>Module: </b>' . $result->module . '<br/>';
+    if (!empty($result->user)) {
+        $s .='<b>User: </b>' . $result->user . '<br/>';
+    }
+    if (!empty($result->created)) {
+        $s .='<b>Created: </b>' . userdate($result->created) . '<br/>';
+    }
+    $s .='<b>Modified: </b>' . userdate($result->modified) . '<br/>';
+    if (!empty($result->name)) {
+        $s .='<b>Name: </b>' . $result->name . '<br/>';
+    }
+    if (!empty($result->intro)) {
+        $s .='<b>Intro: </b>' . $result->intro . '<br/>';
+    }
+    if (!empty($result->title)) {
+        $s .='<b>Title: </b>' . $result->title . '<br/>';
+    }
+    $s .='<b>Content: </b>' . $result->content . '<br/>';
+    $s .='<b>Contextlink: </b>' . $result->contextlink . '<br/>';
+    $s .= html_writer::end_tag('div'); // forumpost
+    
+    echo $s;
+    $OUTPUT->box_end();
+}

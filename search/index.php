@@ -57,7 +57,9 @@ echo $OUTPUT->header();
 solr_display_search_form($mform);
 
 if (!empty($results)){
-    print_r($results); // debug.
+    foreach ($results as $result) {
+    	search_display_results($result);
+    }
 }
 
 echo $OUTPUT->footer();
