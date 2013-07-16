@@ -271,9 +271,11 @@ function search_display_results($result){
     if (!empty($result->title)) {
         $s .='<b>Title: </b>' . $result->title . '<br/>';
     }
-    $s .='<b>Content: </b>' . $result->content . '<br/>';
+    if (!empty($result->content)) {
+        $s .='<b>Content: </b>' . $result->content . '<br/>';
+    }
     $s .='<b>Contextlink: </b>' . $result->contextlink . '<br/>';
-    $s .= html_writer::end_tag('div'); // forumpost
+    $s .= html_writer::end_tag('div'); // end
     
     echo $s;
     $OUTPUT->box_end();
