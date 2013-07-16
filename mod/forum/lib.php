@@ -7530,20 +7530,22 @@ function forum_search_get_documents($id) {
     $fs = get_file_storage();
     $files = $fs->get_area_files($context->id, 'mod_forum', 'attachment', $id, "timemodified", false);
     foreach ($files as $file) {
-        $filename = $file->get_filename();
-        $curl = new curl();
-        $url = search_curl_url();
-        $url .= 'literal.id=' . 'forum_file_' . $id . '&literal.module=forum&literal.type=3&literal.courseid=' . $post->course;
-        $params = array();
-        $params[$id] = $file;
-        $curl->post($url, $params);
+        if (strpos($mime = $file->get_mimetype(), 'image') === false) {
+            $filename = $file->get_filename();
+            $curl = new curl();
+            $url = search_curl_url();
+            $url .= 'literal.id=' . 'forum_file_' . $id . '&literal.module=forum&literal.type=3&literal.courseid=' . $post->course;
+            $params = array();
+            $params[$id] = $file;
+            $curl->post($url, $params);
 
-        $directurl = file_encode_url('/pluginfile.php', '/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename);
+            $directurl = file_encode_url('/pluginfile.php', '/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename);
 
-        $doc = clone $doc;
-        $doc->addField('directlink', $directurl);
-        $doc->addField('mime', $file->get_mimetype());
-        $docs[] = $doc;
+            $doc = clone $doc;
+            $doc->addField('directlink', $directurl);
+            $doc->addField('mime', $file->get_mimetype());
+            $docs[] = $doc;
+        }
     }
 
     return $docs;
