@@ -80,6 +80,9 @@ function solr_query_response(SolrWrapper $client, $query_response) {
 
     if (!empty($totalnumfound)) {
         foreach ($docs as $key => $value) {
+            if (strpos($value->id,'file') !== false) {
+                $value->id = str_replace('_file', '', $value->id);
+            }
             $solr_id = explode("_", $value->id);
             $modname = 'gs_support_' . $solr_id[0];
             if (!empty($CFG->$modname)) { // check whether the module belonging to search response's Solr Document is gs_supported or not.
