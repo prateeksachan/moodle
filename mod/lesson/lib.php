@@ -1006,12 +1006,11 @@ function lesson_update_media_file($lessonid, $context, $draftitemid) {
 }
 
 /**
-* Global Search functions
-* @var $DB mysqli_native_moodle_database
-* @var $OUTPUT core_renderer
-* @var $PAGE moodle_lesson
-*/
-
+ * Global Search API
+ * @var $DB mysqli_native_moodle_database
+ * @var $OUTPUT core_renderer
+ * @var $PAGE moodle_lesson
+ */
 function lesson_search_iterator($from = 0) {
     global $DB;
 
@@ -1026,11 +1025,10 @@ function lesson_search_get_documents($id) {
     $docs = array();
     $lessonpage = $DB->get_record('lesson_pages', array('id' => $id), '*', MUST_EXIST);
     $lesson = $DB->get_record('lesson', array('id' => $lessonpage->lessonid), '*', MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $lesson->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
-    // Declare a new Solr Document and insert fields into it from DB
+    $context = context_module::instance($cm->id);
 
+    // Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'lesson_' . $lessonpage->id);
@@ -1063,7 +1061,7 @@ function lesson_search_files($from = 0) {
         $context = context_module::instance($cm->id);
 
         $files = $fs->get_area_files($context->id, 'mod_lesson', 'mediafile', 0, 'timemodified', false);
-        $numfile = 1;
+
         foreach ($files as $file){
             if (strpos($mime = $file->get_mimetype(), 'image') === false) {
                 $filename = $file->get_filename();
@@ -1071,12 +1069,11 @@ function lesson_search_files($from = 0) {
 
                 $curl = new curl();
                 $url = search_curl_url();
-                $url .= 'literal.id=' . 'lesson_' . $lesson->id . '_file_' . $numfile . '&literal.module=lesson&literal.type=3' .
+                $url .= 'literal.id=' . 'lesson_' . $lesson->id . '_file_' . $file->get_id() . '&literal.module=lesson&literal.type=3' .
                         '&literal.directlink=' . $directlink . '&literal.courseid=' . $lesson->course;
                 $params = array();
                 $params[$filename] = $file;
                 $curl->post($url, $params);
-                $numfile++;
             }
         }    
     }

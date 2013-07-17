@@ -477,12 +477,11 @@ function page_dndupload_handle($uploadinfo) {
 }
 
 /**
-* Global Search functions
+* Global Search API
 * @var $DB mysqli_native_moodle_database
 * @var $OUTPUT core_renderer
 * @var $PAGE moodle_page
 */
-
 function page_search_iterator($from = 0) {
     global $DB;
 
@@ -496,11 +495,10 @@ function page_search_get_documents($id) {
 
     $docs = array();
     $page = $DB->get_record('page', array('id' => $id), '*', MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $page->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+    $context = context_module::instance($cm->id);
+
     // Declare a new Solr Document and insert fields into it from DB
-    
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'page_' . $page->id);

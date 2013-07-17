@@ -638,12 +638,11 @@ function wiki_page_type_list($pagetype, $parentcontext, $currentcontext) {
 }
 
 /**
-* Global Search functions
-* @var $DB mysqli_native_moodle_database
-* @var $OUTPUT core_renderer
-* @var $PAGE moodle_wiki
-*/
-
+ * Global Search API
+ * @var $DB mysqli_native_moodle_database
+ * @var $OUTPUT core_renderer
+ * @var $PAGE moodle_wiki
+ */
 function wiki_search_iterator($from = 0) {
     global $DB;
 
@@ -659,12 +658,11 @@ function wiki_search_get_documents($id) {
     $wikipage = $DB->get_record('wiki_pages', array('id' => $id), '*', MUST_EXIST);
     $subwiki = $DB->get_record('wiki_subwikis', array('id' => $wikipage->subwikiid), '*', MUST_EXIST);
     $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), '*', MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $wiki->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
     $context = context_module::instance($cm->id);
     $contextlink = '/mod/wiki/view.php?pageid=' . $wikipage->id;
-    // Declare a new Solr Document and insert fields into it from DB
 
+    // Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'wiki_' . $wikipage->id);
@@ -692,7 +690,6 @@ function wiki_search_files($id = 0) {
         }
     }
     $fs = get_file_storage();
-    $numfile = 1;
 
     $lastindexedfilerun = end($wikifiles)->id;
     foreach ($wikifiles as $wikifile) {
@@ -710,12 +707,11 @@ function wiki_search_files($id = 0) {
 
             $curl = new curl();
             $url = search_curl_url();
-            $url .= 'literal.id=' . 'wiki_' . $wikipage->id . '_file_' . $numfile . '&literal.module=wiki&literal.type=3' .
+            $url .= 'literal.id=' . 'wiki_' . $wikipage->id . '_file_' . $wikifile->id . '&literal.module=wiki&literal.type=3' .
                     '&literal.directlink=' . $directlink . '&literal.courseid=' . $wiki->course;
             $params = array();
             $params[$filename] = $file;
             $curl->post($url, $params);
-            $numfile++;
         }    
     }
     set_config('wiki' . '_lastindexedfilerun', $lastindexedfilerun, 'search');

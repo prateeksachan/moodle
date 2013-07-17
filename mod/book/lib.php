@@ -435,12 +435,11 @@ function book_page_type_list($pagetype, $parentcontext, $currentcontext) {
 }
 
 /**
-* Global Search functions
-* @var $DB mysqli_native_moodle_database
-* @var $OUTPUT core_renderer
-* @var $PAGE moodle_book
-*/
-
+ * Global Search API
+ * @var $DB mysqli_native_moodle_database
+ * @var $OUTPUT core_renderer
+ * @var $PAGE moodle_book
+ */
 function book_search_iterator($from = 0) {
     global $DB;
 
@@ -455,11 +454,10 @@ function book_search_get_documents($id) {
     $docs = array();
     $chapter = $DB->get_record('book_chapters', array('id' => $id), '*', MUST_EXIST);
     $book = $DB->get_record('book', array('id' => $chapter->bookid), '*', MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $book->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('book', $book->id, $book->course, false, MUST_EXIST);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
-    // Declare a new Solr Document and insert fields into it from DB
+    $context = context_module::instance($cm->id);
 
+    // Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();
     $doc->addField('id', 'book_' . $chapter->id);
     $doc->addField('created', $chapter->timecreated);

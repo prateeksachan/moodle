@@ -3119,3 +3119,50 @@ function glossary_page_type_list($pagetype, $parentcontext, $currentcontext) {
         'mod-glossary-edit'=>get_string('page-mod-glossary-edit', 'glossary'));
     return $module_pagetype;
 }
+
+/**
+ * Global Search API
+ * @var $DB mysqli_native_moodle_database
+ * @var $OUTPUT core_renderer
+ * @var $PAGE moodle_glossary
+ */
+function glossary_search_iterator($from = 0) {
+    global $DB;
+
+    $sql = "SELECT id, timemodified AS modified FROM {glossary_entries} WHERE timemodified > ? ORDER BY timemodified ASC";
+
+    return $DB->get_recordset_sql($sql, array($from));
+}
+
+function glossary_search_get_documents($id) {
+    global $DB;
+
+    $docs = array();
+    $glossaryentry = $DB->get_record('glossary_entries', array('id' => $id));
+    $glossary = $DB->get_record('glossary', array('id' => $glossaryentry->glossaryid)); 
+    $cm = get_coursemodule_from_instance('glossary', $glossary->id, $glossary->course);
+    $user = $DB->get_record('user', array('id' => $glossaryentry->userid));
+    $context = context_module::instance($cm->id);
+
+    // Declare a new Solr Document and insert fields into it from DB
+    $doc = new SolrInputDocument();
+    $doc->addField('type', SEARCH_TYPE_HTML);
+    $doc->addField('id', 'glossary_' . $glossaryentry->id);
+    $doc->addField('user', $user->firstname . ' ' . $user->lastname);
+    $doc->addField('created', $glossaryentry->timecreated);
+    $doc->addField('modified', $glossaryentry->timemodified);
+    $doc->addField('intro', format_text($glossary->intro, $glossary->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('name', $glossary->name);
+    $doc->addField('content', format_text($glossaryentry->definition, $glossaryentry->definitionformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('title', $glossaryentry->concept);
+    $doc->addField('courseid', $glossary->course);
+    $doc->addField('contextlink', '/mod/glossary/showentry.php?eid=' . $glossary->id);
+    $doc->addField('module', 'glossary');
+    $docs[] = $doc;
+
+    return $docs;
+}
+
+function glossary_search_access($id) {
+
+}
