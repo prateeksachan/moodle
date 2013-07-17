@@ -661,10 +661,10 @@ function wiki_search_get_documents($id) {
     $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), '*', MUST_EXIST);
     $course = $DB->get_record('course', array('id' => $wiki->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+    $context = context_module::instance($cm->id);
     $contextlink = '/mod/wiki/view.php?pageid=' . $wikipage->id;
     // Declare a new Solr Document and insert fields into it from DB
-    
+
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'wiki_' . $wikipage->id);
@@ -679,28 +679,46 @@ function wiki_search_get_documents($id) {
     $doc->addField('module', 'wiki');
     $docs[] = $doc;
 
+    return $docs;
+}
+
+function wiki_search_files($id = 0) {
+    global $DB;
+
+    $wikifiles = $DB->get_records('files', array('component' => 'mod_wiki'), 'id', 'id, itemid, filepath, filename, filesize');
+    foreach ($wikifiles as $wikifile) {
+        if ($wikifile->id <= $id or $wikifile->filesize == 0){
+            unset($wikifiles[$wikifile->id]);
+        }
+    }
     $fs = get_file_storage();
-    $files = $fs->get_area_files($context->id, 'mod_wiki', 'attachments', $wiki->id, 'timemodified', false);
     $numfile = 1;
-    print_r($files); // debug.
-    foreach ($files as $file) {
+
+    $lastindexedfilerun = end($wikifiles)->id;
+    foreach ($wikifiles as $wikifile) {
+        $wikipage = $DB->get_record('wiki_pages', array('subwikiid' => $wikifile->itemid), 'id', IGNORE_MULTIPLE);
+        $subwiki = $DB->get_record('wiki_subwikis', array('id' => $wikifile->itemid), 'id, wikiid', MUST_EXIST);
+        $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), 'id, course', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+
+        $file = $fs->get_file($context->id, 'mod_wiki', 'attachments', $wikifile->itemid, $wikifile->filepath, $wikifile->filename);
+
         if (strpos($mime = $file->get_mimetype(), 'image') === false) {
             $filename = $file->get_filename();
-            $directlink = '/pluginfile.php/' . $context->id . '/mod_wiki/attachments/' . $id . '/' . $filename;
+            $directlink = '/pluginfile.php/' . $context->id . '/mod_wiki/attachments/' . $wikifile->itemid . '/' . $filename;
 
             $curl = new curl();
             $url = search_curl_url();
-            $url .= 'literal.id=' . 'wiki_' . $id . '_file_' . $numfile . '&literal.module=wiki&literal.type=3' .
-                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $wiki->course . '&literal.contextlink=' . $contextlink;
+            $url .= 'literal.id=' . 'wiki_' . $wikipage->id . '_file_' . $numfile . '&literal.module=wiki&literal.type=3' .
+                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $wiki->course;
             $params = array();
             $params[$filename] = $file;
             $curl->post($url, $params);
-            
             $numfile++;
-        }
+        }    
     }
-    
-    return $docs;
+    set_config('wiki' . '_lastindexedfilerun', $lastindexedfilerun, 'search');
 }
 
 //@TODO-done. 
@@ -716,7 +734,7 @@ function wiki_search_access($id) {
     catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
-    
+
     $context = context_module::instance($cm->id);
     if (!has_capability('mod/wiki:viewpage', $context)){
         return SEARCH_ACCESS_DENIED;
@@ -731,6 +749,6 @@ function wiki_search_access($id) {
             return SEARCH_ACCESS_DENIED;
         }
     }
-    
+
     return SEARCH_ACCESS_GRANTED;
 }

@@ -1029,9 +1029,8 @@ function lesson_search_get_documents($id) {
     $course = $DB->get_record('course', array('id' => $lesson->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
-    $contextlink = '/mod/lesson/view.php?id=' . $cm->id . '&pageid=' . $lessonpage->id;
     // Declare a new Solr Document and insert fields into it from DB
-    
+
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'lesson_' . $lessonpage->id);
@@ -1041,32 +1040,46 @@ function lesson_search_get_documents($id) {
     $doc->addField('content', format_text($lessonpage->contents, $lessonpage->contentsformat, array('nocache' => true, 'para' => false)));
     $doc->addField('title', $lessonpage->title);
     $doc->addField('courseid', $lesson->course);
-    $doc->addField('contextlink', $contextlink);
+    $doc->addField('contextlink', '/mod/lesson/view.php?id=' . $cm->id . '&pageid=' . $lessonpage->id);
     $doc->addField('module', 'lesson');
     $docs[] = $doc;
 
-    $fs = get_file_storage();
-    $files = $fs->get_area_files($context->id, 'mod_lesson', 'mediafile', $lesson->id, 'timemodified', false);
-    $numfile = 1;
-    print_r($files);
-    foreach ($files as $file) {
-        if (strpos($mime = $file->get_mimetype(), 'image') === false) {
-            $filename = $file->get_filename();
-            $directlink = '/mod/lesson/mediafile.php?id=' . $context->id;
-            
-            $curl = new curl();
-            $url = search_curl_url();
-            $url .= 'literal.id=' . 'lesson_' . $id . '_file_' . $numfile . '&literal.module=lesson&literal.type=3' .
-                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $lesson->course . '&literal.contextlink=' . $contextlink;
-            $params = array();
-            $params[$filename] = $file;
-            $curl->post($url, $params);
-            
-            $numfile++;
-        }
-    }
-
     return $docs;
+}
+
+function lesson_search_files($from = 0) {
+    global $DB;
+
+    $sql = "SELECT id, timemodified AS modified FROM {lesson} WHERE timemodified > ? ORDER BY timemodified ASC";
+
+    $lessonrecords = $DB->get_recordset_sql($sql, array($from));
+
+    $fs = get_file_storage();
+
+    foreach ($lessonrecords as $lessonrecord) {
+        $lesson = $DB->get_record('lesson', array('id' => $lessonrecord->id), '*', MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $lesson->course), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+
+        $files = $fs->get_area_files($context->id, 'mod_lesson', 'mediafile', 0, 'timemodified', false);
+        $numfile = 1;
+        foreach ($files as $file){
+            if (strpos($mime = $file->get_mimetype(), 'image') === false) {
+                $filename = $file->get_filename();
+                $directlink = '/mod/lesson/mediafile.php?id=' . $context->id;
+
+                $curl = new curl();
+                $url = search_curl_url();
+                $url .= 'literal.id=' . 'lesson_' . $lesson->id . '_file_' . $numfile . '&literal.module=lesson&literal.type=3' .
+                        '&literal.directlink=' . $directlink . '&literal.courseid=' . $lesson->course;
+                $params = array();
+                $params[$filename] = $file;
+                $curl->post($url, $params);
+                $numfile++;
+            }
+        }    
+    }
 }
 
 //@TODO-done.
