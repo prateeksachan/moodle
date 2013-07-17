@@ -91,11 +91,18 @@ function search_get_iterators() {
 }
 
 /**
+ * Merge separate index segments into one.
+ * @param SolrWrapper $client
+ */
+function search_optimize_index(SolrWrapper $client) {
+    $client->optimize();
+}
+
+/**
  * Index all documents.
  * @param SolrWrapper $client
  */
 function search_index(SolrWrapper $client) {
-    mtrace("Memory usage:" . memory_get_usage(), '<br/>');
     set_time_limit(576000);
     $iterators = search_get_iterators();
     mtrace("Memory usage:" . memory_get_usage(), '<br/>');
@@ -124,15 +131,6 @@ function search_index(SolrWrapper $client) {
                         mtrace("Memory usage: (doc added)" . memory_get_usage(), '<br/>');
                         ++$numdocs;
                         break;
-                    case SEARCH_TYPE_TEXT:
-                        $client->addDocument($solrdocument);
-                        mtrace("Memory usage: (doc added)" . memory_get_usage(), '<br/>');
-                        ++$numdocs;
-                        break;
-                    case SEARCH_TYPE_FILE:
-                        // TODO Ingtegrate Apache Tika here.
-                        ++$numdocs;
-                        break;
                     default:
                         ++$numdocsignored;
                         throw new search_ex("Incorrect document format encountered");
@@ -155,8 +153,42 @@ function search_index(SolrWrapper $client) {
             echo 'commits completed'.'<br>';
         }
     }
-    $client->optimize();
 }
+
+/**
+ * Index all Rich Document files.
+ * @param SolrWrapper $client
+ */
+function search_index_files(SolrWrapper $client) {
+    global $CFG;
+    set_time_limit(576000);
+    $mod_file = array(
+                'lesson' => 'lesson',
+                'wiki' => 'wiki'
+                );
+
+    foreach ($mod_file as $mod => $name) {
+        $modname = 'gs_support_' . $name;
+        if (empty($CFG->$modname)) {
+            unset($mod_file[$mod]);
+        }
+    }
+
+    mtrace("Memory usage:" . memory_get_usage(), '<br/>');
+    $timestart = microtime(true);
+
+    foreach ($mod_file as $mod => $name) {
+        mtrace('Indexing files for module ' . $name, '<br />');
+        $lastindexrun = search_get_config_file($name);
+        $indexfunction = $name . '_search_files';
+        // this the the indexing function for indexing rich documents. config settings will be updated inside this function only .
+        $indexfunction($lastindexrun);
+    }        
+    $timetaken = microtime(true) - $timestart;
+    mtrace("Time : $timetaken", '<br/>');
+    $client->commit();
+}
+
 
 /**
  * Resets config_plugin table after index deletion as re-indexing will be done from start.
@@ -179,6 +211,9 @@ function search_reset_config($s = null) {
         set_config($name . '_docsignored', 0, 'search');
         set_config($name . '_docsprocessed', 0, 'search');
         set_config($name . '_recordsprocessed', 0, 'search');
+        if ($name == 'wiki'){ // extra config setting reset for wiki rich documents
+            set_config($name . '_lastindexedfilerun', 0, 'search');
+        }
     }
 }
 
@@ -198,6 +233,11 @@ function search_delete_index(SolrWrapper $client, $data) {
     $client->commit();
 }
 
+/**
+ * Deletes index by id.
+ * @param SolrWrapper $client object
+ * @param Solr Document string $id
+ */
 function search_delete_index_by_id(SolrWrapper $client, $id) {
     $client->deleteById($id);
     $client->commit();
@@ -232,6 +272,23 @@ function search_get_config($mods) {
     return $configsettings;
 }
 
+/**
+ * Returns Global Search iterator setting for indexing files.
+ * @param string $mod
+ * @return string setting value
+ */
+function search_get_config_file($mod){
+    switch ($mod) {
+        case 'lesson':
+            return get_config('search', $mod . '_lastindexrun');
+
+        case 'wiki':
+            return get_config('search', $mod . '_lastindexedfilerun');
+
+        default:
+            return 0;
+    }    
+}
 
 /** 
  * Builds the cURL object's url for indexing Rich Documents
@@ -250,13 +307,16 @@ function search_curl_url(){
 function search_display_results($result){
     global $OUTPUT;
     $OUTPUT->box_start();
-    
+
     $s = '';
     $s .= html_writer::start_tag('div', array('class'=>'forumpost clearfix'));
     $s .='<b>ID: </b>' . $result->id . '<br/>';
     $s .='<b>Module: </b>' . $result->module . '<br/>';
     if (!empty($result->user)) {
         $s .='<b>User: </b>' . $result->user . '<br/>';
+    }
+    if (!empty($result->author)) {
+        $s .='<b>Author: </b>' . $result->author[0] . '<br/>';
     }
     if (!empty($result->created)) {
         $s .='<b>Created: </b>' . userdate($result->created) . '<br/>';
@@ -276,14 +336,16 @@ function search_display_results($result){
     if (!empty($result->content)) {
         $s .='<b>Content: </b>' . $result->content . '<br/>';
     }
-    $result->contextlink = new moodle_url($result->contextlink);
-    $s .='<b>Contextlink: </b>' . $result->contextlink . '<br/>';
+    if (!empty($result->contextlink)) {
+        $result->contextlink = new moodle_url($result->contextlink);
+        $s .='<b>Contextlink: </b>' . $result->contextlink . '<br/>';
+    }
     if (!empty($result->directlink)) {
         $result->directlink = new moodle_url($result->directlink);
         $s .='<b>Directlink: </b>' . $result->directlink . '<br/>';
     }
     $s .= html_writer::end_tag('div'); // end
-    
+
     echo $s;
     $OUTPUT->box_end();
 }
