@@ -8540,12 +8540,11 @@ function forum_get_user_digest_options($user = null) {
 }
 
 /**
-* Global Search functions
-* @var $DB mysqli_native_moodle_database
-* @var $OUTPUT core_renderer
-* @var $PAGE moodle_forum
-*/
-
+ * Global Search API
+ * @var $DB mysqli_native_moodle_database
+ * @var $OUTPUT core_renderer
+ * @var $PAGE moodle_forum
+ */
 function forum_search_iterator($from = 0) {
     global $DB;
 
@@ -8559,11 +8558,11 @@ function forum_search_get_documents($id) {
     $docs = array();
     $post = forum_get_all_post($id);
     $cm = get_coursemodule_from_instance('forum', $post->forum, $post->course);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    $context = context_module::instance($cm->id);
     $user = $DB->get_record('user', array('id' => $post->userid));
     $contextlink = '/mod/forum/discuss.php?d=' . $post->discussion . '#p' . $post->id;
+
     //Declare a new Solr Document and insert fields into it from DB
-    
     $doc = new SolrInputDocument();
     $doc->addField('id', 'forum_' . $post->id);
     $doc->addField('user', $user->firstname . ' ' . $user->lastname);
