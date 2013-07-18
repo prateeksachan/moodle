@@ -7508,20 +7508,23 @@ function forum_search_iterator($from = 0) {
 function forum_search_get_documents($id) {
     global $CFG, $DB;
     $docs = array();
-    $post = forum_get_all_post($id);
-    $cm = get_coursemodule_from_instance('forum', $post->forum, $post->course);
+    $post = forum_get_post_full($id);
+    $forum = $DB->get_record('forum', array('id' => $post->forum), MUST_EXIST);
+    $cm = get_coursemodule_from_instance('forum', $forum->id, $forum->course);
     $context = context_module::instance($cm->id);
     $user = $DB->get_record('user', array('id' => $post->userid));
     $contextlink = '/mod/forum/discuss.php?d=' . $post->discussion . '#p' . $post->id;
 
     //Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();
+    $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'forum_' . $post->id);
     $doc->addField('user', $user->firstname . ' ' . $user->lastname);
     $doc->addField('created', $post->created);
     $doc->addField('modified', $post->modified);
+    $doc->addField('intro', format_text($forum->intro, $forum->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('name', $forum->name);
     $doc->addField('title', $post->subject);
-    $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('content', format_text($post->message, $post->messageformat, array('nocache' => true, 'para' => false)));
     $doc->addField('courseid', $post->course);
     $doc->addField('contextlink', $contextlink);
@@ -7582,15 +7585,4 @@ function forum_search_access($id) {
     }
 
     return SEARCH_ACCESS_GRANTED;
-}
-
-function forum_get_all_post($postid) {
-    global $CFG, $DB;
-
-    return $DB->get_record_sql("SELECT p.*, d.course, d.forum, u.firstname, u.lastname, u.email, u.picture, u.imagealt
-                                FROM {forum_posts} p
-                                JOIN {forum_discussions} d ON p.discussion = d.id
-                                LEFT JOIN {user} u ON p.userid = u.id
-                                WHERE p.id = ?",
-                            array($postid));
 }

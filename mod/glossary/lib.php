@@ -3138,10 +3138,11 @@ function glossary_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $glossaryentry = $DB->get_record('glossary_entries', array('id' => $id));
-    $glossary = $DB->get_record('glossary', array('id' => $glossaryentry->glossaryid)); 
+    $glossaryentry = $DB->get_record('glossary_entries', array('id' => $id), '*', MUST_EXIST);
+    $glossary = $DB->get_record('glossary', array('id' => $glossaryentry->glossaryid), '*', MUST_EXIST); 
     $cm = get_coursemodule_from_instance('glossary', $glossary->id, $glossary->course);
     $user = $DB->get_record('user', array('id' => $glossaryentry->userid));
+    $contextlink = '/mod/glossary/showentry.php?eid=' . $glossary->id;
     $context = context_module::instance($cm->id);
 
     // Declare a new Solr Document and insert fields into it from DB
@@ -3156,13 +3157,62 @@ function glossary_search_get_documents($id) {
     $doc->addField('content', format_text($glossaryentry->definition, $glossaryentry->definitionformat, array('nocache' => true, 'para' => false)));
     $doc->addField('title', $glossaryentry->concept);
     $doc->addField('courseid', $glossary->course);
-    $doc->addField('contextlink', '/mod/glossary/showentry.php?eid=' . $glossary->id);
+    $doc->addField('contextlink', $contextlink);
     $doc->addField('module', 'glossary');
     $docs[] = $doc;
+
+    $fs = get_file_storage();
+    $files = $fs->get_area_files($context->id, 'mod_glossary', 'attachment', $glossary->id, 'timemodified', false);
+    $numfile = 1;
+    foreach ($files as $file) {
+        if (strpos($mime = $file->get_mimetype(), 'image') === false) {
+            $filename = $file->get_filename();
+            $directlink = '/pluginfile.php/' . $context->id . '/mod_glossary/attachment/' . $glossary->id . '/' . $filename;
+
+            $curl = new curl();
+            $url = search_curl_url();
+            $url .= 'literal.id=' . 'glossary_' . $id . '_file_' . $numfile . '&literal.module=glossary&literal.type=3' .
+                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $glossary->course . '&literal.contextlink=' . $contextlink;
+            $params = array();
+            $params[$filename] = $file;
+            $curl->post($url, $params);
+
+            $numfile++;
+        }
+    }
 
     return $docs;
 }
 
 function glossary_search_access($id) {
+    global $DB, $USER;
 
+    try {
+        $entry = $DB->get_record('glossary_entries', array('id' => $id), '*', MUST_EXIST);
+        $glossary = $DB->get_record('glossary', array('id' => $entry->glossaryid), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('glossary', $glossary->id, 0, false,MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    } catch (dml_missing_record_exception $ex) {
+        return SEARCH_ACCESS_DELETED;
+    }
+
+    try {
+        require_course_login($course, true, $cm, true, true);
+        $context = context_module::instance($cm->id);
+        require_capability('mod/page:view', $context);
+    } catch (moodle_exception $ex) {
+        echo $ex; //debug.
+        return SEARCH_ACCESS_DENIED;
+    }
+
+    // give access to search results to teacher or editing-teacher or manager
+    $issuperuser = has_capability('mod/glossary:approve', $context) or has_capability('mod/glossary:manageentries', $context) ;
+    
+    if (!$issuperuser){
+        if (!$entry->approved && $USER != $entry->userid){
+            return SEARCH_ACCESS_DENIED;        
+        }        
+    }
+
+    return SEARCH_ACCESS_GRANTED;
 }
