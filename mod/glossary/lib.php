@@ -3196,12 +3196,8 @@ function glossary_search_access($id) {
         return SEARCH_ACCESS_DELETED;
     }
 
-    try {
-        require_course_login($course, true, $cm, true, true);
-        $context = context_module::instance($cm->id);
-        require_capability('mod/page:view', $context);
-    } catch (moodle_exception $ex) {
-        echo $ex; //debug.
+    $context = context_module::instance($cm->id);
+    if (!has_capability('mod/glossary:view', $context)){
         return SEARCH_ACCESS_DENIED;
     }
 
