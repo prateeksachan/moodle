@@ -56,9 +56,9 @@ if ($data = $mform->get_data()) {
 echo $OUTPUT->header();
 solr_display_search_form($mform);
 
-if (!empty($results)){
+if (!empty($results)) {
     foreach ($results as $result) {
-    	search_display_results($result);
+        search_display_results($result);
     }
 }
 

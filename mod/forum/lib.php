@@ -7509,7 +7509,7 @@ function forum_search_get_documents($id) {
     global $CFG, $DB;
     $docs = array();
     $post = forum_get_post_full($id);
-    $forum = $DB->get_record('forum', array('id' => $post->forum), MUST_EXIST);
+    $forum = $DB->get_record('forum', array('id' => $post->forum), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('forum', $forum->id, $forum->course);
     $context = context_module::instance($cm->id);
     $user = $DB->get_record('user', array('id' => $post->userid));
@@ -7526,7 +7526,7 @@ function forum_search_get_documents($id) {
     $doc->addField('name', $forum->name);
     $doc->addField('title', $post->subject);
     $doc->addField('content', format_text($post->message, $post->messageformat, array('nocache' => true, 'para' => false)));
-    $doc->addField('courseid', $post->course);
+    $doc->addField('courseid', $forum->course);
     $doc->addField('contextlink', $contextlink);
     $doc->addField('module', 'forum');
     $docs[] = $doc;
@@ -7542,7 +7542,7 @@ function forum_search_get_documents($id) {
             $curl = new curl();
             $url = search_curl_url();
             $url .= 'literal.id=' . 'forum_' . $id . '_file_' . $numfile . '&literal.module=forum&literal.type=3' .
-                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $post->course . '&literal.contextlink=' . $contextlink;
+                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $forum->course . '&literal.contextlink=' . $contextlink;
             $params = array();
             $params[$filename] = $file;
             $curl->post($url, $params);

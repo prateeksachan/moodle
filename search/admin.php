@@ -54,7 +54,7 @@ class search_admin_form extends moodleform {
         $mform->closeHeaderBefore('modadvcheckbox');
 
         $mform->disabledIf('modadvcheckbox', 'delete', 'notchecked');
-        
+
         $this->add_action_buttons($cancel = false);
         $mform->setDefault('action', '');
 

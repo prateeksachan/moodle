@@ -127,7 +127,7 @@ function search_index(SolrWrapper $client) {
             foreach ($documents as $solrdocument) {
                 switch (($solrdocument->getField('type')->values[0])) {
                     case SEARCH_TYPE_HTML:
-                        $client->addDocument($solrdocument);
+                        $client->add_document($solrdocument);
                         mtrace("Memory usage: (doc added)" . memory_get_usage(), '<br/>');
                         ++$numdocs;
                         break;
@@ -181,9 +181,9 @@ function search_index_files(SolrWrapper $client) {
         mtrace('Indexing files for module ' . $name, '<br />');
         $lastindexrun = search_get_config_file($name);
         $indexfunction = $name . '_search_files';
-        // this the the indexing function for indexing rich documents. config settings will be updated inside this function only .
+        // This the the indexing function for indexing rich documents. config settings will be updated inside this function only.
         $indexfunction($lastindexrun);
-    }        
+    }
     $timetaken = microtime(true) - $timestart;
     mtrace("Time : $timetaken", '<br/>');
     $client->commit();
@@ -211,7 +211,7 @@ function search_reset_config($s = null) {
         set_config($name . '_docsignored', 0, 'search');
         set_config($name . '_docsprocessed', 0, 'search');
         set_config($name . '_recordsprocessed', 0, 'search');
-        if ($name == 'wiki'){ // extra config setting reset for wiki rich documents
+        if ($name == 'wiki') { // Extra config setting reset for wiki rich documents.
             set_config($name . '_lastindexedfilerun', 0, 'search');
         }
     }
@@ -224,10 +224,10 @@ function search_reset_config($s = null) {
  */
 function search_delete_index(SolrWrapper $client, $data) {
     if (!empty($data->module)) {
-        $client->deleteByQuery('module:' . $data->module);
+        $client->delete_by_query('module:' . $data->module);
         search_reset_config($data->module);
     } else {
-        $client->deleteByQuery('*:*');
+        $client->delete_by_query('*:*');
         search_reset_config();
     }
     $client->commit();
@@ -239,7 +239,7 @@ function search_delete_index(SolrWrapper $client, $data) {
  * @param Solr Document string $id
  */
 function search_delete_index_by_id(SolrWrapper $client, $id) {
-    $client->deleteById($id);
+    $client->delete_by_id($id);
     $client->commit();
 }
 
@@ -277,7 +277,7 @@ function search_get_config($mods) {
  * @param string $mod
  * @return string setting value
  */
-function search_get_config_file($mod){
+function search_get_config_file($mod) {
     switch ($mod) {
         case 'lesson':
             return get_config('search', $mod . '_lastindexrun');
@@ -287,14 +287,14 @@ function search_get_config_file($mod){
 
         default:
             return 0;
-    }    
+    }
 }
 
 /** 
  * Builds the cURL object's url for indexing Rich Documents
  * @return string $url
- */ 
-function search_curl_url(){
+ */
+function search_curl_url() {
     global $CFG;
     $url = $CFG->SOLR_SERVER_HOSTNAME . ':' . $CFG->SOLR_SERVER_PORT . '/solr/update/extract?';
     return $url;
@@ -303,8 +303,8 @@ function search_curl_url(){
 /** 
  * Temorary page for displaying search results 
  * @param stdClass object $result containing a single search response to be displayed (ACCESS_GRANTED)
- */ 
-function search_display_results($result){
+ */
+function search_display_results($result) {
     global $OUTPUT;
     $OUTPUT->box_start();
 
@@ -344,7 +344,7 @@ function search_display_results($result){
         $result->directlink = new moodle_url($result->directlink);
         $s .='<b>Directlink: </b>' . $result->directlink . '<br/>';
     }
-    $s .= html_writer::end_tag('div'); // end
+    $s .= html_writer::end_tag('div'); // End.
 
     echo $s;
     $OUTPUT->box_end();
