@@ -23,8 +23,11 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once($CFG->dirroot . '/search/solr/lib.php');
+require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/lib.php');
 
+if ($CFG->SEARCH_ENGINE == 'solr') {
+
+// Solr connection options.
 $options = array(
     'hostname' => $CFG->SOLR_SERVER_HOSTNAME,
     'login'    => $CFG->SOLR_SERVER_USERNAME,
@@ -32,17 +35,18 @@ $options = array(
     'port'     => $CFG->SOLR_SERVER_PORT,
 );
 
-// if php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page. 
-if (solr_get_version() == '1.0.3-alpha') {
-	if ($CFG->SOLR_VERSION == '4.0') {
-		$object = new SolrClient($options, $CFG->SOLR_VERSION);
-	} else {
-		$object = new SolrClient($options, '3.0');
-	}
-} else { // no choice if php solr extension <=1.0.2 is installed.
-	$object = new SolrClient($options);
+    // If php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page.
+    if (solr_get_version() == '1.0.3-alpha') {
+        if ($CFG->SOLR_VERSION == '4.0') {
+            $object = new SolrClient($options, $CFG->SOLR_VERSION);
+        } else {
+            $object = new SolrClient($options, '3.0');
+        }
+    } else { // No choice if php solr extension <=1.0.2 is installed.
+        $object = new SolrClient($options);
+    }
+
+    $client = new SolrWrapper($object);
+
+    solr_check_server($client);
 }
-
-$client = new SolrWrapper($object);
-
-solr_check_server($client);

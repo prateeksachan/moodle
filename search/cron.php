@@ -29,9 +29,9 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot . '/search/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
 
-// indexing database records for modules + rich documents of forum 
+// Indexing database records for modules + rich documents of forum.
 search_index($client);
-// indexing rich documents for lesson, wiki
+// Indexing rich documents for lesson, wiki.
 search_index_files($client);
-// optimize index at last
+// Optimize index at last.
 search_optimize_index($client);
