@@ -82,7 +82,8 @@ function solr_query_response(SolrWrapper $client, $query_response) {
         foreach ($docs as $key => $value) {
             $solr_id = explode('_', $value->id);
             $modname = 'gs_support_' . $solr_id[0];
-            if (!empty($CFG->$modname)) { // check whether the module belonging to search response's Solr Document is gs_supported or not.
+            // Check whether the module belonging to search response's Solr Document is gs_supported or not.
+            if (!empty($CFG->$modname)) {
                 if (file_exists("$CFG->dirroot/mod/{$solr_id[0]}/lib.php")) {
                     include_once("$CFG->dirroot/mod/{$solr_id[0]}/lib.php");
                 } else {
@@ -110,19 +111,19 @@ function solr_query_response(SolrWrapper $client, $query_response) {
             if ($numgranted == SEARCH_MAX_RESULTS) {
                 $docs = array_slice($docs, 0, SEARCH_MAX_RESULTS, true);
                 break;
-            }            
+            }
         }
     }
-    
+
     return $docs;
 }
 
 // Initial solr filter by looking into enrolled courses - removed.
-function solr_primary_filter(){
+function solr_primary_filter() {
     global $USER;
     $primary_f = '';
     $courses = enrol_get_all_users_courses($USER->id);
-    if (!empty($courses)){
+    if (!empty($courses)) {
         $courseid = array();
         foreach ($courses as $key => $value) {
             $courseid[] = $value->id;
