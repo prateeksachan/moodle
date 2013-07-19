@@ -54,20 +54,18 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
         $ADMIN->add('globalsearch', $temp);
     }
 
-    $temp = new admin_settingpage('supportedmods', new lang_string('supportedmods', 'admin'));
+    if ($is_solr_installed) { // Use OR with if other search engine implemented.
+        $temp = new admin_settingpage('supportedmods', new lang_string('supportedmods', 'admin'));
 
-    if ($is_solr_installed) { // Use OR with if other search library implemented.
         $supported_mods = array('book', 'forum', 'glossary', 'label', 'lesson', 'page', 'url', 'wiki'); // add a module here to make it gs_supported
         foreach ($supported_mods as $mod) {
             $temp->add(new admin_setting_configcheckbox('gs_support_' . $mod, new lang_string('gs_support_mod', 'admin', ucfirst($mod)), new lang_string('gs_support_mod_desc', 'admin', ucfirst($mod)), 1, 1, 0));
         }
-    } else {
-        $temp->add(new admin_setting_heading('solr_not_installed', 'Solr is not installed' , ''));    
+
+        $ADMIN->add('globalsearch', $temp);
     }
 
-    $ADMIN->add('globalsearch', $temp);
-
-    if ($is_solr_installed) { // Use OR with if other search library implemented.
+    if ($is_solr_installed) { // Use OR with if other search engine implemented.
         $ADMIN->add('globalsearch', new admin_externalpage('statistics', new lang_string('statistics','admin'), "$CFG->wwwroot/search/admin.php"));
     }
 }
