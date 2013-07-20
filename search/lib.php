@@ -105,9 +105,8 @@ function search_optimize_index(SolrWrapper $client) {
 function search_index(SolrWrapper $client) {
     set_time_limit(576000);
     $iterators = search_get_iterators();
-    mtrace("Memory usage:" . memory_get_usage(), '<br/>');
     foreach ($iterators as $name => $iterator) {
-        mtrace('Processing module ' . $iterator->module, '<br />');
+        mtrace('Processing module ' . $iterator->module);
         $indexingstart = time();
         $iterfunction = $iterator->iterator;
         $getdocsfunction = $iterator->documents;
@@ -117,10 +116,7 @@ function search_index(SolrWrapper $client) {
         $numdocs = 0;
         $numdocsignored = 0;
         foreach ($recordset as $record) {
-            mtrace("$name,{$record->id}", '<br/>');
-            mtrace("Memory usage:" . memory_get_usage(), '<br/>');
             ++$numrecords;
-            echo 'norecords: '.$numrecords;
             $timestart = microtime(true);
             $documents = $getdocsfunction($record->id);
 
@@ -128,16 +124,14 @@ function search_index(SolrWrapper $client) {
                 switch (($solrdocument->getField('type')->values[0])) {
                     case SEARCH_TYPE_HTML:
                         $client->add_document($solrdocument);
-                        mtrace("Memory usage: (doc added)" . memory_get_usage(), '<br/>');
                         ++$numdocs;
                         break;
                     default:
                         ++$numdocsignored;
-                        throw new search_ex("Incorrect document format encountered");
+                        throw new search_ex('Incorrect document format encountered');
                 }
             }
             $timetaken = microtime(true) - $timestart;
-            mtrace("Time $numrecords: $timetaken", '<br/>');
         }
         $recordset->close();
         if ($numrecords > 0) {
@@ -149,8 +143,7 @@ function search_index(SolrWrapper $client) {
             set_config($name . '_docsignored', $numdocsignored, 'search');
             set_config($name . '_docsprocessed', $numdocs, 'search');
             set_config($name . '_recordsprocessed', $numrecords, 'search');
-            mtrace("Processed $numrecords records containing $numdocs documents for " . $iterator->module);
-            echo 'commits completed'.'<br>';
+            mtrace("Processed $numrecords records containing $numdocs documents for " . $iterator->module . '. Commits completed.');
         }
     }
 }
@@ -174,18 +167,18 @@ function search_index_files(SolrWrapper $client) {
         }
     }
 
-    mtrace("Memory usage:" . memory_get_usage(), '<br/>');
+    mtrace("Memory usage:" . display_size(memory_get_usage()));
     $timestart = microtime(true);
 
     foreach ($mod_file as $mod => $name) {
-        mtrace('Indexing files for module ' . $name, '<br />');
+        mtrace('Indexing files for module ' . $name);
         $lastindexrun = search_get_config_file($name);
         $indexfunction = $name . '_search_files';
         // This the the indexing function for indexing rich documents. config settings will be updated inside this function only.
         $indexfunction($lastindexrun);
     }
     $timetaken = microtime(true) - $timestart;
-    mtrace("Time : $timetaken", '<br/>');
+    mtrace("Time : $timetaken");
     $client->commit();
 }
 
