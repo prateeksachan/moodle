@@ -1093,15 +1093,11 @@ function lesson_search_access($id) {
         return SEARCH_ACCESS_DELETED;
     }
     
-    try {
-        require_course_login($course, false, $cm, true, true);
-        $context = context_module::instance($cm->id);
-    }
-    catch (moodle_exception $ex) {
-        echo $ex; // debug.
+    if (!can_access_course($course, null, '', true)) {
         return SEARCH_ACCESS_DENIED;
     }
     
+    $context = context_module::instance($cm->id);
     // give access to search results to teacher or editing-teacher or manager
     $issuperuser = has_capability('mod/lesson:manage', $context);
     

@@ -84,11 +84,6 @@ function solr_query_response(SolrWrapper $client, $query_response) {
             $modname = 'gs_support_' . $solr_id[0];
             // Check whether the module belonging to search response's Solr Document is gs_supported or not.
             if (!empty($CFG->$modname)) {
-                if (file_exists("$CFG->dirroot/mod/{$solr_id[0]}/lib.php")) {
-                    include_once("$CFG->dirroot/mod/{$solr_id[0]}/lib.php");
-                } else {
-                    throw new coding_exception('Library file for module \'' . $solr_id[0] . '\' is missing.');
-                }
                 $access_func = $solr_id[0] . '_search_access';
                 $acc = $access_func($solr_id[1]);
 

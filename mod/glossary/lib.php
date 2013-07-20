@@ -3197,11 +3197,14 @@ function glossary_search_access($id) {
         return SEARCH_ACCESS_DELETED;
     }
 
-    $context = context_module::instance($cm->id);
-    if (!has_capability('mod/glossary:view', $context)){
+    try {
+        $context = context_module::instance($cm->id);
+        require_capability('mod/glossary:view', $context);
+    } catch (moodle_exception $ex) {
+        echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }
-
+    
     // give access to search results to teacher or editing-teacher or manager
     $issuperuser = has_capability('mod/glossary:approve', $context) or has_capability('mod/glossary:manageentries', $context) ;
     

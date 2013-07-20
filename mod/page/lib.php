@@ -527,8 +527,11 @@ function page_search_access($id) {
         return SEARCH_ACCESS_DELETED;
     }
     
+    if (!can_access_course($course, null, '', true)) {
+        return SEARCH_ACCESS_DENIED;
+    }
+
     try {
-        require_course_login($course, false, $cm, true, true);
         $context = context_module::instance($cm->id);
         require_capability('mod/page:view', $context);
     }

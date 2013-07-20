@@ -375,9 +375,13 @@ function url_search_access($id) {
     catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
-    
+
+    if (!can_access_course($course, null, '', true)){
+        echo 'no';
+        return SEARCH_ACCESS_DENIED;
+    }
+
     try {
-        require_course_login($course, false, $cm, true, true);
         $context = context_module::instance($cm->id);
         require_capability('mod/url:view', $context);
     }
