@@ -46,7 +46,8 @@ function search_get_modules() {
     global $CFG, $DB;
     $mods = $DB->get_records('modules', null, 'name', 'id,name');
     foreach ($mods as $key => $mod) {
-        if (!plugin_supports('mod', $mod->name, FEATURE_GLOBAL_SEARCH)) {
+        $modname = 'gs_support_' . $mod->name;
+        if (empty($CFG->$modname) or !plugin_supports('mod', $mod->name, FEATURE_GLOBAL_SEARCH)) {
             unset($mods[$key]);
         }
     }
@@ -62,8 +63,7 @@ function search_get_iterators() {
     $mods = search_get_modules();
     $functions = array();
     foreach ($mods as $mod) {
-        $modname = 'gs_support_' . $mod->name;
-        if (file_exists("$CFG->dirroot/mod/{$mod->name}/lib.php") and !empty($CFG->$modname)) {
+        if (file_exists("$CFG->dirroot/mod/{$mod->name}/lib.php")) {
             include_once("$CFG->dirroot/mod/{$mod->name}/lib.php");
             if (!function_exists($mod->name . '_search_iterator')) {
                 throw new coding_exception('Module supports GLOBAL_SEARCH but function \'' .
