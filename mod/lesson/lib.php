@@ -747,6 +747,7 @@ function lesson_supports($feature) {
         case FEATURE_GRADE_HAS_GRADE:         return true;
         case FEATURE_GRADE_OUTCOMES:          return true;
         case FEATURE_BACKUP_MOODLE2:          return true;
+        case FEATURE_GLOBAL_SEARCH:          return true;
 
         default: return null;
     }
