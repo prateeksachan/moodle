@@ -7526,7 +7526,11 @@ function forum_search_get_documents($id) {
     $doc->addField('intro', format_text($forum->intro, $forum->introformat, array('nocache' => true, 'para' => false)));
     $doc->addField('name', $forum->name);
     $doc->addField('title', $post->subject);
-    $doc->addField('content', format_text($post->message, $post->messageformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('content', format_text(
+                                            $post->message,
+                                            $post->messageformat,
+                                            array('nocache' => true, 'para' => false))
+                    );
     $doc->addField('courseid', $forum->course);
     $doc->addField('contextlink', $contextlink);
     $doc->addField('module', 'forum');
@@ -7534,16 +7538,18 @@ function forum_search_get_documents($id) {
 
     $fs = get_file_storage();
     $files = $fs->get_area_files($context->id, 'mod_forum', 'attachment', $id, "timemodified", false);
+    
     $numfile = 1;
     foreach ($files as $file) {
         if (strpos($mime = $file->get_mimetype(), 'image') === false) {
-            $filename = $file->get_filename();
+            $filename = urlencode($file->get_filename());
             $directlink = '/pluginfile.php/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename;
 
             $curl = new curl();
             $url = search_curl_url();
-            $url .= 'literal.id=' . 'forum_' . $id . '_file_' . $numfile . '&literal.module=forum&literal.type=3' .
-                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $forum->course . '&literal.contextlink=' . $contextlink;
+            $url .= 'literal.id=' . 'forum_' . $id . '_file_' . $numfile .
+                    '&literal.module=forum&literal.type=3' . '&literal.directlink=' . $directlink .
+                    '&literal.courseid=' . $forum->course . '&literal.contextlink=' . $contextlink;
             $params = array();
             $params[$filename] = $file;
             $curl->post($url, $params);
@@ -7555,7 +7561,7 @@ function forum_search_get_documents($id) {
     return $docs;
 }
 
-//@TODO-done.
+// @TODO-done.
 function forum_search_access($id) {
     global $DB, $USER;
 
@@ -7568,7 +7574,7 @@ function forum_search_access($id) {
     } catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
-    
+
     $context = context_module::instance($cm->id);
 
     if ($discussion->groupid > 0 and $groupmode = groups_get_activity_groupmode($cm, $course)) {

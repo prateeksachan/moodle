@@ -27,13 +27,13 @@ require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/lib.php');
 
 if ($CFG->SEARCH_ENGINE == 'solr') {
 
-// Solr connection options.
-$options = array(
-    'hostname' => $CFG->SOLR_SERVER_HOSTNAME,
-    'login'    => $CFG->SOLR_SERVER_USERNAME,
-    'password' => $CFG->SOLR_SERVER_PASSWORD,
-    'port'     => $CFG->SOLR_SERVER_PORT,
-);
+    // Solr connection options.
+    $options = array(
+        'hostname' => $CFG->SOLR_SERVER_HOSTNAME,
+        'login'    => $CFG->SOLR_SERVER_USERNAME,
+        'password' => $CFG->SOLR_SERVER_PASSWORD,
+        'port'     => $CFG->SOLR_SERVER_PORT,
+    );
 
     // If php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page.
     if (solr_get_version() == '1.0.3-alpha') {

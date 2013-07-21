@@ -687,7 +687,7 @@ function wiki_search_files($id = 0) {
 
     $wikifiles = $DB->get_records('files', array('component' => 'mod_wiki'), 'id', 'id, itemid, filepath, filename, filesize');
     foreach ($wikifiles as $wikifile) {
-        if ($wikifile->id <= $id or $wikifile->filesize == 0){
+        if ($wikifile->id <= $id or $wikifile->filesize == 0) {
             unset($wikifiles[$wikifile->id]);
         }
     }
@@ -704,7 +704,7 @@ function wiki_search_files($id = 0) {
         $file = $fs->get_file($context->id, 'mod_wiki', 'attachments', $wikifile->itemid, $wikifile->filepath, $wikifile->filename);
 
         if (strpos($mime = $file->get_mimetype(), 'image') === false) {
-            $filename = $file->get_filename();
+            $filename = urlencode($file->get_filename());
             $directlink = '/pluginfile.php/' . $context->id . '/mod_wiki/attachments/' . $wikifile->itemid . '/' . $filename;
 
             $curl = new curl();
@@ -714,12 +714,12 @@ function wiki_search_files($id = 0) {
             $params = array();
             $params[$filename] = $file;
             $curl->post($url, $params);
-        }    
+        }
     }
     set_config('wiki' . '_lastindexedfilerun', $lastindexedfilerun, 'search');
 }
 
-//@TODO-done. 
+// @TODO-done.
 function wiki_search_access($id) {
     global $DB;
     try {
@@ -728,8 +728,7 @@ function wiki_search_access($id) {
         $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, MUST_EXIST);
         $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-    }
-    catch (dml_missing_record_exception $ex) {
+    } catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
 

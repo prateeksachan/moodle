@@ -257,7 +257,7 @@ function book_supports($feature) {
         case FEATURE_GRADE_OUTCOMES:          return false;
         case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_SHOW_DESCRIPTION:        return true;
-        case FEATURE_GLOBAL_SEARCH:        return true;
+        case FEATURE_GLOBAL_SEARCH:           return true;
 
         default: return null;
     }
@@ -476,7 +476,7 @@ function book_search_get_documents($id) {
     return $docs;
 }
 
-//@TODO-done.
+// @TODO-done.
 function book_search_access($id) {
     global $DB;
     try {
@@ -484,16 +484,14 @@ function book_search_access($id) {
         $book = $DB->get_record('book', array('id'=>$chapter->bookid), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('book', $book->id, $book->course, MUST_EXIST);
         $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-    }
-    catch (dml_missing_record_exception $ex) {
+    } catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
-    
+
     try {
         $context = context_module::instance($cm->id);
         require_capability('mod/book:read', $context);
-    }
-    catch (moodle_exception $ex) {
+    } catch (moodle_exception $ex) {
         echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }

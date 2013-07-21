@@ -369,15 +369,14 @@ function label_search_get_documents($id) {
     return $docs;
 }
 
-//@TODO-done.
+// @TODO-done.
 function label_search_access($id) {
     global $DB;
     try {
         $label = $DB->get_record('label', array('id'=>$id), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('label', $label->id, $label->course, MUST_EXIST);
         $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-    }
-    catch (dml_missing_record_exception $ex) {
+    } catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
 

@@ -478,11 +478,11 @@ function page_dndupload_handle($uploadinfo) {
 }
 
 /**
-* Global Search API
-* @var $DB mysqli_native_moodle_database
-* @var $OUTPUT core_renderer
-* @var $PAGE moodle_page
-*/
+ * Global Search API
+ * @var $DB mysqli_native_moodle_database
+ * @var $OUTPUT core_renderer
+ * @var $PAGE moodle_page
+ */
 function page_search_iterator($from = 0) {
     global $DB;
 
@@ -515,18 +515,17 @@ function page_search_get_documents($id) {
     return $docs;
 }
 
-//@TODO-done.
+// @TODO-done.
 function page_search_access($id) {
     global $DB;
     try {
         $page = $DB->get_record('page', array('id'=>$id), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('page', $page->id, $page->course, MUST_EXIST);
         $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-    }
-    catch (dml_missing_record_exception $ex) {
+    } catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
-    
+
     if (!can_access_course($course, null, '', true)) {
         return SEARCH_ACCESS_DENIED;
     }
@@ -534,8 +533,7 @@ function page_search_access($id) {
     try {
         $context = context_module::instance($cm->id);
         require_capability('mod/page:view', $context);
-    }
-    catch (moodle_exception $ex) {
+    } catch (moodle_exception $ex) {
         echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }

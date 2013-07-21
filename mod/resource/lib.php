@@ -40,6 +40,7 @@ function resource_supports($feature) {
         case FEATURE_GRADE_OUTCOMES:          return false;
         case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_SHOW_DESCRIPTION:        return true;
+        case FEATURE_GLOBAL_SEARCH:        return true;
 
         default: return null;
     }
@@ -475,4 +476,88 @@ function resource_dndupload_handle($uploadinfo) {
     $data->filterfiles = $config->filterfiles;
 
     return resource_add_instance($data, null);
+}
+
+/**
+ * Global Search API
+ * @var $DB mysqli_native_moodle_database
+ * @var $OUTPUT core_renderer
+ * @var $PAGE moodle_resource
+ */
+function resource_search_iterator($from = 0) {
+    global $DB;
+
+    $sql = "SELECT id, timemodified AS modified FROM {resource} WHERE timemodified > ? ORDER BY timemodified ASC";
+
+    return $DB->get_recordset_sql($sql, array($from));
+}
+
+function resource_search_get_documents($id) {
+    global $DB;
+
+    $docs = array();
+    $resource = $DB->get_record('resource', array('id' => $id), '*', MUST_EXIST); 
+    $cm = get_coursemodule_from_instance('resource', $resource->id, $resource->course);
+    $context = context_module::instance($cm->id);
+    $contextlink = '/mod/resource/view.php?r=' . $resource->id;
+
+    // Declare a new Solr Document and insert fields into it from DB
+    $doc = new SolrInputDocument();
+    $doc->addField('type', SEARCH_TYPE_HTML);
+    $doc->addField('id', 'resource_' . $resource->id);
+    $doc->addField('modified', $resource->timemodified);
+    $doc->addField('intro', format_text($resource->intro, $resource->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('name', $resource->name);
+    $doc->addField('courseid', $resource->course);
+    $doc->addField('contextlink', $contextlink);
+    $doc->addField('module', 'resource');
+    $docs[] = $doc;
+
+    $fs = get_file_storage();
+    $files = $fs->get_area_files($context->id, 'mod_resource', 'content', 0, 'sortorder DESC, id ASC', false);
+    if (count($files) > 0) {
+        $mainfile = reset($files);
+    }
+
+    if (strpos($mime = $mainfile->get_mimetype(), 'image') === false) {
+        $filename = urlencode($mainfile->get_filename());
+        $directlink = '/pluginfile.php/' . $context->id . '/mod_resource/attachment/' . $resource->id . '/' . $filename;
+
+        $curl = new curl();
+        $url = search_curl_url();
+        $url .= 'literal.id=' . 'resource_' . $id . '_file_1' . '&literal.module=resource&literal.type=3' .
+                '&literal.directlink=' . $directlink . '&literal.courseid=' . $resource->course . '&literal.contextlink=' . $contextlink;
+        $params = array();
+        $params[$filename] = $mainfile;
+        $curl->post($url, $params);
+    }
+
+    return $docs;
+}
+
+function resource_search_access($id) {
+    global $DB, $USER;
+
+    try {
+        $resource = $DB->get_record('resource', array('id' => $id), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('resource', $resource->id, 0, false,MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    } catch (dml_missing_record_exception $ex) {
+        return SEARCH_ACCESS_DELETED;
+    }
+
+    if (!can_access_course($course, null, '', true)) {
+        return SEARCH_ACCESS_DENIED;
+    }
+
+    try {
+        $context = context_module::instance($cm->id);
+        require_capability('mod/resource:view', $context);
+    }
+    catch (moodle_exception $ex) {
+        echo $ex; // debug.
+        return SEARCH_ACCESS_DENIED;
+    }
+
+    return SEARCH_ACCESS_GRANTED;
 }

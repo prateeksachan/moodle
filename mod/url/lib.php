@@ -364,19 +364,18 @@ function url_search_get_documents($id) {
     return $docs;
 }
 
-//@TODO-done.
+// @TODO-done.
 function url_search_access($id) {
     global $DB;
     try {
         $url = $DB->get_record('url', array('id'=>$id), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('url', $url->id, $url->course, MUST_EXIST);
         $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-    }
-    catch (dml_missing_record_exception $ex) {
+    } catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
 
-    if (!can_access_course($course, null, '', true)){
+    if (!can_access_course($course, null, '', true)) {
         echo 'no';
         return SEARCH_ACCESS_DENIED;
     }
@@ -384,8 +383,7 @@ function url_search_access($id) {
     try {
         $context = context_module::instance($cm->id);
         require_capability('mod/url:view', $context);
-    }
-    catch (moodle_exception $ex) {
+    } catch (moodle_exception $ex) {
         echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }

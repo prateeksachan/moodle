@@ -1036,7 +1036,12 @@ function lesson_search_get_documents($id) {
     $doc->addField('created', $lessonpage->timecreated);
     $doc->addField('modified', $lessonpage->timemodified);
     $doc->addField('name', $lesson->name);
-    $doc->addField('content', format_text($lessonpage->contents, $lessonpage->contentsformat, array('nocache' => true, 'para' => false)));
+    $doc->addField(
+                    'content', 
+                    format_text($lessonpage->contents,
+                    $lessonpage->contentsformat,
+                    array('nocache' => true, 'para' => false))
+                );
     $doc->addField('title', $lessonpage->title);
     $doc->addField('courseid', $lesson->course);
     $doc->addField('contextlink', '/mod/lesson/view.php?id=' . $cm->id . '&pageid=' . $lessonpage->id);
@@ -1063,24 +1068,25 @@ function lesson_search_files($from = 0) {
 
         $files = $fs->get_area_files($context->id, 'mod_lesson', 'mediafile', 0, 'timemodified', false);
 
-        foreach ($files as $file){
+        foreach ($files as $file) {
             if (strpos($mime = $file->get_mimetype(), 'image') === false) {
-                $filename = $file->get_filename();
+                $filename = urlencode($file->get_filename());
                 $directlink = '/mod/lesson/mediafile.php?id=' . $context->id;
 
                 $curl = new curl();
                 $url = search_curl_url();
-                $url .= 'literal.id=' . 'lesson_' . $lesson->id . '_file_' . $file->get_id() . '&literal.module=lesson&literal.type=3' .
-                        '&literal.directlink=' . $directlink . '&literal.courseid=' . $lesson->course;
+                $url .= 'literal.id=' . 'lesson_' . $lesson->id . '_file_' . $file->get_id() .
+                        '&literal.module=lesson&literal.type=3' . '&literal.directlink=' . $directlink .
+                        '&literal.courseid=' . $lesson->course;
                 $params = array();
                 $params[$filename] = $file;
                 $curl->post($url, $params);
             }
-        }    
+        }
     }
 }
 
-//@TODO-done.
+// @TODO-done.
 function lesson_search_access($id) {
     global $DB, $USER;
     try {
@@ -1088,20 +1094,19 @@ function lesson_search_access($id) {
         $lesson = $DB->get_record('lesson', array('id'=>$lessonpage->lessonid), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, MUST_EXIST);
         $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-    }
-    catch (dml_missing_record_exception $ex) {
+    } catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
     }
-    
+
     if (!can_access_course($course, null, '', true)) {
         return SEARCH_ACCESS_DENIED;
     }
-    
+
     $context = context_module::instance($cm->id);
     // give access to search results to teacher or editing-teacher or manager
     $issuperuser = has_capability('mod/lesson:manage', $context);
-    
-    if (!$issuperuser){
+
+    if (!$issuperuser) {
         // checks for time boundation
         if (!empty($lesson->available) or !empty($lesson->deadline)) {
             if (empty($lesson->available) and time() > $lesson->deadline) {
@@ -1115,20 +1120,23 @@ function lesson_search_access($id) {
 
         // if timed lesson - deny access as time gets activated when students click on lesson link.
         // if password-protected lesson - deny access.
-        if (!empty($lesson->timed) or !empty($lesson->usepassword)){
+        if (!empty($lesson->timed) or !empty($lesson->usepassword)) {
             return SEARCH_ACCESS_DENIED;
         }
-        
+
         // check for dependencies
         if ($lesson->dependency) {
             if ($dependentlesson = $DB->get_record('lesson', array('id' => $lesson->dependency))) {
                 $conditions = unserialize($lesson->conditions);
-                
+
                 // check for the timespent condition
                 if ($conditions->timespent) {
                     $timespent = false;
-                    if ($attempttimes = $DB->get_records('lesson_timer', array("userid"=>$USER->id, "lessonid"=>$dependentlesson->id))) {
-                        foreach($attempttimes as $attempttime) {
+                    if ($attempttimes = $DB->get_records(
+                                                        'lesson_timer',
+                                                        array("userid"=>$USER->id, "lessonid"=>$dependentlesson->id))
+                                                        ) {
+                        foreach ($attempttimes as $attempttime) {
                             $duration = $attempttime->lessontime - $attempttime->starttime;
                             if ($conditions->timespent < $duration/60) {
                                 $timespent = true;
@@ -1141,10 +1149,13 @@ function lesson_search_access($id) {
                 }
 
                 // check for the gradebetterthan condition
-                if($conditions->gradebetterthan) {
+                if ($conditions->gradebetterthan) {
                     $gradebetterthan = false;
-                    if ($studentgrades = $DB->get_records('lesson_grades', array("userid"=>$USER->id, "lessonid"=>$dependentlesson->id))) {
-                        foreach($studentgrades as $studentgrade) {
+                    if ($studentgrades = $DB->get_records(
+                                                            'lesson_grades',
+                                                            array("userid"=>$USER->id, "lessonid"=>$dependentlesson->id))
+                                                        ) {
+                        foreach ($studentgrades as $studentgrade) {
                             if ($studentgrade->grade >= $conditions->gradebetterthan) {
                                 $gradebetterthan = true;
                             }

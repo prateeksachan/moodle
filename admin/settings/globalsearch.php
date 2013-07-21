@@ -1,11 +1,13 @@
 <?php
 
+// This file defines everything related to globalsearch
+
 if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
 
     // "solr" settingpage
     
     $temp = new admin_settingpage('searchengine', new lang_string('searchengine', 'admin'));
-    $is_solr_installed = FALSE;
+    $is_solr_installed = false;
     // Insert variable here for other search engine.
 
     // Add other search engine to be implemented (if) later.
@@ -15,7 +17,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
     switch ($CFG->SEARCH_ENGINE) {
         case 'solr':
             if (function_exists('solr_get_version')) {
-                $is_solr_installed = TRUE;
+                $is_solr_installed = true;
                 $version = solr_get_version();
                 $options = array('4.0'=>'4.x', '3.0'=>'3.x');
                 if ($version != '1.0.3-alpha') {
@@ -39,7 +41,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
         $hostname = '127.0.0.1';
         $temp->add(new admin_setting_configtext('SOLR_SERVER_HOSTNAME', new lang_string('solrserverhostname', 'admin'), new lang_string('solrserverhostname_desc', 'admin'), $hostname, PARAM_TEXT));
         $temp->add(new admin_setting_configcheckbox('SOLR_SECURE', new lang_string('solrsecuremode', 'admin'), new lang_string('solrsecuremode_desc', 'admin'), 0, 1, 0));
-        
+
         $temp->add(new admin_setting_configtext('SOLR_SERVER_PORT', new lang_string('solrhttpconnectionport', 'admin'), new lang_string('solrhttpconnectionport_desc', 'admin'), (($CFG->SOLR_SECURE) ? 8443 : 8983), PARAM_INT));
         $temp->add(new admin_setting_configtext('SOLR_SERVER_USERNAME', new lang_string('solrauthuser', 'admin'), new lang_string('solrauthuser_desc', 'admin'), '', PARAM_RAW));
         $temp->add(new admin_setting_configtext('SOLR_SERVER_PASSWORD', new lang_string('solrauthpassword', 'admin'), new lang_string('solrauthpassword_desc', 'admin'), '', PARAM_RAW));
@@ -57,7 +59,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
     if ($is_solr_installed) { // Use OR with if other search engine implemented.
         $temp = new admin_settingpage('supportedmods', new lang_string('supportedmods', 'admin'));
 
-        $supported_mods = array('book', 'forum', 'glossary', 'label', 'lesson', 'page', 'url', 'wiki'); // add a module here to make it gs_supported
+        $supported_mods = array('book', 'forum', 'glossary', 'label', 'lesson', 'page', 'resource', 'url', 'wiki'); // add a module here to make it gs_supported
         foreach ($supported_mods as $mod) {
             $temp->add(new admin_setting_configcheckbox('gs_support_' . $mod, new lang_string('gs_support_mod', 'admin', ucfirst($mod)), new lang_string('gs_support_mod_desc', 'admin', ucfirst($mod)), 1, 1, 0));
         }
@@ -66,6 +68,6 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
     }
 
     if ($is_solr_installed) { // Use OR with if other search engine implemented.
-        $ADMIN->add('globalsearch', new admin_externalpage('statistics', new lang_string('statistics','admin'), "$CFG->wwwroot/search/admin.php"));
+        $ADMIN->add('globalsearch', new admin_externalpage('statistics', new lang_string('statistics', 'admin'), "$CFG->wwwroot/search/admin.php"));
     }
 }
