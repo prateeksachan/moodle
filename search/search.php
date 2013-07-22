@@ -45,6 +45,13 @@ function solr_execute_query(SolrWrapper $client, $data) {
     if (!empty($data->modulefilterqueryfield)) {
         $query->addFilterQuery($data->modulefilterqueryfield);
     }
+    if (empty($data->searchfromtime)){
+        $data->searchfromtime = '*';
+    }
+    if (empty($data->searchtilltime)){
+        $data->searchtilltime = '*';
+    }
+    $query->addFilterQuery('modified:[' . $data->searchfromtime . ' TO ' . $data->searchtilltime . ']');
 
     return solr_query_response($client, $client->query($query));
 }
@@ -59,12 +66,13 @@ function solr_prepare_query(SolrWrapper $client, $data) {
     if (!empty($data->modulefilterqueryfield)) {
         $data->modulefilterqueryfield = 'module:' . $data->modulefilterqueryfield;
     }
+    //print_r($data);
     return solr_execute_query($client, $data);
 }
 
 function solr_add_fields($query) {
-    $fields = array('type', 'id', 'user', 'created', 'modified', 'author', 'name', 'title', 'intro',
-                    'content', 'courseid', 'mime', 'contextlink', 'directlink', 'filepath', 'module');
+    $fields = array('id', 'user', 'created', 'modified', 'author', 'name', 'title', 'intro',
+                    'content', 'courseid', 'mime', 'contextlink', 'directlink', 'module');
 
     foreach ($fields as $field) {
         $query->addField($field);

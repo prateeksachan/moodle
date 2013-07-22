@@ -91,9 +91,22 @@ $string['emptyqueryfield'] = 'Please enter a query to search';
 $string['filterquery'] = 'Enter Filter Queries below. Insert a comma between multiple values.';
 $string['filterqueryheader'] = 'Filter Query';
 $string['globalsearch'] = 'Global Search';
-$string['globalsearch_help'] = 'Global Search help text popup. This will be updated with syntax of entering search queries';
+$string['globalsearch_help'] = 'Features you can use while performing search queries. Search queries are contained within []: 
+
+* Fields: You can specify which fields you want results from. 
+[title:("moodle" + "perth")]: returns all records that contains both "moodle" and "perth" in the title. 
+Available fields: title, name, content, user, author. 
+* Boolean Operators ("AND", "OR", "NOT"): <br>[("moodle" AND "perth") OR ("moodle" AND "australia")] 
+* Wildcards ("&#42;", "?"): <br>["mo??dl&#42;"] returns both "moodle" and "moodledata". 
+* Proximity Searches ("~"): ["mood"~2] returns moodle. <br>(2 alphabets away from "mood"). 
+* Boosting Terms ("^"): To boost certain words/phrases. <br>
+["perth australia"^5 "australia"] will make results with the phrase "perth australia" more relevant.
+';
 $string['index'] = 'Index';
 $string['modulefilterquery'] = 'From records belonging to this module';
 $string['query'] = 'Enter Query';
 $string['optimize'] = 'Optimize';
 $string['titlefilterquery'] = 'From records having this title';
+$string['filtertimesection'] = 'Limit search by time';
+$string['searchfromtime'] = 'Include search results modified after';
+$string['searchtilltime'] = 'Include search results modified before';

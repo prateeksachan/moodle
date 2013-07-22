@@ -53,7 +53,14 @@ class search_form extends moodleform {
         }
         $mform->addElement('select', 'modulefilterqueryfield', get_string('modulefilterquery', 'search'), $modules);
 
-        $mform->addElement('submit', 'submitbutton', get_string('search', 'search'));
+        $mform->addElement('header', 'filtertimesection', get_string('filtertimesection', 'search'));
 
+        $mform->addElement('date_time_selector', 'searchfromtime', get_string('searchfromtime', 'search'), array('optional'=>true));
+        $mform->setDefault('searchfromtime', 0);
+
+        $mform->addElement('date_time_selector', 'searchtilltime', get_string('searchtilltime', 'search'), array('optional'=>true));
+        $mform->setDefault('searchtilltime', 0);
+
+        $this->add_action_buttons(false, get_string('search', 'search'));
     }
 }
