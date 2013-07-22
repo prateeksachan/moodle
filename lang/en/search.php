@@ -98,7 +98,8 @@ $string['globalsearch_help'] = 'Features you can use while performing search que
 Available fields: title, name, content, user, author. 
 * Boolean Operators ("AND", "OR", "NOT"): <br>[("moodle" AND "perth") OR ("moodle" AND "australia")] 
 * Wildcards ("&#42;", "?"): <br>["mo??dl&#42;"] returns both "moodle" and "moodledata". 
-* Proximity Searches ("~"): ["mood"~2] returns moodle. <br>(2 alphabets away from "mood"). 
+* Proximity Searches ("~"): ["mood"~2] returns "moodle". <br>(2 alphabets away from "mood").<br>
+["moodle australia"~3] returns results containing "moodle hq at perth australia" (the queried terms were within 3 words of each other) 
 * Boosting Terms ("^"): To boost certain words/phrases. <br>
 ["perth australia"^5 "australia"] will make results with the phrase "perth australia" more relevant.
 ';
