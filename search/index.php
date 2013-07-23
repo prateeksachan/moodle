@@ -57,6 +57,7 @@ echo $OUTPUT->header();
 solr_display_search_form($mform);
 
 if (!empty($results)) {
+	echo 'Total accessible records: ' . count($results);
     foreach ($results as $result) {
         search_display_results($result);
     }
