@@ -1024,10 +1024,14 @@ function lesson_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $lessonpage = $DB->get_record('lesson_pages', array('id' => $id), '*', MUST_EXIST);
-    $lesson = $DB->get_record('lesson', array('id' => $lessonpage->lessonid), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
-    $context = context_module::instance($cm->id);
+    try {
+        $lessonpage = $DB->get_record('lesson_pages', array('id' => $id), '*', MUST_EXIST);
+        $lesson = $DB->get_record('lesson', array('id' => $lessonpage->lessonid), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+    } catch (mdml_missing_record_exception $ex) {
+        return $docs;
+    }
 
     // Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();
@@ -1061,10 +1065,14 @@ function lesson_search_files($from = 0) {
     $fs = get_file_storage();
 
     foreach ($lessonrecords as $lessonrecord) {
-        $lesson = $DB->get_record('lesson', array('id' => $lessonrecord->id), '*', MUST_EXIST);
-        $course = $DB->get_record('course', array('id' => $lesson->course), '*', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
-        $context = context_module::instance($cm->id);
+        try{
+            $lesson = $DB->get_record('lesson', array('id' => $lessonrecord->id), '*', MUST_EXIST);
+            $course = $DB->get_record('course', array('id' => $lesson->course), '*', MUST_EXIST);
+            $cm = get_coursemodule_from_instance('lesson', $lesson->id, $lesson->course, false, MUST_EXIST);
+            $context = context_module::instance($cm->id);
+        } catch (mdml_missing_record_exception $ex) {
+            exit();
+        }
 
         $files = $fs->get_area_files($context->id, 'mod_lesson', 'mediafile', 0, 'timemodified', false);
 

@@ -453,10 +453,14 @@ function book_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $chapter = $DB->get_record('book_chapters', array('id' => $id), '*', MUST_EXIST);
-    $book = $DB->get_record('book', array('id' => $chapter->bookid), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('book', $book->id, $book->course, false, MUST_EXIST);
-    $context = context_module::instance($cm->id);
+    try {
+        $chapter = $DB->get_record('book_chapters', array('id' => $id), '*', MUST_EXIST);
+        $book = $DB->get_record('book', array('id' => $chapter->bookid), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('book', $book->id, $book->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+    } catch (mdml_missing_record_exception $ex) {
+        return $docs;
+    }
 
     // Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();

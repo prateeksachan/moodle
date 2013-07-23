@@ -3139,11 +3139,16 @@ function glossary_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $glossaryentry = $DB->get_record('glossary_entries', array('id' => $id), '*', MUST_EXIST);
-    $glossary = $DB->get_record('glossary', array('id' => $glossaryentry->glossaryid), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('glossary', $glossary->id, $glossary->course);
-    $user = $DB->get_record('user', array('id' => $glossaryentry->userid));
-    $context = context_module::instance($cm->id);
+    try {
+        $glossaryentry = $DB->get_record('glossary_entries', array('id' => $id), '*', MUST_EXIST);
+        $glossary = $DB->get_record('glossary', array('id' => $glossaryentry->glossaryid), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('glossary', $glossary->id, $glossary->course);
+        $user = $DB->get_record('user', array('id' => $glossaryentry->userid));
+        $context = context_module::instance($cm->id);
+    } catch (mdml_missing_record_exception $ex) {
+        return $docs;
+    }
+
     $contextlink = '/mod/glossary/showentry.php?eid=' . $glossary->id;
 
     // Declare a new Solr Document and insert fields into it from DB

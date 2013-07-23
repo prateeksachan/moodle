@@ -344,9 +344,13 @@ function url_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $url = $DB->get_record('url', array('id' => $id), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('url', $url->id, $url->course, false, MUST_EXIST);
-    $context = context_module::instance($cm->id);
+    try {
+        $url = $DB->get_record('url', array('id' => $id), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('url', $url->id, $url->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+    } catch (mdml_missing_record_exception $ex) {
+        return $docs;
+    }
 
     // Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();

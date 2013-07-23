@@ -7508,12 +7508,18 @@ function forum_search_iterator($from = 0) {
 
 function forum_search_get_documents($id) {
     global $CFG, $DB;
+    
     $docs = array();
-    $post = forum_get_post_full($id);
-    $forum = $DB->get_record('forum', array('id' => $post->forum), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('forum', $forum->id, $forum->course);
-    $context = context_module::instance($cm->id);
-    $user = $DB->get_record('user', array('id' => $post->userid));
+    try {
+        $post = forum_get_post_full($id);
+        $forum = $DB->get_record('forum', array('id' => $post->forum), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('forum', $forum->id, $forum->course);
+        $context = context_module::instance($cm->id);
+        $user = $DB->get_record('user', array('id' => $post->userid));
+    } catch (mdml_missing_record_exception $ex) {
+        return $docs;
+    }
+
     $contextlink = '/mod/forum/discuss.php?d=' . $post->discussion . '#p' . $post->id;
 
     //Declare a new Solr Document and insert fields into it from DB

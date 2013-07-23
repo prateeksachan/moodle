@@ -350,9 +350,13 @@ function label_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $label = $DB->get_record('label', array('id' => $id), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('label', $label->id, $label->course, false, MUST_EXIST);
-    $context = context_module::instance($cm->id);
+    try {
+        $label = $DB->get_record('label', array('id' => $id), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('label', $label->id, $label->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+    } catch (mdml_missing_record_exception $ex) {
+        return $docs;
+    }
 
     // Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();

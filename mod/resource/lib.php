@@ -496,9 +496,14 @@ function resource_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $resource = $DB->get_record('resource', array('id' => $id), '*', MUST_EXIST); 
-    $cm = get_coursemodule_from_instance('resource', $resource->id, $resource->course);
-    $context = context_module::instance($cm->id);
+    try {
+        $resource = $DB->get_record('resource', array('id' => $id), '*', MUST_EXIST); 
+        $cm = get_coursemodule_from_instance('resource', $resource->id, $resource->course);
+        $context = context_module::instance($cm->id);
+    } catch (mdml_missing_record_exception $ex) {
+        return $docs;
+    }
+
     $contextlink = '/mod/resource/view.php?r=' . $resource->id;
 
     // Declare a new Solr Document and insert fields into it from DB

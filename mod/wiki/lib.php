@@ -657,11 +657,16 @@ function wiki_search_get_documents($id) {
     global $DB;
 
     $docs = array();
-    $wikipage = $DB->get_record('wiki_pages', array('id' => $id), '*', MUST_EXIST);
-    $subwiki = $DB->get_record('wiki_subwikis', array('id' => $wikipage->subwikiid), '*', MUST_EXIST);
-    $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
-    $context = context_module::instance($cm->id);
+    try {
+        $wikipage = $DB->get_record('wiki_pages', array('id' => $id), '*', MUST_EXIST);
+        $subwiki = $DB->get_record('wiki_subwikis', array('id' => $wikipage->subwikiid), '*', MUST_EXIST);
+        $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+    } catch (mdml_missing_record_exception $ex) {
+        return $docs;
+    }
+    
     $contextlink = '/mod/wiki/view.php?pageid=' . $wikipage->id;
 
     // Declare a new Solr Document and insert fields into it from DB
@@ -693,13 +698,19 @@ function wiki_search_files($id = 0) {
     }
     $fs = get_file_storage();
 
-    $lastindexedfilerun = end($wikifiles)->id;
+    if (!empty($wikifiles)) {
+        $lastindexedfilerun = end($wikifiles)->id;
+    }
     foreach ($wikifiles as $wikifile) {
-        $wikipage = $DB->get_record('wiki_pages', array('subwikiid' => $wikifile->itemid), 'id', IGNORE_MULTIPLE);
-        $subwiki = $DB->get_record('wiki_subwikis', array('id' => $wikifile->itemid), 'id, wikiid', MUST_EXIST);
-        $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), 'id, course', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
-        $context = context_module::instance($cm->id);
+        try {
+            $wikipage = $DB->get_record('wiki_pages', array('subwikiid' => $wikifile->itemid), 'id', IGNORE_MULTIPLE);
+            $subwiki = $DB->get_record('wiki_subwikis', array('id' => $wikifile->itemid), 'id, wikiid', MUST_EXIST);
+            $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), 'id, course', MUST_EXIST);
+            $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
+            $context = context_module::instance($cm->id);
+        } catch (mdml_missing_record_exception $ex) {
+            exit();
+        }
 
         $file = $fs->get_file($context->id, 'mod_wiki', 'attachments', $wikifile->itemid, $wikifile->filepath, $wikifile->filename);
 
@@ -716,7 +727,9 @@ function wiki_search_files($id = 0) {
             $curl->post($url, $params);
         }
     }
-    set_config('wiki' . '_lastindexedfilerun', $lastindexedfilerun, 'search');
+    if (!empty($wikifiles)) {
+        set_config('wiki' . '_lastindexedfilerun', $lastindexedfilerun, 'search');
+    }
 }
 
 // @TODO-done.
