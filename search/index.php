@@ -46,11 +46,11 @@ $data = new stdClass();
 if (!empty($search)) {
     $data->queryfield = $search;
     $data->modulefilterqueryfield = $fq_module;
-    $results = solr_prepare_query($client, $data);
+    $results = solr_execute_query($client, $data);
 }
 
 if ($data = $mform->get_data()) {
-    $results = solr_prepare_query($client, $data);
+    $results = solr_execute_query($client, $data);
 }
 
 echo $OUTPUT->header();
