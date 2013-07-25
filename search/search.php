@@ -31,9 +31,8 @@ function solr_display_search_form($mform) {
 
 function solr_execute_query(SolrWrapper $client, $data) {
     $query = new SolrQuery();
-    $query->setQuery($data->queryfield);
-    $query->setStart(SEARCH_SET_START);
-    $query->setRows(SEARCH_SET_ROWS);
+    solr_set_query($query, $data);
+    solr_prepare_filter($client, $data);
     solr_add_fields($query);
 
     if (!empty($data->titlefilterqueryfield)) {
@@ -53,10 +52,21 @@ function solr_execute_query(SolrWrapper $client, $data) {
     }
     $query->addFilterQuery('modified:[' . $data->searchfromtime . ' TO ' . $data->searchtilltime . ']');
 
-    return solr_query_response($client, $client->query($query));
+    try {
+        return solr_query_response($client, $client->query($query));
+    } catch (SolrClientException $ex) {
+        echo 'Please start the Solr server!';        
+    }
 }
 
-function solr_prepare_query(SolrWrapper $client, $data) {
+function solr_set_query($query, $data) {
+    solr_set_highlight($query);
+    $query->setQuery($data->queryfield);
+    $query->setStart(SEARCH_SET_START);
+    $query->setRows(SEARCH_SET_ROWS);
+}
+
+function solr_prepare_filter(SolrWrapper $client, $data) {
     if (!empty($data->titlefilterqueryfield)) {
         $data->titlefilterqueryfield = 'title:' . $data->titlefilterqueryfield;
     }
@@ -66,8 +76,6 @@ function solr_prepare_query(SolrWrapper $client, $data) {
     if (!empty($data->modulefilterqueryfield)) {
         $data->modulefilterqueryfield = 'module:' . $data->modulefilterqueryfield;
     }
-    //print_r($data);
-    return solr_execute_query($client, $data);
 }
 
 function solr_add_fields($query) {
@@ -79,8 +87,15 @@ function solr_add_fields($query) {
     }
 }
 
+function solr_set_highlight($query) {
+    $query->setHighlight(true);
+    $query->addHighlightField('content');
+    $query->setHighlightFragsize(250); 
+}
+
 function solr_query_response(SolrWrapper $client, $query_response) {
     global $CFG;
+
     $response = $query_response->getResponse();
     $totalnumfound = $response->response->numFound;
     $docs = $response->response->docs;
