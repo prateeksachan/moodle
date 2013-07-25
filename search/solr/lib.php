@@ -65,7 +65,9 @@ class SolrWrapper {
 }
 
 function solr_check_server(SolrWrapper $client) {
-    if (!$client->ping()) {
-        exit ('Solr service not responding');
+    try {
+        $client->ping();
+    } catch (SolrClientException $ex) {
+        echo 'Please start the Solr server!';        
     }
 }
