@@ -44,13 +44,15 @@ function solr_execute_query(SolrWrapper $client, $data) {
     if (!empty($data->modulefilterqueryfield)) {
         $query->addFilterQuery($data->modulefilterqueryfield);
     }
-    if (empty($data->searchfromtime)){
-        $data->searchfromtime = '*';
+    if (!empty($data->searchfromtime) or !empty($data->searchtilltime)) {
+        if (empty($data->searchfromtime)){
+            $data->searchfromtime = '*';
+        }
+        if (empty($data->searchtilltime)){
+            $data->searchtilltime = '*';
+        }
+        $query->addFilterQuery('modified:[' . $data->searchfromtime . ' TO ' . $data->searchtilltime . ']');
     }
-    if (empty($data->searchtilltime)){
-        $data->searchtilltime = '*';
-    }
-    $query->addFilterQuery('modified:[' . $data->searchfromtime . ' TO ' . $data->searchtilltime . ']');
 
     try {
         return solr_query_response($client, $client->query($query));
