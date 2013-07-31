@@ -328,7 +328,11 @@ function search_display_results($result) {
         $s .='<b>Title: </b>' . $result->title . '<br/>';
     }
     if (!empty($result->content)) {
-        $s .='<b>Content: </b>' . $result->content . '<br/>';
+        if (strlen($result->content) < 250) {
+            $s .='<b>Content: </b>' . $result->content . '<br/>';
+        } else {
+            $s .='<b>Content: </b>' . $result->highlightedcontent . '<br/>';
+        }
     }
     if (!empty($result->contextlink)) {
         $result->contextlink = new moodle_url($result->contextlink);
