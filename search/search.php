@@ -105,16 +105,15 @@ function solr_add_highlight_content($response) {
     foreach($response->response->docs as $doc) {
         $x = $doc->id;
         $highlighteddoc = $highlightedobject->$x;
-        $doc->highlightedcontent = $highlighteddoc->content[0];
         solr_merge_highlight_field_values($doc, $highlighteddoc);
     }
 }
 
 function solr_merge_highlight_field_values($doc, $highlighteddoc) {
-    $fields = array('user', 'author', 'name', 'title', 'intro');
+    $fields = array('content', 'user', 'author', 'name', 'title', 'intro');
     foreach ($fields as $field) {
         if(!empty($highlighteddoc->$field)) {
-            $doc->$field = $highlighteddoc->$field;
+            $doc->$field = reset($highlighteddoc->$field);
         }
     }
 }
