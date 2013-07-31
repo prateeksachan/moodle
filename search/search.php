@@ -74,7 +74,7 @@ function solr_set_highlight($query) {
     foreach ($highlightfields as $field) {
         $query->addHighlightField($field);
     }
-    $query->setHighlightFragsize(SEARCH_SET_HIGHLIGHT_FRAG_SIZE);
+    $query->setHighlightFragsize(SEARCH_SET_FRAG_SIZE);
     $query->setHighlightSimplePre('<span class="highlight">');
     $query->setHighlightSimplePost('</span>');
 }
@@ -112,7 +112,7 @@ function solr_add_highlight_content($response) {
 function solr_merge_highlight_field_values($doc, $highlighteddoc) {
     $fields = array('user', 'author', 'name', 'title', 'intro');
     if (empty($highlighteddoc->content)) {
-        $doc->content = substr($doc->content, 0, SEARCH_SET_HIGHLIGHT_FRAG_SIZE);
+        $doc->content = substr($doc->content, 0, SEARCH_SET_FRAG_SIZE);
     } else {
         $doc->content = $highlighteddoc->content[0];
     }
