@@ -310,7 +310,12 @@ function search_display_results($result) {
         $s .='<b>User: </b>' . $result->user . '<br/>';
     }
     if (!empty($result->author)) {
-        $s .='<b>Author: </b>' . $result->author[0] . '<br/>';
+        $s .='<b>Authors: </b>';
+        foreach ($result->author as $key => $value) {
+            $s .= $value . ',';
+        }
+        $s =rtrim($s, ",");
+        $s .='<br/>';
     }
     if (!empty($result->created)) {
         $s .='<b>Created: </b>' . userdate($result->created) . '<br/>';
