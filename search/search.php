@@ -118,8 +118,18 @@ function solr_merge_highlight_field_values($doc, $highlighteddoc) {
     }
 
     foreach ($fields as $field) {
-        if(!empty($highlighteddoc->$field)) {
-            $doc->$field = reset($highlighteddoc->$field);
+        switch ($field) {
+            case 'author':
+                if(!empty($highlighteddoc->$field)) {
+                    $doc->$field = $highlighteddoc->$field;
+                }
+                break;
+
+            default:
+            if(!empty($highlighteddoc->$field)) {
+                $doc->$field = reset($highlighteddoc->$field);
+            }
+            break;
         }
     }
 }
