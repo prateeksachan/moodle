@@ -68,6 +68,17 @@ function solr_set_query($query, $data) {
     $query->setRows(SEARCH_SET_ROWS);
 }
 
+function solr_set_highlight($query) {
+    $query->setHighlight(true);
+    $highlightfields = array('content', 'user', 'author', 'name', 'title', 'intro');
+    foreach ($highlightfields as $field) {
+        $query->addHighlightField($field);
+    }
+    $query->setHighlightFragsize(SEARCH_SET_HIGHLIGHT_FRAG_SIZE);
+    $query->setHighlightSimplePre('<span class="highlight">');
+    $query->setHighlightSimplePost('</span>');
+}
+
 function solr_prepare_filter(SolrWrapper $client, $data) {
     if (!empty($data->titlefilterqueryfield)) {
         $data->titlefilterqueryfield = 'title:' . $data->titlefilterqueryfield;
@@ -89,10 +100,23 @@ function solr_add_fields($query) {
     }
 }
 
-function solr_set_highlight($query) {
-    $query->setHighlight(true);
-    $query->addHighlightField('content');
-    $query->setHighlightFragsize(250); 
+function solr_add_highlight_content($response) {
+    $highlightedobject = $response->highlighting;
+    foreach($response->response->docs as $doc) {
+        $x = $doc->id;
+        $highlighteddoc = $highlightedobject->$x;
+        $doc->highlightedcontent = $highlighteddoc->content[0];
+        solr_merge_highlight_field_values($doc, $highlighteddoc);
+    }
+}
+
+function solr_merge_highlight_field_values($doc, $highlighteddoc) {
+    $fields = array('user', 'author', 'name', 'title', 'intro');
+    foreach ($fields as $field) {
+        if(!empty($highlighteddoc->$field)) {
+            $doc->$field = $highlighteddoc->$field;
+        }
+    }
 }
 
 function solr_query_response(SolrWrapper $client, $query_response) {
@@ -100,6 +124,7 @@ function solr_query_response(SolrWrapper $client, $query_response) {
 
     $response = $query_response->getResponse();
     $totalnumfound = $response->response->numFound;
+    solr_add_highlight_content($response);
     $docs = $response->response->docs;
     $numgranted = 0;
 
