@@ -468,9 +468,9 @@ function book_search_get_documents($id) {
     $doc->addField('created', $chapter->timecreated);
     $doc->addField('modified', $chapter->timemodified);
     $doc->addField('name', $book->name);
-    $doc->addField('intro', format_text($book->intro, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
+    $doc->addField('intro', strip_tags($book->intro));
     $doc->addField('title', $chapter->title);
-    $doc->addField('content', format_text($chapter->content, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
+    $doc->addField('content', strip_tags($chapter->content));
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('courseid', $book->course);
     $doc->addField('contextlink', '/mod/book/view.php?id=' . $cm->id .'&chapterid=' . $book->id);

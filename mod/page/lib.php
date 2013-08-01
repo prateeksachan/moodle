@@ -508,9 +508,9 @@ function page_search_get_documents($id) {
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'page_' . $page->id);
     $doc->addField('modified', $page->timemodified);
-    $doc->addField('intro', format_text($page->intro, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
+    $doc->addField('intro', strip_tags($page->intro));
     $doc->addField('name', $page->name);
-    $doc->addField('content', format_text($page->content, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
+    $doc->addField('content', strip_tags($page->content));
     $doc->addField('courseid', $page->course);
     $doc->addField('contextlink', '/mod/page/view.php?id=' . $cm->id);
     $doc->addField('module', 'page');

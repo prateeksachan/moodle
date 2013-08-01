@@ -1040,12 +1040,7 @@ function lesson_search_get_documents($id) {
     $doc->addField('created', $lessonpage->timecreated);
     $doc->addField('modified', $lessonpage->timemodified);
     $doc->addField('name', $lesson->name);
-    $doc->addField(
-                    'content', 
-                    format_text($lessonpage->contents,
-                    FORMAT_MOODLE,
-                    array('nocache' => true, 'para' => false))
-                );
+    $doc->addField('content', strip_tags($lessonpage->contents));
     $doc->addField('title', $lessonpage->title);
     $doc->addField('courseid', $lesson->course);
     $doc->addField('contextlink', '/mod/lesson/view.php?id=' . $cm->id . '&pageid=' . $lessonpage->id);

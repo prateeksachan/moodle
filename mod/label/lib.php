@@ -363,7 +363,7 @@ function label_search_get_documents($id) {
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'label_' . $label->id);
     $doc->addField('modified', $label->timemodified);
-    $doc->addField('intro', format_text($label->intro, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
+    $doc->addField('intro', strip_tags($label->intro));
     $doc->addField('name', $label->name);
     $doc->addField('courseid', $label->course);
     $doc->addField('contextlink', '/course/view.php?id=' . $label->course);
