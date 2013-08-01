@@ -47,10 +47,15 @@ function solr_execute_query(SolrWrapper $client, $data) {
     if (!empty($data->searchfromtime) or !empty($data->searchtilltime)) {
         if (empty($data->searchfromtime)){
             $data->searchfromtime = '*';
+        } else {
+            $data->searchfromtime = gmdate('Y-m-d\TH:i:s\Z', $data->searchfromtime);
         }
         if (empty($data->searchtilltime)){
             $data->searchtilltime = '*';
+        } else {
+            $data->searchtilltime = gmdate('Y-m-d\TH:i:s\Z', $data->searchtilltime);
         }
+
         $query->addFilterQuery('modified:[' . $data->searchfromtime . ' TO ' . $data->searchtilltime . ']');
     }
 
