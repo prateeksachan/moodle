@@ -110,28 +110,25 @@ function solr_add_highlight_content($response) {
 }
 
 function solr_merge_highlight_field_values($doc, $highlighteddoc) {
-    $fields = array('user', 'author', 'name', 'title', 'intro');
-    if (!empty($doc->content)) {
-        if (empty($highlighteddoc->content)) {
-            $doc->content = substr($doc->content, 0, SEARCH_SET_FRAG_SIZE);
-        } else {
-            $doc->content = $highlighteddoc->content[0];
-        }
-    }
+    $fields = array('content', 'user', 'author', 'name', 'title', 'intro');
 
     foreach ($fields as $field) {
-        switch ($field) {
-            case 'author':
-                if(!empty($highlighteddoc->$field)) {
-                    $doc->$field = $highlighteddoc->$field;
-                }
-                break;
+        if (!empty($doc->$field)) {
+            switch ($field) {
+                case 'author':
+                    if(!empty($highlighteddoc->$field)) {
+                        $doc->$field = $highlighteddoc->$field;
+                    }
+                    break;
 
-            default:
-                if(!empty($highlighteddoc->$field)) {
-                    $doc->$field = reset($highlighteddoc->$field);
-                }
-                break;
+                default:
+                    if (empty($highlighteddoc->$field)) {
+                        $doc->$field = substr($doc->$field, 0, SEARCH_SET_FRAG_SIZE);
+                    } else {
+                        $doc->$field = reset($highlighteddoc->$field);
+                    }
+                    break;
+            }
         }
     }
 }
@@ -141,11 +138,11 @@ function solr_query_response(SolrWrapper $client, $query_response) {
 
     $response = $query_response->getResponse();
     $totalnumfound = $response->response->numFound;
-    solr_add_highlight_content($response);
     $docs = $response->response->docs;
     $numgranted = 0;
 
     if (!empty($totalnumfound)) {
+        solr_add_highlight_content($response);
         foreach ($docs as $key => $value) {
             $solr_id = explode('_', $value->id);
             $modname = 'gs_support_' . $solr_id[0];
