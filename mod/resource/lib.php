@@ -511,7 +511,7 @@ function resource_search_get_documents($id) {
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'resource_' . $resource->id);
     $doc->addField('modified', $resource->timemodified);
-    $doc->addField('intro', format_text($resource->intro, $resource->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('intro', format_text($resource->intro, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
     $doc->addField('name', $resource->name);
     $doc->addField('courseid', $resource->course);
     $doc->addField('contextlink', $contextlink);

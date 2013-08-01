@@ -7529,12 +7529,12 @@ function forum_search_get_documents($id) {
     $doc->addField('user', $user->firstname . ' ' . $user->lastname);
     $doc->addField('created', $post->created);
     $doc->addField('modified', $post->modified);
-    $doc->addField('intro', format_text($forum->intro, $forum->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('intro', format_text($forum->intro, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
     $doc->addField('name', $forum->name);
     $doc->addField('title', $post->subject);
     $doc->addField('content', format_text(
                                             $post->message,
-                                            $post->messageformat,
+                                            FORMAT_MOODLE,
                                             array('nocache' => true, 'para' => false))
                     );
     $doc->addField('courseid', $forum->course);

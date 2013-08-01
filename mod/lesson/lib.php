@@ -1043,7 +1043,7 @@ function lesson_search_get_documents($id) {
     $doc->addField(
                     'content', 
                     format_text($lessonpage->contents,
-                    $lessonpage->contentsformat,
+                    FORMAT_MOODLE,
                     array('nocache' => true, 'para' => false))
                 );
     $doc->addField('title', $lessonpage->title);

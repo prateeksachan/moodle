@@ -3158,9 +3158,9 @@ function glossary_search_get_documents($id) {
     $doc->addField('user', $user->firstname . ' ' . $user->lastname);
     $doc->addField('created', $glossaryentry->timecreated);
     $doc->addField('modified', $glossaryentry->timemodified);
-    $doc->addField('intro', format_text($glossary->intro, $glossary->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('intro', format_text($glossary->intro, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
     $doc->addField('name', $glossary->name);
-    $doc->addField('content', format_text($glossaryentry->definition, $glossaryentry->definitionformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('content', format_text($glossaryentry->definition, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
     $doc->addField('title', $glossaryentry->concept);
     $doc->addField('courseid', $glossary->course);
     $doc->addField('contextlink', $contextlink);

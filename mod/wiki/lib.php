@@ -675,9 +675,9 @@ function wiki_search_get_documents($id) {
     $doc->addField('id', 'wiki_' . $wikipage->id);
     $doc->addField('created', $wikipage->timecreated);
     $doc->addField('modified', $wikipage->timemodified);
-    $doc->addField('intro', format_text($wiki->intro, $wiki->introformat, array('nocache' => true, 'para' => false)));
+    $doc->addField('intro', format_text($wiki->intro, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
     $doc->addField('name', $wiki->name);
-    $doc->addField('content', format_text($wikipage->cachedcontent, array('nocache' => true, 'para' => false)));
+    $doc->addField('content', format_text($wikipage->cachedcontent, FORMAT_MOODLE, array('nocache' => true, 'para' => false)));
     $doc->addField('title', $wikipage->title);
     $doc->addField('courseid', $wiki->course);
     $doc->addField('contextlink', $contextlink);
