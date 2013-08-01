@@ -318,10 +318,10 @@ function search_display_results($result) {
         $s .='<br/>';
     }
     if (!empty($result->created)) {
-        $s .='<b>Created: </b>' . userdate($result->created) . '<br/>';
+        $s .='<b>Created: </b>' . $result->created . '<br/>';
     }
     if (!empty($result->modified)) {
-        $s .='<b>Modified: </b>' . userdate($result->modified) . '<br/>';
+        $s .='<b>Modified: </b>' . $result->modified . '<br/>';
     }
     if (!empty($result->name)) {
         $s .='<b>Name: </b>' . $result->name . '<br/>';

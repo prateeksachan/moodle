@@ -356,7 +356,7 @@ function url_search_get_documents($id) {
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'url_' . $url->id);
-    $doc->addField('modified', $url->timemodified);
+    $doc->addField('modified', gmdate('Y-m-d\TH:i:s\Z', $url->timemodified));
     $doc->addField('intro', strip_tags($url->intro));
     $doc->addField('name', $url->name);
     $doc->addField('content', $url->externalurl);

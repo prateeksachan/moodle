@@ -507,7 +507,7 @@ function page_search_get_documents($id) {
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'page_' . $page->id);
-    $doc->addField('modified', $page->timemodified);
+    $doc->addField('modified', gmdate('Y-m-d\TH:i:s\Z', $page->timemodified));
     $doc->addField('intro', strip_tags($page->intro));
     $doc->addField('name', $page->name);
     $doc->addField('content', strip_tags($page->content));

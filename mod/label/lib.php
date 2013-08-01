@@ -362,7 +362,7 @@ function label_search_get_documents($id) {
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'label_' . $label->id);
-    $doc->addField('modified', $label->timemodified);
+    $doc->addField('modified', gmdate('Y-m-d\TH:i:s\Z', $label->timemodified));
     $doc->addField('intro', strip_tags($label->intro));
     $doc->addField('name', $label->name);
     $doc->addField('courseid', $label->course);

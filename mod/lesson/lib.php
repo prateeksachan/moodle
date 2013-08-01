@@ -1037,8 +1037,8 @@ function lesson_search_get_documents($id) {
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'lesson_' . $lessonpage->id);
-    $doc->addField('created', $lessonpage->timecreated);
-    $doc->addField('modified', $lessonpage->timemodified);
+    $doc->addField('created', gmdate('Y-m-d\TH:i:s\Z', $lessonpage->timecreated));
+    $doc->addField('modified', gmdate('Y-m-d\TH:i:s\Z', $lessonpage->timemodified));
     $doc->addField('name', $lesson->name);
     $doc->addField('content', strip_tags($lessonpage->contents));
     $doc->addField('title', $lessonpage->title);

@@ -510,7 +510,7 @@ function resource_search_get_documents($id) {
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'resource_' . $resource->id);
-    $doc->addField('modified', $resource->timemodified);
+    $doc->addField('modified', gmdate('Y-m-d\TH:i:s\Z', $resource->timemodified));
     $doc->addField('intro', strip_tags($resource->intro));
     $doc->addField('name', $resource->name);
     $doc->addField('courseid', $resource->course);

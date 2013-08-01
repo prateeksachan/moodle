@@ -673,8 +673,8 @@ function wiki_search_get_documents($id) {
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'wiki_' . $wikipage->id);
-    $doc->addField('created', $wikipage->timecreated);
-    $doc->addField('modified', $wikipage->timemodified);
+    $doc->addField('created', gmdate('Y-m-d\TH:i:s\Z', $wikipage->timecreated));
+    $doc->addField('modified', gmdate('Y-m-d\TH:i:s\Z', $wikipage->timemodified));
     $doc->addField('intro', strip_tags($wiki->intro));
     $doc->addField('name', $wiki->name);
     $doc->addField('content', strip_tags($wikipage->cachedcontent));

@@ -3156,8 +3156,8 @@ function glossary_search_get_documents($id) {
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'glossary_' . $glossaryentry->id);
     $doc->addField('user', $user->firstname . ' ' . $user->lastname);
-    $doc->addField('created', $glossaryentry->timecreated);
-    $doc->addField('modified', $glossaryentry->timemodified);
+    $doc->addField('created', gmdate('Y-m-d\TH:i:s\Z', $glossaryentry->timecreated));
+    $doc->addField('modified', gmdate('Y-m-d\TH:i:s\Z', $glossaryentry->timemodified));
     $doc->addField('intro', strip_tags($glossary->intro));
     $doc->addField('name', $glossary->name);
     $doc->addField('content', strip_tags($glossaryentry->definition));

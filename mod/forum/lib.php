@@ -7527,8 +7527,8 @@ function forum_search_get_documents($id) {
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'forum_' . $post->id);
     $doc->addField('user', $user->firstname . ' ' . $user->lastname);
-    $doc->addField('created', $post->created);
-    $doc->addField('modified', $post->modified);
+    $doc->addField('created', gmdate('Y-m-d\TH:i:s\Z', $post->created));
+    $doc->addField('modified', gmdate('Y-m-d\TH:i:s\Z', $post->modified));
     $doc->addField('intro', strip_tags($forum->intro));
     $doc->addField('name', $forum->name);
     $doc->addField('title', $post->subject);
