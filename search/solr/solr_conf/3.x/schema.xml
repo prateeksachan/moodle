@@ -546,8 +546,8 @@
 
    <field name="type" type="int" indexed="true" stored="false" required="true"/>
    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
-   <field name="created" type="string" indexed="true" stored="true" />
-   <field name="modified" type="string" indexed="true" stored="true" />
+   <field name="created" type="tdate" indexed="true" stored="true" />
+   <field name="modified" type="tdate" indexed="true" stored="true" />
    <field name="user" type="text_general" indexed="true" stored="true" />
    <field name="author" type="text_general" indexed="true" stored="true" multiValued="true"/>
    <field name="name" type="text_general" indexed="true" stored="true"/>
