@@ -41,15 +41,22 @@ define('SEARCH_SET_FRAG_SIZE', 300);
 
 /**
  * Modules activated for Global Search.
+ * @param boolean $requireconfig->whether to check if the admin has ac/de-vated a particular module. Useful in clearing index. 
  * @return array $mods
  */
-function search_get_modules() {
+function search_get_modules($requireconfig = true) {
     global $CFG, $DB;
     $mods = $DB->get_records('modules', null, 'name', 'id,name');
     foreach ($mods as $key => $mod) {
         $modname = 'gs_support_' . $mod->name;
-        if (empty($CFG->$modname) or !plugin_supports('mod', $mod->name, FEATURE_GLOBAL_SEARCH)) {
-            unset($mods[$key]);
+        if ($requireconfig) {
+            if (empty($CFG->$modname) or !plugin_supports('mod', $mod->name, FEATURE_GLOBAL_SEARCH)) {
+                unset($mods[$key]);
+            }
+        } else {
+            if (!plugin_supports('mod', $mod->name, FEATURE_GLOBAL_SEARCH)) {
+                unset($mods[$key]);
+            }
         }
     }
     return $mods;
@@ -61,7 +68,7 @@ function search_get_modules() {
  */
 function search_get_iterators() {
     global $CFG;
-    $mods = search_get_modules();
+    $mods = search_get_modules(true);
     $functions = array();
     foreach ($mods as $mod) {
         if (file_exists("$CFG->dirroot/mod/{$mod->name}/lib.php")) {
