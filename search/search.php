@@ -45,12 +45,12 @@ function solr_execute_query(SolrWrapper $client, $data) {
         $query->addFilterQuery($data->modulefilterqueryfield);
     }
     if (!empty($data->searchfromtime) or !empty($data->searchtilltime)) {
-        if (empty($data->searchfromtime)){
+        if (empty($data->searchfromtime)) {
             $data->searchfromtime = '*';
         } else {
             $data->searchfromtime = gmdate('Y-m-d\TH:i:s\Z', $data->searchfromtime);
         }
-        if (empty($data->searchtilltime)){
+        if (empty($data->searchtilltime)) {
             $data->searchtilltime = '*';
         } else {
             $data->searchtilltime = gmdate('Y-m-d\TH:i:s\Z', $data->searchtilltime);
@@ -62,7 +62,7 @@ function solr_execute_query(SolrWrapper $client, $data) {
     try {
         return solr_query_response($client, $client->query($query));
     } catch (SolrClientException $ex) {
-        echo 'Please start the Solr server!';        
+        echo 'Please start the Solr server!';
     }
 }
 
@@ -107,7 +107,7 @@ function solr_add_fields($query) {
 
 function solr_add_highlight_content($response) {
     $highlightedobject = $response->highlighting;
-    foreach($response->response->docs as $doc) {
+    foreach ($response->response->docs as $doc) {
         $x = $doc->id;
         $highlighteddoc = $highlightedobject->$x;
         solr_merge_highlight_field_values($doc, $highlighteddoc);
@@ -121,7 +121,7 @@ function solr_merge_highlight_field_values($doc, $highlighteddoc) {
         if (!empty($doc->$field)) {
             switch ($field) {
                 case 'author':
-                    if(!empty($highlighteddoc->$field)) {
+                    if (!empty($highlighteddoc->$field)) {
                         $doc->$field = $highlighteddoc->$field;
                     }
                     break;
