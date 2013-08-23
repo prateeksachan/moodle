@@ -519,7 +519,6 @@ function page_search_get_documents($id) {
     return $docs;
 }
 
-// @TODO-done.
 function page_search_access($id) {
     global $DB;
     try {

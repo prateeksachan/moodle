@@ -554,7 +554,7 @@
    <field name="title" type="text_general" indexed="true" stored="true" />
    <field name="intro" type="text_general" indexed="true" stored="true"/>
    <field name="content" type="text_general" indexed="true" stored="true"/>
-   <field name="courseid" type="int" indexed="true" stored="false" required="true"/>
+   <field name="courseid" type="int" indexed="true" stored="true" required="true"/>
    <field name="mime" type="text_general" indexed="false" stored="true" />
    <field name="contextlink" type="text_general" indexed="false" stored="true"/>
    <field name="directlink" type="text_general" indexed="false" stored="true"/>

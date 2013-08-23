@@ -545,7 +545,7 @@ function resource_search_access($id) {
 
     try {
         $resource = $DB->get_record('resource', array('id' => $id), '*', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('resource', $resource->id, 0, false,MUST_EXIST);
+        $cm = get_coursemodule_from_instance('resource', $resource->id, 0, false, MUST_EXIST);
         $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     } catch (dml_missing_record_exception $ex) {
         return SEARCH_ACCESS_DELETED;
@@ -558,8 +558,7 @@ function resource_search_access($id) {
     try {
         $context = context_module::instance($cm->id);
         require_capability('mod/resource:view', $context);
-    }
-    catch (moodle_exception $ex) {
+    } catch (moodle_exception $ex) {
         echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }

@@ -36,7 +36,7 @@ define('SEARCH_ACCESS_DELETED', 2);
 define('SEARCH_MAX_RESULTS', 100);
 define('SEARCH_SET_START', 0);
 define('SEARCH_SET_ROWS', 1000);
-define('SEARCH_SET_FRAG_SIZE', 300);
+define('SEARCH_SET_FRAG_SIZE', 500);
 
 
 /**
@@ -302,56 +302,105 @@ function search_curl_url() {
 }
 
 /** 
- * Temorary page for displaying search results 
- * @param stdClass object $result containing a single search response to be displayed (ACCESS_GRANTED)
+ * Displaying search results 
+ * @param stdClass object $result containing a single search response to be displayed
  */
 function search_display_results($result) {
-    global $OUTPUT;
+    global $DB, $OUTPUT;
     $OUTPUT->box_start();
 
+    $doc_id = $result->id;
+    $course = $DB->get_record('course', array('id' => $result->courseid), 'fullname', MUST_EXIST);
+
+    $coursefullname = $course->fullname;
+    $attributes = array('target' => '_new');
     $s = '';
-    $s .= html_writer::start_tag('div', array('class'=>'forumpost clearfix'));
-    $s .='<b>ID: </b>' . $result->id . '<br/>';
-    $s .='<b>Module: </b>' . $result->module . '<br/>';
-    if (!empty($result->user)) {
-        $s .='<b>User: </b>' . $result->user . '<br/>';
-    }
-    if (!empty($result->author)) {
-        $s .='<b>Authors: </b>';
-        foreach ($result->author as $key => $value) {
-            $s .= $value . ',';
-        }
-        $s =rtrim($s, ",");
-        $s .='<br/>';
-    }
-    if (!empty($result->created)) {
-        $s .='<b>Created: </b>' . userdate(strtotime($result->created)) . '<br/>';
-    }
-    if (!empty($result->modified)) {
-        $s .='<b>Modified: </b>' . userdate(strtotime($result->modified)) . '<br/>';
-    }
+    $s .= html_writer::start_tag('div', array('class'=>'globalsearchpost clearfix side'));
+    $s .= html_writer::start_tag('div', array('class'=>'row header clearfix'));
+    $s .= html_writer::start_tag('div', array('class'=>'course'));
+    $s .= html_writer::link(new moodle_url('/course/view.php?id=' . $result->courseid), $coursefullname, $attributes);
+    $s .= ' > ' . ucfirst($result->module);
+    $s .= html_writer::end_tag('div');
+    $s .= html_writer::start_tag('div', array('class'=>'name'));
     if (!empty($result->name)) {
-        $s .='<b>Name: </b>' . $result->name . '<br/>';
+        $s .=html_writer::link(new moodle_url($result->contextlink), $result->name, $attributes);
     }
     if (!empty($result->intro)) {
-        $s .='<b>Intro: </b>' . $result->intro . '<br/>';
+        $s .= html_writer::span(' Description: ' . $result->intro, 'description');
     }
+    $s .= html_writer::end_tag('div');
+    $s .= html_writer::start_tag('div', array('class'=>'author'));
+    if (!empty($result->user)) {
+        $s .='<b><i>By: </i></b>';
+        $s .= html_writer::link(search_get_user_url($result->user), $result->user , $attributes);
+    }
+    if (!empty($result->author)) {
+        $s .='<b>Document Author(s): </b>';
+        foreach ($result->author as $key => $value) {
+            $author_url = search_get_user_url($value);
+            if (!empty($author_url)) {
+                $s .= html_writer::link($author_url, $value, $attributes) . ', ';
+            } else {
+                $s .= $value . ', ';
+            }
+        }
+        $s =rtrim($s, ', ');
+        $s .='<br>';
+    }
+    $s .= html_writer::end_tag('div');
+    $s .= html_writer::start_tag('div', array('class'=>'timeinfo'));
+    if (!empty($result->modified)) {
+        $s .='<b><i>Last Modified on: </i></b>' . userdate(strtotime($result->modified)) . ' ';
+    }
+    if (!empty($result->created)) {
+        $s .='<b><i>Created on: </i></b>' . userdate(strtotime($result->created)) . '<br/>';
+    }
+    $s .= html_writer::end_tag('div');
+    $s .= html_writer::end_tag('div');
+    $s .= html_writer::start_tag('div', array('class'=>'row maincontent clearfix'));
+    $s .= html_writer::start_tag('div', array('class'=>'content'));
     if (!empty($result->title)) {
-        $s .='<b>Title: </b>' . $result->title . '<br/>';
+        $s .=$result->title . '<br/>';
     }
     if (!empty($result->content)) {
-        $s .='<b>Content: </b>' . $result->content . '<br/>';
+        $s .=$result->content . '<br/>';
     }
-    if (!empty($result->contextlink)) {
-        $result->contextlink = new moodle_url($result->contextlink);
-        $s .='<b>Contextlink: </b>' . $result->contextlink . '<br/>';
-    }
+    $s .= html_writer::end_tag('div');
+    $s .= html_writer::end_tag('div');
+    $s .= html_writer::start_tag('div', array('class'=>'row footer clearfix side'));
+
     if (!empty($result->directlink)) {
-        $result->directlink = new moodle_url($result->directlink);
-        $s .='<b>Directlink: </b>' . $result->directlink . '<br/>';
+        $s .= html_writer::span(
+                                html_writer::link(new moodle_url($result->directlink), 'Direct link to file', $attributes),
+                                'urllink');
+    } else if (!empty($result->contextlink)) {
+        $s .= html_writer::span(
+                                html_writer::link(new moodle_url($result->contextlink), 'View this result in context', $attributes),
+                                'urllink');
     }
+    $s .= html_writer::end_tag('div');
     $s .= html_writer::end_tag('div'); // End.
 
     echo $s;
     $OUTPUT->box_end();
+}
+
+/** 
+ * Searches the user table for userid
+ * @param string name of user
+ * @return string $url of the user's profile
+ */
+function search_get_user_url($fullname) {
+    global $DB;
+    $url = '';
+    try {
+        $username = explode(' ', $fullname);
+        if (count($username) == 2) {
+            $userdata = $DB->get_record('user', array('firstname' => $username[0], 'lastname' => $username[1]), 'id', MUST_EXIST);
+            $url = new moodle_url('/user/profile.php?id=' . $userdata->id);
+        }
+    } catch (dml_missing_record_exception $ex) {
+        return $url;
+    }
+    return $url;
 }

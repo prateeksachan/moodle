@@ -3179,7 +3179,8 @@ function glossary_search_get_documents($id) {
             $curl = new curl();
             $url = search_curl_url();
             $url .= 'literal.id=' . 'glossary_' . $id . '_file_' . $numfile . '&literal.module=glossary&literal.type=3' .
-                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $glossary->course . '&literal.contextlink=' . $contextlink;
+                    '&literal.directlink=' . $directlink . '&literal.courseid=' .
+                    $glossary->course . '&literal.contextlink=' . $contextlink;
             $params = array();
             $params[$filename] = $file;
             $curl->post($url, $params);

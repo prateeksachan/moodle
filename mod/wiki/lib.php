@@ -666,7 +666,7 @@ function wiki_search_get_documents($id) {
     } catch (mdml_missing_record_exception $ex) {
         return $docs;
     }
-    
+
     $contextlink = '/mod/wiki/view.php?pageid=' . $wikipage->id;
 
     // Declare a new Solr Document and insert fields into it from DB
@@ -732,7 +732,6 @@ function wiki_search_files($id = 0) {
     }
 }
 
-// @TODO-done.
 function wiki_search_access($id) {
     global $DB;
     try {

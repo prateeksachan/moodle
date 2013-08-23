@@ -12,7 +12,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
 
     // Add other search engine to be implemented (if) later.
     $options = array('solr' => 'Apache Solr');
-    $temp->add(new admin_setting_configselect('SEARCH_ENGINE', new lang_string('choosesearchengine', 'admin'), new lang_string('choosesearchengine_desc', 'admin'), 'solr', $options));    
+    $temp->add(new admin_setting_configselect('SEARCH_ENGINE', new lang_string('choosesearchengine', 'admin'), new lang_string('choosesearchengine_desc', 'admin'), 'solr', $options));
 
     switch ($CFG->SEARCH_ENGINE) {
         case 'solr':
