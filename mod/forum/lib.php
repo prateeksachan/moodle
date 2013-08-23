@@ -8556,7 +8556,7 @@ function forum_search_iterator($from = 0) {
 
 function forum_search_get_documents($id) {
     global $CFG, $DB;
-    
+
     $docs = array();
     try {
         $post = forum_get_post_full($id);
@@ -8588,7 +8588,7 @@ function forum_search_get_documents($id) {
 
     $fs = get_file_storage();
     $files = $fs->get_area_files($context->id, 'mod_forum', 'attachment', $id, "timemodified", false);
-    
+
     $numfile = 1;
     foreach ($files as $file) {
         if (strpos($mime = $file->get_mimetype(), 'image') === false) {
@@ -8611,7 +8611,6 @@ function forum_search_get_documents($id) {
     return $docs;
 }
 
-// @TODO-done.
 function forum_search_access($id) {
     global $DB, $USER;
 
