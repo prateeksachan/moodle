@@ -411,7 +411,6 @@ function url_search_get_documents($id) {
     return $docs;
 }
 
-// @TODO-done.
 function url_search_access($id) {
     global $DB;
     try {
