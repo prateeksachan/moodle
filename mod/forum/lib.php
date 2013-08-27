@@ -8553,6 +8553,7 @@ function forum_search_get_documents($id) {
     }
 
     $contextlink = '/mod/forum/discuss.php?d=' . $post->discussion . '#p' . $post->id;
+    $modulelink = '/mod/forum/view.php?id=' . $cm->id;
 
     //Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();
@@ -8567,6 +8568,7 @@ function forum_search_get_documents($id) {
     $doc->addField('content', strip_tags($post->message));
     $doc->addField('courseid', $forum->course);
     $doc->addField('contextlink', $contextlink);
+    $doc->addField('modulelink', $modulelink);
     $doc->addField('module', 'forum');
     $docs[] = $doc;
 
@@ -8581,7 +8583,7 @@ function forum_search_get_documents($id) {
 
             $curl = new curl();
             $url = search_curl_url();
-            $url .= 'literal.id=' . 'forum_' . $id . '_file_' . $numfile .
+            $url .= 'literal.id=' . 'forum_' . $id . '_file_' . $numfile . '&literal.modulelink=' . $modulelink .
                     '&literal.module=forum&literal.type=3' . '&literal.directlink=' . $directlink .
                     '&literal.courseid=' . $forum->course . '&literal.contextlink=' . $contextlink;
             $params = array();
