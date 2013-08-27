@@ -23,10 +23,9 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
                 if ($version != '1.0.3-alpha') {
                     array_shift($options);
                 }
-
                 $temp->add(new admin_setting_configselect('SOLR_VERSION', new lang_string('solrversion', 'admin'), new lang_string('solrversion_desc', 'admin', $version), ($version == '1.0.3-alpha' ? '4.0' : '3.0'), $options));    
             } else {
-                // Insert readme file here.
+                $ADMIN->add('globalsearch', new admin_externalpage('installglobalsearch', new lang_string('installglobalsearch', 'admin'), "$CFG->wwwroot/search/install.php"));
             }
             break;
         default:

@@ -28,6 +28,8 @@ require_once($CFG->dirroot . '/search/lib.php');
 require_once($CFG->dirroot . '/search/search.php');
 require_once($CFG->dirroot . '/search/locallib.php');
 
+$page = optional_param('page', 0, PARAM_INT);   // which page to show
+$perpage = optional_param('perpage', 10, PARAM_INT);   // how many per page
 $PAGE->set_url($FULLME);
 
 $PAGE->set_context(context_system::instance());
@@ -46,21 +48,33 @@ $data = new stdClass();
 if (!empty($search)) {
     $data->queryfield = $search;
     $data->modulefilterqueryfield = $fq_module;
-    $results = solr_execute_query($client, $data);
+    $mform->set_data($data);
+	$results = solr_execute_query($client, $data);
 }
 
 if ($data = $mform->get_data()) {
-    $results = solr_execute_query($client, $data);
+	$results = solr_execute_query($client, $data);
 }
 
 echo $OUTPUT->header();
-solr_display_search_form($mform);
 
-if (!empty($results)) {
+solr_check_server($client);
+
+if (!is_array($results)) {
+    echo $results;
+}
+
+solr_display_search_form($mform);
+$url = new moodle_url('/search/index.php', array('perpage' => $perpage));
+
+if (!empty($results) and is_array($results)) {
     echo 'Total accessible records: ' . count($results);
-    foreach ($results as $result) {
-        search_display_results($result);
+    echo $OUTPUT->paging_bar(count($results), $page, $perpage, $url);
+    $hits = array_slice($results, $page*$perpage, $perpage, true);
+    foreach ($hits as $hit) {
+        search_display_results($hit);
     }
+    echo $OUTPUT->paging_bar(count($results), $page, $perpage, $url);
 }
 
 echo $OUTPUT->footer();

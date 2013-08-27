@@ -362,6 +362,7 @@ function url_search_get_documents($id) {
     $doc->addField('content', $url->externalurl);
     $doc->addField('courseid', $url->course);
     $doc->addField('contextlink', '/mod/url/view.php?id=' . $cm->id);
+    $doc->addField('modulelink', '/mod/url/view.php?id=' . $cm->id);
     $doc->addField('module', 'url');
     $docs[] = $doc;
 

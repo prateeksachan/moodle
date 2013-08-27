@@ -367,6 +367,7 @@ function label_search_get_documents($id) {
     $doc->addField('name', $label->name);
     $doc->addField('courseid', $label->course);
     $doc->addField('contextlink', '/course/view.php?id=' . $label->course);
+    $doc->addField('modulelink', '/course/view.php?id=' . $label->course);
     $doc->addField('module', 'label');
     $docs[] = $doc;
 

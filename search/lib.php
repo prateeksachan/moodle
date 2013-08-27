@@ -309,7 +309,7 @@ function search_display_results($result) {
     global $DB, $OUTPUT;
     $OUTPUT->box_start();
 
-    $doc_id = $result->id;
+    $doc_id = explode('_', $result->id);
     $course = $DB->get_record('course', array('id' => $result->courseid), 'fullname', MUST_EXIST);
 
     $coursefullname = $course->fullname;
@@ -323,7 +323,12 @@ function search_display_results($result) {
     $s .= html_writer::end_tag('div');
     $s .= html_writer::start_tag('div', array('class'=>'name'));
     if (!empty($result->name)) {
-        $s .=html_writer::link(new moodle_url($result->contextlink), $result->name, $attributes);
+        $s .= html_writer::link(new moodle_url($result->modulelink), $result->name, $attributes);
+    } else {
+        $module_parameters = explode('/', $result->modulelink);
+        $module_id = explode('=', $module_parameters[3]);
+        $module_record = get_coursemodule_from_id($module_parameters[2], $module_id[1], $result->courseid, false, MUST_EXIST);
+        $s .= html_writer::link(new moodle_url($result->modulelink), $module_record->name, $attributes);
     }
     if (!empty($result->intro)) {
         $s .= html_writer::span(' Description: ' . $result->intro, 'description');
@@ -370,14 +375,22 @@ function search_display_results($result) {
     $s .= html_writer::start_tag('div', array('class'=>'row footer clearfix side'));
 
     if (!empty($result->directlink)) {
-        $s .= html_writer::span(
+        if (!empty($result->contextlink)) {
+            $s .= html_writer::span(
+                                html_writer::link(new moodle_url($result->directlink), 'Direct link to file', $attributes) . ' | '.
+                                html_writer::link(new moodle_url($result->contextlink), 'View this result in context', $attributes),
+                                'urllink');
+        } else {
+            $s .= html_writer::span(
                                 html_writer::link(new moodle_url($result->directlink), 'Direct link to file', $attributes),
                                 'urllink');
+        }
     } else if (!empty($result->contextlink)) {
         $s .= html_writer::span(
                                 html_writer::link(new moodle_url($result->contextlink), 'View this result in context', $attributes),
                                 'urllink');
     }
+
     $s .= html_writer::end_tag('div');
     $s .= html_writer::end_tag('div'); // End.
 

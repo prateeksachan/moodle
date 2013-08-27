@@ -1044,6 +1044,7 @@ function lesson_search_get_documents($id) {
     $doc->addField('title', $lessonpage->title);
     $doc->addField('courseid', $lesson->course);
     $doc->addField('contextlink', '/mod/lesson/view.php?id=' . $cm->id . '&pageid=' . $lessonpage->id);
+    $doc->addField('modulelink', '/mod/lesson/view.php?id=' . $cm->id);
     $doc->addField('module', 'lesson');
     $docs[] = $doc;
 
@@ -1075,12 +1076,13 @@ function lesson_search_files($from = 0) {
             if (strpos($mime = $file->get_mimetype(), 'image') === false) {
                 $filename = urlencode($file->get_filename());
                 $directlink = '/mod/lesson/mediafile.php?id=' . $context->id;
+                $modulelink = '/mod/lesson/view.php?id=' . $cm->id;
 
                 $curl = new curl();
                 $url = search_curl_url();
                 $url .= 'literal.id=' . 'lesson_' . $lesson->id . '_file_' . $file->get_id() .
                         '&literal.module=lesson&literal.type=3' . '&literal.directlink=' . $directlink .
-                        '&literal.courseid=' . $lesson->course;
+                        '&literal.courseid=' . $lesson->course . '&literal.modulelink=' . $modulelink;
                 $params = array();
                 $params[$filename] = $file;
                 $curl->post($url, $params);

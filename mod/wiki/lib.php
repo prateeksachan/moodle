@@ -681,6 +681,7 @@ function wiki_search_get_documents($id) {
     $doc->addField('title', $wikipage->title);
     $doc->addField('courseid', $wiki->course);
     $doc->addField('contextlink', $contextlink);
+    $doc->addField('modulelink', '/mod/wiki/view.php?id=' . $cm->id);
     $doc->addField('module', 'wiki');
     $docs[] = $doc;
 
@@ -705,7 +706,7 @@ function wiki_search_files($id = 0) {
         try {
             $wikipage = $DB->get_record('wiki_pages', array('subwikiid' => $wikifile->itemid), 'id', IGNORE_MULTIPLE);
             $subwiki = $DB->get_record('wiki_subwikis', array('id' => $wikifile->itemid), 'id, wikiid', MUST_EXIST);
-            $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), 'id, course', MUST_EXIST);
+            $wiki = $DB->get_record('wiki', array('id' => $subwiki->wikiid), 'id, course, name, intro', MUST_EXIST);
             $cm = get_coursemodule_from_instance('wiki', $wiki->id, $wiki->course, false, MUST_EXIST);
             $context = context_module::instance($cm->id);
         } catch (mdml_missing_record_exception $ex) {
@@ -717,11 +718,12 @@ function wiki_search_files($id = 0) {
         if (strpos($mime = $file->get_mimetype(), 'image') === false) {
             $filename = urlencode($file->get_filename());
             $directlink = '/pluginfile.php/' . $context->id . '/mod_wiki/attachments/' . $wikifile->itemid . '/' . $filename;
+            $modulelink = '/mod/wiki/view.php?id=' . $cm->id;
 
             $curl = new curl();
             $url = search_curl_url();
             $url .= 'literal.id=' . 'wiki_' . $wikipage->id . '_file_' . $wikifile->id . '&literal.module=wiki&literal.type=3' .
-                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $wiki->course;
+                    '&literal.directlink=' . $directlink . '&literal.courseid=' . $wiki->course . '&literal.modulelink=' . $modulelink;
             $params = array();
             $params[$filename] = $file;
             $curl->post($url, $params);

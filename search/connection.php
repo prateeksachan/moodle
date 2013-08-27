@@ -33,6 +33,13 @@ if ($CFG->SEARCH_ENGINE == 'solr') {
         'login'    => $CFG->SOLR_SERVER_USERNAME,
         'password' => $CFG->SOLR_SERVER_PASSWORD,
         'port'     => $CFG->SOLR_SERVER_PORT,
+        'issecure' => $SOLR_SECURE,
+        'ssl_cert' => $SOLR_SSL_CERT,
+        'ssl_cert_only' => $SOLR_SSL_CERT_ONLY,
+        'ssl_key' => $SOLR_SSL_KEY,
+        'ssl_password' => $SOLR_SSL_KEYPASSWORD,
+        'ssl_cainfo' => $SOLR_SSL_CAINFO,
+        'ssl_capath' => $SOLR_SSL_CAPATH
     );
 
     // If php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page.
@@ -47,6 +54,4 @@ if ($CFG->SEARCH_ENGINE == 'solr') {
     }
 
     $client = new SolrWrapper($object);
-
-    solr_check_server($client);
 }

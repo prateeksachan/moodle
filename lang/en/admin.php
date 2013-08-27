@@ -1154,10 +1154,11 @@ $string['cacheapplicationhelp'] = ' Cached items are shared amoung all users and
 
 /* Global Search admin settings page string values */
 $string['choosesearchengine'] = 'Choose Search Engine';
-$string['choosesearchengine_desc'] = 'Choose your preferred Search Engine';
+$string['choosesearchengine_desc'] = 'Choose your preferred Search Engine. Currently, Global Search supports only Apache Solr.';
 $string['globalsearch'] = 'Global Search';
 $string['gs_support_mod'] = '{$a}';
 $string['gs_support_mod_desc'] = 'Allow indexing and searches of the {$a}';
+$string['installglobalsearch'] = 'Install Global Search';
 $string['searchengine'] = 'Search Engine';
 $string['solrauthpassword'] = 'Password';
 $string['solrauthpassword_desc'] = 'HTTP Basic Authentication Password';

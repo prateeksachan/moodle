@@ -505,6 +505,7 @@ function resource_search_get_documents($id) {
     }
 
     $contextlink = '/mod/resource/view.php?r=' . $resource->id;
+    $modulelink = '/mod/resource/view.php?id=' . $cm->id;
 
     // Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();
@@ -515,6 +516,7 @@ function resource_search_get_documents($id) {
     $doc->addField('name', $resource->name);
     $doc->addField('courseid', $resource->course);
     $doc->addField('contextlink', $contextlink);
+    $doc->addField('modulelink', $modulelink);
     $doc->addField('module', 'resource');
     $docs[] = $doc;
 
@@ -531,7 +533,8 @@ function resource_search_get_documents($id) {
         $curl = new curl();
         $url = search_curl_url();
         $url .= 'literal.id=' . 'resource_' . $id . '_file_1' . '&literal.module=resource&literal.type=3' .
-                '&literal.directlink=' . $directlink . '&literal.courseid=' . $resource->course . '&literal.contextlink=' . $contextlink;
+                '&literal.directlink=' . $directlink . '&literal.courseid=' . $resource->course .
+                '&literal.contextlink=' . $contextlink . '&literal.modulelink=' . $modulelink;
         $params = array();
         $params[$filename] = $mainfile;
         $curl->post($url, $params);

@@ -158,7 +158,7 @@
    <field name="mime" type="text_general" indexed="false" stored="true" />
    <field name="contextlink" type="text_general" indexed="false" stored="true"/>
    <field name="directlink" type="text_general" indexed="false" stored="true"/>
-   <field name="filepath" type="text_general" indexed="false" stored="true"/>
+   <field name="modulelink" type="text_general" indexed="false" stored="true"/>
    <field name="module" type="string" indexed="true" stored="true" required="true"/>
    
    <!-- catchall field, containing all other searchable text fields (implemented

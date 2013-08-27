@@ -474,6 +474,7 @@ function book_search_get_documents($id) {
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('courseid', $book->course);
     $doc->addField('contextlink', '/mod/book/view.php?id=' . $cm->id .'&chapterid=' . $book->id);
+    $doc->addField('modulelink', '/mod/book/view.php?id=' . $cm->id);
     $doc->addField('module', 'book');
     $docs[] = $doc;
 
