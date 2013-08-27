@@ -28,9 +28,9 @@ require_once($CFG->dirroot . '/search/lib.php');
 require_once($CFG->dirroot . '/search/search.php');
 require_once($CFG->dirroot . '/search/locallib.php');
 
-$page = optional_param('page', 0, PARAM_INT);   // which page to show
-$perpage = optional_param('perpage', 10, PARAM_INT);   // how many per page
-$PAGE->set_url($FULLME);
+$page = optional_param('page', 0, PARAM_INT);
+$search = trim(optional_param('search', '', PARAM_NOTAGS));
+$fq_module = trim(optional_param('fq_module', '', PARAM_NOTAGS));
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('standard');
@@ -38,9 +38,6 @@ $PAGE->set_title(get_string('globalsearch', 'search'));
 $PAGE->set_heading(get_string('globalsearch', 'search'));
 
 require_login();
-
-$search = trim(optional_param('search', '', PARAM_NOTAGS));
-$fq_module = trim(optional_param('fq_module', '', PARAM_NOTAGS));
 
 $mform = new search_form();
 $data = new stdClass();
@@ -53,21 +50,36 @@ if (!empty($search)) {
 }
 
 if ($data = $mform->get_data()) {
-	$results = solr_execute_query($client, $data);
+	$search = $data->queryfield;
+    $fq_module = $data->modulefilterqueryfield;
+    $results = solr_execute_query($client, $data);
 }
+
+$urlparams = array('search' => $search, 'fq_module' => $fq_module, 'page' => $page);
+$url = new moodle_url('/search/index.php', $urlparams);
+$PAGE->set_url($url);
 
 echo $OUTPUT->header();
 
+if ($showreadme) { // Printing the Global Search wiki if solr-php extension is not installed.
+    echo $OUTPUT->box_start();
+    $info = file_get_contents($CFG->dirroot . '/search/readme.md');
+    echo markdown_to_html($info);
+    echo $OUTPUT->box_end();
+    echo $OUTPUT->footer();
+    exit();
+}
+
 solr_check_server($client);
 
-if (!is_array($results)) {
+solr_display_search_form($mform);
+
+if (!empty($results) and !is_array($results)) {
     echo $results;
 }
 
-solr_display_search_form($mform);
-$url = new moodle_url('/search/index.php', array('perpage' => $perpage));
-
 if (!empty($results) and is_array($results)) {
+    $perpage = DISPLAY_RESULTS_PER_PAGE;
     echo 'Total accessible records: ' . count($results);
     echo $OUTPUT->paging_bar(count($results), $page, $perpage, $url);
     $hits = array_slice($results, $page*$perpage, $perpage, true);

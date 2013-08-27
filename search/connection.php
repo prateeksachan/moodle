@@ -27,31 +27,28 @@ require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/lib.php');
 
 if ($CFG->SEARCH_ENGINE == 'solr') {
 
-    // Solr connection options.
-    $options = array(
-        'hostname' => $CFG->SOLR_SERVER_HOSTNAME,
-        'login'    => $CFG->SOLR_SERVER_USERNAME,
-        'password' => $CFG->SOLR_SERVER_PASSWORD,
-        'port'     => $CFG->SOLR_SERVER_PORT,
-        'issecure' => $SOLR_SECURE,
-        'ssl_cert' => $SOLR_SSL_CERT,
-        'ssl_cert_only' => $SOLR_SSL_CERT_ONLY,
-        'ssl_key' => $SOLR_SSL_KEY,
-        'ssl_password' => $SOLR_SSL_KEYPASSWORD,
-        'ssl_cainfo' => $SOLR_SSL_CAINFO,
-        'ssl_capath' => $SOLR_SSL_CAPATH
-    );
+    if (function_exists('solr_get_version')) {
+        // Solr connection options.
+        $options = array(
+            'hostname' => $CFG->SOLR_SERVER_HOSTNAME,
+            'login'    => $CFG->SOLR_SERVER_USERNAME,
+            'password' => $CFG->SOLR_SERVER_PASSWORD,
+            'port'     => $CFG->SOLR_SERVER_PORT
+        );
 
-    // If php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page.
-    if (solr_get_version() == '1.0.3-alpha') {
-        if ($CFG->SOLR_VERSION == '4.0') {
-            $object = new SolrClient($options, $CFG->SOLR_VERSION);
-        } else {
-            $object = new SolrClient($options, '3.0');
+        // If php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page.
+        if (solr_get_version() == '1.0.3-alpha') {
+            if ($CFG->SOLR_VERSION == '4.0') {
+                $object = new SolrClient($options, $CFG->SOLR_VERSION);
+            } else {
+                $object = new SolrClient($options, '3.0');
+            }
+        } else { // No choice if php solr extension <=1.0.2 is installed.
+            $object = new SolrClient($options);
         }
-    } else { // No choice if php solr extension <=1.0.2 is installed.
-        $object = new SolrClient($options);
+        $showreadme = false;
+        $client = new SolrWrapper($object);
+    } else {
+        $showreadme = true;
     }
-
-    $client = new SolrWrapper($object);
 }
