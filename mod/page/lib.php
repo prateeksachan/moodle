@@ -550,6 +550,7 @@ function page_search_get_documents($id) {
     $doc->addField('content', strip_tags($page->content));
     $doc->addField('courseid', $page->course);
     $doc->addField('contextlink', '/mod/page/view.php?id=' . $cm->id);
+    $doc->addField('modulelink', '/mod/page/view.php?id=' . $cm->id);
     $doc->addField('module', 'page');
     $docs[] = $doc;
 

@@ -62,7 +62,7 @@ function solr_execute_query(SolrWrapper $client, $data) {
     try {
         return solr_query_response($client, $client->query($query));
     } catch (SolrClientException $ex) {
-        echo 'Please start the Solr server!';
+        return 'Bad query request!';
     }
 }
 
@@ -97,8 +97,8 @@ function solr_prepare_filter(SolrWrapper $client, $data) {
 }
 
 function solr_add_fields($query) {
-    $fields = array('id', 'user', 'created', 'modified', 'author', 'name', 'title', 'intro',
-                    'content', 'courseid', 'mime', 'contextlink', 'directlink', 'module');
+    $fields = array('id', 'user', 'created', 'modified', 'author', 'name', 'title', 'intro', 'content',
+                    'courseid', 'mime', 'contextlink', 'directlink', 'modulelink', 'module');
 
     foreach ($fields as $field) {
         $query->addField($field);

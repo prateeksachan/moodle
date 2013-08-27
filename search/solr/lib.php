@@ -68,6 +68,6 @@ function solr_check_server(SolrWrapper $client) {
     try {
         $client->ping();
     } catch (SolrClientException $ex) {
-        echo 'Please start the Solr server!';
+        echo 'Please start the Solr Jetty Server!<br/>';
     }
 }
