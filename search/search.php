@@ -178,7 +178,9 @@ function solr_query_response(SolrWrapper $client, $query_response) {
             }
         }
     }
-
+    if (empty($docs)) {
+        return 'No search results found. Try modifying your query.';
+    }
     return $docs;
 }
 
