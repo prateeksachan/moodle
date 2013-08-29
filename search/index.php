@@ -42,15 +42,19 @@ require_login();
 $mform = new search_form();
 $data = new stdClass();
 
+if ($page) {
+    $results = unserialize(get_config('search', 'search_results'));
+}
+
 if (!empty($search)) {
     $data->queryfield = $search;
     $data->modulefilterqueryfield = $fq_module;
     $mform->set_data($data);
-	$results = solr_execute_query($client, $data);
+    $results = solr_execute_query($client, $data);
 }
 
 if ($data = $mform->get_data()) {
-	$search = $data->queryfield;
+    $search = $data->queryfield;
     $fq_module = $data->modulefilterqueryfield;
     $results = solr_execute_query($client, $data);
 }
@@ -61,32 +65,23 @@ $PAGE->set_url($url);
 
 echo $OUTPUT->header();
 
-if ($showreadme) { // Printing the Global Search wiki if solr-php extension is not installed.
-    echo $OUTPUT->box_start();
-    $info = file_get_contents($CFG->dirroot . '/search/readme.md');
-    echo markdown_to_html($info);
-    echo $OUTPUT->box_end();
-    echo $OUTPUT->footer();
-    exit();
-}
-
 solr_check_server($client);
 
 solr_display_search_form($mform);
 
-if (!empty($results) and !is_array($results)) {
-    echo $results;
-}
-
-if (!empty($results) and is_array($results)) {
-    $perpage = DISPLAY_RESULTS_PER_PAGE;
-    echo 'Total accessible records: ' . count($results);
-    echo $OUTPUT->paging_bar(count($results), $page, $perpage, $url);
-    $hits = array_slice($results, $page*$perpage, $perpage, true);
-    foreach ($hits as $hit) {
-        search_display_results($hit);
+if (!empty($results)) {
+    if (is_array($results)) {
+        $perpage = DISPLAY_RESULTS_PER_PAGE;
+        echo 'Total accessible records: ' . count($results);
+        echo $OUTPUT->paging_bar(count($results), $page, $perpage, $url);
+        $hits = array_slice($results, $page*$perpage, $perpage, true);
+        foreach ($hits as $hit) {
+            search_display_results($hit);
+        }
+        echo $OUTPUT->paging_bar(count($results), $page, $perpage, $url);
+    } else {
+        echo $results;
     }
-    echo $OUTPUT->paging_bar(count($results), $page, $perpage, $url);
 }
 
 echo $OUTPUT->footer();

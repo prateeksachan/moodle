@@ -42,7 +42,7 @@ define('SEARCH_SET_FRAG_SIZE', 500);
 
 /**
  * Modules activated for Global Search.
- * @param boolean $requireconfig->whether to check if the admin has ac/de-vated a particular module. Useful in clearing index. 
+ * @param boolean $requireconfig to check if the admin has de/activated a particular module.
  * @return array $mods
  */
 function search_get_modules($requireconfig = true) {
@@ -65,11 +65,12 @@ function search_get_modules($requireconfig = true) {
 
 /**
  * Search API functions for modules.
+ * @param boolean $requireconfig to check if the admin has de/activated a particular module.
  * @return stdClass object $functions
  */
-function search_get_iterators() {
+function search_get_iterators($requireconfig = true) {
     global $CFG;
-    $mods = search_get_modules(true);
+    $mods = search_get_modules($requireconfig);
     $functions = array();
     foreach ($mods as $mod) {
         if (file_exists("$CFG->dirroot/mod/{$mod->name}/lib.php")) {
@@ -200,7 +201,7 @@ function search_reset_config($s = null) {
     if (!empty($s)) {
         $mods = explode(',', $s);
     } else {
-        $get_mods = search_get_modules();
+        $get_mods = search_get_modules(false);
         $mods = array();
         foreach ($get_mods as $mod) {
             $mods[] = $mod->name;

@@ -16,7 +16,6 @@
 
 /**
  * Running the Solr server according to admin settings. 
- * Throws an error if the solr server is not running
  *
  * @package   search
  * @copyright 
@@ -46,9 +45,8 @@ if ($CFG->SEARCH_ENGINE == 'solr') {
         } else { // No choice if php solr extension <=1.0.2 is installed.
             $object = new SolrClient($options);
         }
-        $showreadme = false;
         $client = new SolrWrapper($object);
     } else {
-        $showreadme = true;
+        include($CFG->dirroot . '/search/install.php');
     }
 }

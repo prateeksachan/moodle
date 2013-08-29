@@ -5,7 +5,7 @@
 if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
 
     // "solr" settingpage
-    
+
     $temp = new admin_settingpage('searchengine', new lang_string('searchengine', 'admin'));
     $is_solr_installed = false;
     // Insert variable here for other search engine.
@@ -23,7 +23,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
                 if ($version != '1.0.3-alpha') {
                     array_shift($options);
                 }
-                $temp->add(new admin_setting_configselect('SOLR_VERSION', new lang_string('solrversion', 'admin'), new lang_string('solrversion_desc', 'admin', $version), ($version == '1.0.3-alpha' ? '4.0' : '3.0'), $options));    
+                $temp->add(new admin_setting_configselect('SOLR_VERSION', new lang_string('solrversion', 'admin'), new lang_string('solrversion_desc', 'admin', $version), ($version == '1.0.3-alpha' ? '4.0' : '3.0'), $options));
             }
             break;
         default:
@@ -38,7 +38,6 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
         $hostname = '127.0.0.1';
         $temp->add(new admin_setting_configtext('SOLR_SERVER_HOSTNAME', new lang_string('solrserverhostname', 'admin'), new lang_string('solrserverhostname_desc', 'admin'), $hostname, PARAM_TEXT));
         $temp->add(new admin_setting_configcheckbox('SOLR_SECURE', new lang_string('solrsecuremode', 'admin'), new lang_string('solrsecuremode_desc', 'admin'), 0, 1, 0));
-
         $temp->add(new admin_setting_configtext('SOLR_SERVER_PORT', new lang_string('solrhttpconnectionport', 'admin'), new lang_string('solrhttpconnectionport_desc', 'admin'), (($CFG->SOLR_SECURE) ? 8443 : 8983), PARAM_INT));
         $temp->add(new admin_setting_configtext('SOLR_SERVER_USERNAME', new lang_string('solrauthuser', 'admin'), new lang_string('solrauthuser_desc', 'admin'), '', PARAM_RAW));
         $temp->add(new admin_setting_configtext('SOLR_SERVER_PASSWORD', new lang_string('solrauthpassword', 'admin'), new lang_string('solrauthpassword_desc', 'admin'), '', PARAM_RAW));
@@ -48,13 +47,13 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
         $temp->add(new admin_setting_configtext('SOLR_SSL_KEY', new lang_string('solrsslkey', 'admin'), new lang_string('solrsslkey_desc', 'admin'), '', PARAM_RAW));
         $temp->add(new admin_setting_configtext('SOLR_SSL_KEYPASSWORD', new lang_string('solrsslkeypassword', 'admin'), new lang_string('solrsslkeypassword_desc', 'admin'), '', PARAM_RAW));
         $temp->add(new admin_setting_configtext('SOLR_SSL_CAINFO', new lang_string('solrsslcainfo', 'admin'), new lang_string('solrsslcainfo_desc', 'admin'), '', PARAM_RAW));
-        $temp->add(new admin_setting_configtext('SOLR_SSL_CAPATH', new lang_string('solrsslcapath', 'admin'), new lang_string('solrsslcapath_desc', 'admin'), '', PARAM_RAW));            
+        $temp->add(new admin_setting_configtext('SOLR_SSL_CAPATH', new lang_string('solrsslcapath', 'admin'), new lang_string('solrsslcapath_desc', 'admin'), '', PARAM_RAW));
 
         $ADMIN->add('globalsearch', $temp);
     }
 
     if ($is_solr_installed) { // Use OR with if other search engine implemented.
-        $temp = new admin_settingpage('supportedmods', new lang_string('supportedmods', 'admin'));
+        $temp = new admin_settingpage('activatemods', new lang_string('activatemods', 'admin'));
 
         $supported_mods = array('book', 'forum', 'glossary', 'label', 'lesson', 'page', 'resource', 'url', 'wiki'); // add a module here to make it gs_supported
         foreach ($supported_mods as $mod) {
