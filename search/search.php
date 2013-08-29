@@ -155,7 +155,6 @@ function solr_query_response(SolrWrapper $client, $query_response) {
             if (!empty($CFG->$modname)) {
                 $access_func = $solr_id[0] . '_search_access';
                 $acc = $access_func($solr_id[1]);
-
                 switch ($acc) {
                     case SEARCH_ACCESS_DELETED:
                         search_delete_index_by_id($client, $value->id);
