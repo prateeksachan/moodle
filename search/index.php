@@ -42,10 +42,6 @@ require_login();
 $mform = new search_form();
 $data = new stdClass();
 
-if ($page) {
-    $results = unserialize(get_config('search', 'search_results'));
-}
-
 if (!empty($search)) {
     $data->queryfield = $search;
     $data->modulefilterqueryfield = $fq_module;
