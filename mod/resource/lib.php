@@ -497,7 +497,7 @@ function resource_search_get_documents($id) {
 
     $docs = array();
     try {
-        $resource = $DB->get_record('resource', array('id' => $id), '*', MUST_EXIST); 
+        $resource = $DB->get_record('resource', array('id' => $id), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('resource', $resource->id, $resource->course);
         $context = context_module::instance($cm->id);
     } catch (mdml_missing_record_exception $ex) {

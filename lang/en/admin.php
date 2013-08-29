@@ -1153,6 +1153,7 @@ $string['cacheapplicationhelp'] = ' Cached items are shared amoung all users and
 
 
 /* Global Search admin settings page string values */
+$string['activatemods'] = 'Activate Modules';
 $string['choosesearchengine'] = 'Choose Search Engine';
 $string['choosesearchengine_desc'] = 'Choose your preferred Search Engine. Currently, Global Search supports only Apache Solr.';
 $string['globalsearch'] = 'Global Search';
@@ -1188,4 +1189,3 @@ $string['solrsslkeypassword_desc'] = 'Password for PEM-formatted private key fil
 $string['solrversion'] = 'Version';
 $string['solrversion_desc'] = 'Define the Solr version. The current Apache Solr php extension installed on your system is <code>{$a}</code>';
 $string['statistics'] = 'Statistics';
-$string['supportedmods'] = 'Supported Modules'; 

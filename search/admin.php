@@ -46,7 +46,7 @@ class search_admin_form extends moodleform {
 
         $modcheckboxarray = array();
         $mods = search_get_modules();
-        $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'all', '', 'All Modules', array('group' => 1));
+        $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'all', '', 'Entire Index', array('group' => 1));
         foreach ($mods as $mod) {
             $modcheckboxarray[] =& $mform->createElement('advcheckbox', $mod->name, '', ucfirst($mod->name), array('group' => 2));
         }
@@ -87,13 +87,13 @@ if ($data = $mform->get_data()) {
 $gstable = new html_table();
 $gstable->id = 'gs-control-panel';
 $gstable->head = array(
-    "Name", "Newest document indexed", "Last run <br /> (time, # docs, # records, # ignores)"
+    'Name', 'Newest document indexed', 'Last run <br /> (time, # docs, # records, # ignores)', 'Activated'
 );
 $gstable->colclasses = array(
     'displayname', 'lastrun', 'timetaken'
 );
 
-$mods = search_get_iterators();
+$mods = search_get_iterators(false);
 $config = search_get_config(array_keys($mods));
 
 foreach ($mods as $name => $mod) {
@@ -103,7 +103,9 @@ foreach ($mods as $name => $mod) {
                                         $config[$name]->docsprocessed . ' , ' .
                                         $config[$name]->recordsprocessed . ' , ' .
                                         $config[$name]->docsignored);
-    $row = new html_table_row(array($cname, $clastrun, $ctimetaken));
+    $modname = 'gs_support_' . $name;
+    $cactive = new html_table_cell(($CFG->$modname) ? 'Yes' : 'No');
+    $row = new html_table_row(array($cname, $clastrun, $ctimetaken, $cactive));
     $gstable->data[] = $row;
 }
 

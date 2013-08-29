@@ -7523,7 +7523,7 @@ function forum_search_get_documents($id) {
     $contextlink = '/mod/forum/discuss.php?d=' . $post->discussion . '#p' . $post->id;
     $modulelink = '/mod/forum/view.php?id=' . $cm->id;
 
-    //Declare a new Solr Document and insert fields into it from DB
+    // Declare a new Solr Document and insert fields into it from DB
     $doc = new SolrInputDocument();
     $doc->addField('type', SEARCH_TYPE_HTML);
     $doc->addField('id', 'forum_' . $post->id);
