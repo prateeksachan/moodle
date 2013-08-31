@@ -30,7 +30,11 @@ require_once($CFG->dirroot . '/search/locallib.php');
 
 $page = optional_param('page', 0, PARAM_INT);
 $search = trim(optional_param('search', '', PARAM_NOTAGS));
-$fq_module = trim(optional_param('fq_module', '', PARAM_NOTAGS));
+$fq_title = trim(optional_param('fq_title', '', PARAM_NOTAGS));
+$fq_author = trim(optional_param('fq_author', '', PARAM_NOTAGS));
+$fq_module = trim(optional_param('fq_module', '0', PARAM_NOTAGS));
+$fq_from = optional_param('fq_from', 0, PARAM_INT);
+$fq_till = optional_param('fq_till', 0, PARAM_INT);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('standard');
@@ -42,26 +46,34 @@ require_login();
 $mform = new search_form();
 $data = new stdClass();
 
-if (!empty($search)) {
+if (!empty($search)) { // search executed from URL params
     $data->queryfield = $search;
+    $data->titlefilterqueryfield = $fq_title;
+    $data->authorfilterqueryfield = $fq_author;
     $data->modulefilterqueryfield = $fq_module;
+    $data->searchfromtime = $fq_from;
+    $data->searchtilltime = $fq_till;
     $mform->set_data($data);
     $results = solr_execute_query($client, $data);
 }
 
-if ($data = $mform->get_data()) {
+if ($data = $mform->get_data()) { // search executed from submitting form
     $search = $data->queryfield;
+    $fq_title = $data->titlefilterqueryfield;
+    $fq_author = $data->authorfilterqueryfield;
     $fq_module = $data->modulefilterqueryfield;
+    $fq_from = $data->searchfromtime;
+    $fq_till = $data->searchtilltime;
+    unset($data->submitbutton);
     $results = solr_execute_query($client, $data);
 }
 
-$urlparams = array('search' => $search, 'fq_module' => $fq_module, 'page' => $page);
+$urlparams = array('search' => $search, 'fq_title' => $fq_title, 'fq_author' => $fq_author,
+                    'fq_module' => $fq_module, 'fq_from' => $fq_from, 'fq_till' => $fq_till,  'page' => $page);
 $url = new moodle_url('/search/index.php', $urlparams);
 $PAGE->set_url($url);
 
 echo $OUTPUT->header();
-
-solr_check_server($client);
 
 solr_display_search_form($mform);
 

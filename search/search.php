@@ -25,16 +25,42 @@
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->libdir . '/enrollib.php');
 
+/**
+ * Displays Global Search form.
+ * @param object $mform moodle form.
+ */
 function solr_display_search_form($mform) {
     $mform->display();
 }
 
+/**
+ * Completely prepares a solr query request and executes it.
+ * @param SolrWrapper $client object.
+ * @param object $data containing query and filters.
+ * @return mixed array $results containing search results, if found, or
+ *              string $results containing an error message.
+ */
 function solr_execute_query(SolrWrapper $client, $data) {
+    global $USER;
+
+    if (!solr_check_server($client)) {
+        return 'Please start the Solr Jetty Server!';
+    }
+
+    // check cache through MUC
+    $cache = cache::make_from_params(cache_store::MODE_SESSION, 'globalsearch', 'search');
+    if (time() - $cache->get('time_' . $USER->id) < SEARCH_CACHE_TIME and $cache->get('query_' . $USER->id) == serialize($data)) {
+        return $results = unserialize($cache->get('results_' . $USER->id));
+    } else { // fire a new search request to server and store its cache
+        $cache->set('query_' . $USER->id, serialize($data));
+    }
+
     $query = new SolrQuery();
     solr_set_query($query, $data);
     solr_prepare_filter($client, $data);
     solr_add_fields($query);
 
+    // search filters applied
     if (!empty($data->titlefilterqueryfield)) {
         $query->addFilterQuery($data->titlefilterqueryfield);
     }
@@ -66,6 +92,11 @@ function solr_execute_query(SolrWrapper $client, $data) {
     }
 }
 
+/**
+ * Prepares a new query by setting the query, start offset and rows to return.
+ * @param SolrQuery $query object.
+ * @param object $data containing query and filters.
+ */
 function solr_set_query($query, $data) {
     solr_set_highlight($query);
     $query->setQuery($data->queryfield);
@@ -73,6 +104,10 @@ function solr_set_query($query, $data) {
     $query->setRows(SEARCH_SET_ROWS);
 }
 
+/**
+ * Sets highlighting properties.
+ * @param SolrQuery $query object.
+ */
 function solr_set_highlight($query) {
     $query->setHighlight(true);
     $highlightfields = array('content', 'user', 'author', 'name', 'title', 'intro');
@@ -84,6 +119,11 @@ function solr_set_highlight($query) {
     $query->setHighlightSimplePost('</span>');
 }
 
+/**
+ * Prepares filter to be applied to query.
+ * @param SolrWrapper $client object.
+ * @param object $data containing query and filters.
+ */
 function solr_prepare_filter(SolrWrapper $client, $data) {
     if (!empty($data->titlefilterqueryfield)) {
         $data->titlefilterqueryfield = 'title:' . $data->titlefilterqueryfield;
@@ -96,6 +136,10 @@ function solr_prepare_filter(SolrWrapper $client, $data) {
     }
 }
 
+/**
+ * Sets fields to be returned in the result. 
+ * @param SolrQuery $query object.
+ */
 function solr_add_fields($query) {
     $fields = array('id', 'user', 'created', 'modified', 'author', 'name', 'title', 'intro', 'content',
                     'courseid', 'mime', 'contextlink', 'directlink', 'modulelink', 'module');
@@ -105,6 +149,10 @@ function solr_add_fields($query) {
     }
 }
 
+/**
+ * Finds the key common to both highlighing and docs array returned from response. 
+ * @param object $response containing results.
+ */
 function solr_add_highlight_content($response) {
     $highlightedobject = $response->highlighting;
     foreach ($response->response->docs as $doc) {
@@ -114,6 +162,11 @@ function solr_add_highlight_content($response) {
     }
 }
 
+/**
+ * Adds the highlighting array values to docs array values. 
+ * @param object $doc containing the results.
+ * @param object $highlighteddoc containing the highlighted results values.
+ */
 function solr_merge_highlight_field_values($doc, $highlighteddoc) {
     $fields = array('content', 'user', 'author', 'name', 'title', 'intro');
 
@@ -138,8 +191,16 @@ function solr_merge_highlight_field_values($doc, $highlighteddoc) {
     }
 }
 
+/**
+ * Filters the response on Moodle side. 
+ * @param SolrWrapper $client object.
+ * @param object $query_response containing the response return from solr server.
+ * @return object $results containing final results to be displayed.
+ */
 function solr_query_response(SolrWrapper $client, $query_response) {
-    global $CFG;
+    global $CFG, $USER;
+
+    $cache = cache::make_from_params(cache_store::MODE_SESSION, 'globalsearch', 'search');
 
     $response = $query_response->getResponse();
     $totalnumfound = $response->response->numFound;
@@ -180,21 +241,8 @@ function solr_query_response(SolrWrapper $client, $query_response) {
     if (empty($docs)) {
         return 'No search results found. Try modifying your query.';
     }
+    // set cache through MUC
+    $cache->set('results_' . $USER->id, serialize($docs));
+    $cache->set('time_' . $USER->id, time());
     return $docs;
-}
-
-// Initial solr filter by looking into enrolled courses - removed.
-function solr_primary_filter() {
-    global $USER;
-    $primary_f = '';
-    $courses = enrol_get_all_users_courses($USER->id);
-    if (!empty($courses)) {
-        $courseid = array();
-        foreach ($courses as $key => $value) {
-            $courseid[] = $value->id;
-        }
-        $primary_f = 'courseid: ' . implode(',', $courseid);
-    }
-
-    return $primary_f;
 }

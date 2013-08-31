@@ -38,6 +38,7 @@ define('DISPLAY_RESULTS_PER_PAGE', 10);
 define('SEARCH_SET_START', 0);
 define('SEARCH_SET_ROWS', 1000);
 define('SEARCH_SET_FRAG_SIZE', 500);
+define('SEARCH_CACHE_TIME', 300);
 
 
 /**
