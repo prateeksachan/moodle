@@ -221,7 +221,6 @@ class mod_assign_renderer extends plugin_renderer_base {
         }
 
         $this->page->set_title(get_string('pluginname', 'assign'));
-        $this->page->set_heading($header->assign->name);
 
         $o .= $this->output->header();
         if ($header->preface) {
