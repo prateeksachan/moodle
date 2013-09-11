@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/lib.php');
+
 if (function_exists('solr_get_version')) {
     // Solr connection options.
     $options = array(
