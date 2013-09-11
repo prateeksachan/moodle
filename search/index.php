@@ -23,9 +23,9 @@
  */
 
 require_once('../config.php');
-require_once($CFG->dirroot . '/search/connection.php');
+require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
-require_once($CFG->dirroot . '/search/search.php');
+require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/search.php');
 require_once($CFG->dirroot . '/search/locallib.php');
 
 $page = optional_param('page', 0, PARAM_INT);
@@ -45,6 +45,7 @@ require_login();
 
 $mform = new search_form();
 $data = new stdClass();
+$search_function = $CFG->SEARCH_ENGINE . '_execute_query';
 
 if (!empty($search)) { // search executed from URL params
     $data->queryfield = $search;
@@ -54,7 +55,7 @@ if (!empty($search)) { // search executed from URL params
     $data->searchfromtime = $fq_from;
     $data->searchtilltime = $fq_till;
     $mform->set_data($data);
-    $results = solr_execute_query($client, $data);
+    $results = $search_function($client, $data);
 }
 
 if ($data = $mform->get_data()) { // search executed from submitting form
@@ -65,7 +66,7 @@ if ($data = $mform->get_data()) { // search executed from submitting form
     $fq_from = $data->searchfromtime;
     $fq_till = $data->searchtilltime;
     unset($data->submitbutton);
-    $results = solr_execute_query($client, $data);
+    $results = $search_function($client, $data);
 }
 
 $urlparams = array('search' => $search, 'fq_title' => $fq_title, 'fq_author' => $fq_author,

@@ -26,7 +26,7 @@ require_once('../config.php');
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot . '/search/connection.php');
+require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
 
 // Indexing database records for modules + rich documents of forum.
