@@ -17,10 +17,12 @@
 /**
  * Global Search library code
  *
- * @package   search
- * @copyright 
+ * @package   Global Search
+ * @copyright Prateek Sachan {@link http://prateeksachan.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot . '/lib/accesslib.php');
 
@@ -34,7 +36,7 @@ define('SEARCH_ACCESS_GRANTED', 1);
 define('SEARCH_ACCESS_DELETED', 2);
 
 define('SEARCH_MAX_RESULTS', 100);
-define('DISPLAY_RESULTS_PER_PAGE', 10);
+define('SEARCH_DISPLAY_RESULTS_PER_PAGE', 10);
 define('SEARCH_SET_START', 0);
 define('SEARCH_SET_ROWS', 1000);
 define('SEARCH_SET_FRAG_SIZE', 500);
@@ -103,17 +105,17 @@ function search_get_iterators($requireconfig = true) {
 
 /**
  * Merge separate index segments into one.
- * @param SolrWrapper $client
+ * @param global_search_engine $client
  */
-function search_optimize_index(SolrWrapper $client) {
+function search_optimize_index(global_search_engine $client) {
     $client->optimize();
 }
 
 /**
  * Index all documents.
- * @param SolrWrapper $client
+ * @param global_search_engine $client
  */
-function search_index(SolrWrapper $client) {
+function search_index(global_search_engine $client) {
     set_time_limit(576000);
     $iterators = search_get_iterators();
     foreach ($iterators as $name => $iterator) {
@@ -131,10 +133,10 @@ function search_index(SolrWrapper $client) {
             $timestart = microtime(true);
             $documents = $getdocsfunction($record->id);
 
-            foreach ($documents as $solrdocument) {
-                switch (($solrdocument->getField('type')->values[0])) {
+            foreach ($documents as $document) {
+                switch (($document->getField('type')->values[0])) {
                     case SEARCH_TYPE_HTML:
-                        $client->add_document($solrdocument);
+                        $client->add_document($document);
                         ++$numdocs;
                         break;
                     default:
@@ -161,9 +163,9 @@ function search_index(SolrWrapper $client) {
 
 /**
  * Index all Rich Document files.
- * @param SolrWrapper $client
+ * @param global_search_engine $client
  */
-function search_index_files(SolrWrapper $client) {
+function search_index_files(global_search_engine $client) {
     global $CFG;
     set_time_limit(576000);
     $mod_file = array(
@@ -223,10 +225,10 @@ function search_reset_config($s = null) {
 
 /**
  * Deletes index.
- * @param SolrWrapper $client
+ * @param global_search_engine $client
  * @param stdClass object $data
  */
-function search_delete_index(SolrWrapper $client, $data) {
+function search_delete_index(global_search_engine $client, $data) {
     if (!empty($data->module)) {
         $client->delete_by_query('module:' . $data->module);
         search_reset_config($data->module);
@@ -239,10 +241,10 @@ function search_delete_index(SolrWrapper $client, $data) {
 
 /**
  * Deletes index by id.
- * @param SolrWrapper $client object
+ * @param global_search_engine $client object
  * @param Solr Document string $id
  */
-function search_delete_index_by_id(SolrWrapper $client, $id) {
+function search_delete_index_by_id(global_search_engine $client, $id) {
     $client->delete_by_id($id);
     $client->commit();
 }
@@ -292,16 +294,6 @@ function search_get_config_file($mod) {
         default:
             return 0;
     }
-}
-
-/** 
- * Builds the cURL object's url for indexing Rich Documents
- * @return string $url
- */
-function search_curl_url() {
-    global $CFG;
-    $url = $CFG->SOLR_SERVER_HOSTNAME . ':' . $CFG->SOLR_SERVER_PORT . '/solr/update/extract?';
-    return $url;
 }
 
 /** 
@@ -420,3 +412,12 @@ function search_get_user_url($fullname) {
     }
     return $url;
 }
+
+/**
+ * Displays Global Search form.
+ * @param object $mform moodle form.
+ */
+function search_display_form($mform) {
+    $mform->display();
+}
+

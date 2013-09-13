@@ -8542,9 +8542,8 @@ function forum_get_user_digest_options($user = null) {
 
 /**
  * Global Search API
- * @var $DB mysqli_native_moodle_database
- * @var $OUTPUT core_renderer
- * @var $PAGE moodle_forum
+ * @package Global Search
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 function forum_search_iterator($from = 0) {
     global $DB;
@@ -8555,7 +8554,7 @@ function forum_search_iterator($from = 0) {
 }
 
 function forum_search_get_documents($id) {
-    global $CFG, $DB;
+    global $DB, $CFG;
 
     $docs = array();
     try {
@@ -8596,16 +8595,12 @@ function forum_search_get_documents($id) {
         if (strpos($mime = $file->get_mimetype(), 'image') === false) {
             $filename = urlencode($file->get_filename());
             $directlink = '/pluginfile.php/' . $context->id . '/mod_forum/attachment/' . $id . '/' . $filename;
-
-            $curl = new curl();
-            $url = search_curl_url();
-            $url .= 'literal.id=' . 'forum_' . $id . '_file_' . $numfile . '&literal.modulelink=' . $modulelink .
+            $url = 'literal.id=' . 'forum_' . $id . '_file_' . $numfile . '&literal.modulelink=' . $modulelink .
                     '&literal.module=forum&literal.type=3' . '&literal.directlink=' . $directlink .
                     '&literal.courseid=' . $forum->course . '&literal.contextlink=' . $contextlink;
-            $params = array();
-            $params[$filename] = $file;
-            $curl->post($url, $params);
 
+            $index_file_function = $CFG->SEARCH_ENGINE . '_post_file';
+            $index_file_function($file, $url);
             $numfile++;
         }
     }

@@ -17,8 +17,8 @@
 /**
  * Global Search form definition
  *
- * @package   search
- * @copyright 
+ * @package   Global Search
+ * @copyright Prateek Sachan {@link http://prateeksachan.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

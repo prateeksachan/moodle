@@ -17,8 +17,8 @@
 /**
  * Global Search admin settings
  *
- * @package   search
- * @copyright 
+ * @package   Global Search
+ * @copyright Prateek Sachan {@link http://prateeksachan.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +31,6 @@ require_once($CFG->dirroot . '/search/lib.php');
 admin_externalpage_setup('statistics');
 $PAGE->set_title(get_string('globalsearch', 'search'));
 $PAGE->set_heading(get_string('globalsearch', 'search'));
-//$PAGE->set_heading(get_string('statistics', 'admin'));
 
 global $DB;
 

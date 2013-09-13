@@ -15,15 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'block_globalsearch', language 'en', branch 'MOODLE_25_STABLE'
+ * Strings for component 'block_globalsearch', language 'en', branch 'MOODLE_26_STABLE'
  *
  * @package    block
  * @subpackage globalsearch
- * @copyright  2011 Moodle
- * @author     
- *             
+ * @copyright  Prateek Sachan {@link http://prateeksachan.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
  */
 
 $string['pluginname'] = 'Global Search';
