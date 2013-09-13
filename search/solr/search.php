@@ -15,32 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Global Search solr search functions
+ * solr search functions
  *
- * @package   search
- * @copyright 
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    Global Search
+ * @subpackage solr
+ * @copyright  Prateek Sachan {@link http://prateeksachan.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->libdir . '/enrollib.php');
 
 /**
- * Displays Global Search form.
- * @param object $mform moodle form.
- */
-function solr_display_search_form($mform) {
-    $mform->display();
-}
-
-/**
  * Completely prepares a solr query request and executes it.
- * @param SolrWrapper $client object.
+ * @param global_search_engine $client object.
  * @param object $data containing query and filters.
  * @return mixed array $results containing search results, if found, or
  *              string $results containing an error message.
  */
-function solr_execute_query(SolrWrapper $client, $data) {
+function solr_execute_query(global_search_engine $client, $data) {
     global $USER;
 
     if (!solr_check_server($client)) {
@@ -121,10 +116,10 @@ function solr_set_highlight($query) {
 
 /**
  * Prepares filter to be applied to query.
- * @param SolrWrapper $client object.
+ * @param global_search_engine $client object.
  * @param object $data containing query and filters.
  */
-function solr_prepare_filter(SolrWrapper $client, $data) {
+function solr_prepare_filter(global_search_engine $client, $data) {
     if (!empty($data->titlefilterqueryfield)) {
         $data->titlefilterqueryfield = 'title:' . $data->titlefilterqueryfield;
     }
@@ -193,11 +188,11 @@ function solr_merge_highlight_field_values($doc, $highlighteddoc) {
 
 /**
  * Filters the response on Moodle side. 
- * @param SolrWrapper $client object.
+ * @param global_search_engine $client object.
  * @param object $query_response containing the response return from solr server.
  * @return object $results containing final results to be displayed.
  */
-function solr_query_response(SolrWrapper $client, $query_response) {
+function solr_query_response(global_search_engine $client, $query_response) {
     global $CFG, $USER;
 
     $cache = cache::make_from_params(cache_store::MODE_SESSION, 'globalsearch', 'search');
@@ -245,4 +240,19 @@ function solr_query_response(SolrWrapper $client, $query_response) {
     $cache->set('results_' . $USER->id, serialize($docs));
     $cache->set('time_' . $USER->id, time());
     return $docs;
+}
+
+/** 
+ * Builds the cURL object's url for indexing Rich Documents
+ * @return string $url
+ */
+function solr_post_file($file, $posturl) {
+    global $CFG;
+    $filename = urlencode($file->get_filename());
+    $curl = new curl();
+    $url = $CFG->SOLR_SERVER_HOSTNAME . ':' . $CFG->SOLR_SERVER_PORT . '/solr/update/extract?';
+    $url .= $posturl;
+    $params = array();
+    $params[$filename] = $file;
+    $curl->post($url, $params);
 }

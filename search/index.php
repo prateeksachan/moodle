@@ -15,17 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Display form for entering search queries
+ * Global Search index page for entering queries and display of results
  *
- * @package   search
- * @copyright 
+ * @package   Global Search
+ * @copyright Prateek Sachan {@link http://prateeksachan.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once('../config.php');
 require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
-require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/search.php');
 require_once($CFG->dirroot . '/search/locallib.php');
 
 $page = optional_param('page', 0, PARAM_INT);
@@ -76,11 +75,11 @@ $PAGE->set_url($url);
 
 echo $OUTPUT->header();
 
-solr_display_search_form($mform);
+search_display_form($mform);
 
 if (!empty($results)) {
     if (is_array($results)) {
-        $perpage = DISPLAY_RESULTS_PER_PAGE;
+        $perpage = SEARCH_DISPLAY_RESULTS_PER_PAGE;
         echo 'Total accessible records: ' . count($results);
         echo $OUTPUT->paging_bar(count($results), $page, $perpage, $url);
         $hits = array_slice($results, $page*$perpage, $perpage, true);

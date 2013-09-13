@@ -17,13 +17,16 @@
 /**
  * Connection settings for Solr PHP extension.
  *
- * @package   search
+ * @package    Global Search
  * @subpackage solr
- * @copyright 
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  Prateek Sachan {@link http://prateeksachan.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/lib.php');
+require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/search.php');
 
 if (function_exists('solr_get_version')) {
     // Solr connection options.
@@ -44,7 +47,7 @@ if (function_exists('solr_get_version')) {
     } else { // No choice if php solr extension <=1.0.2 is installed.
         $object = new SolrClient($options);
     }
-    $client = new SolrWrapper($object);
+    $client = new global_search_engine($object);
 } else {
     include($CFG->dirroot . '/search/install.php');
 }

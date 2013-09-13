@@ -17,15 +17,14 @@
 /**
  * Global Search cron() for indexing.
  *
- * @package   search
- * @copyright 
+ * @package   Global Search
+ * @copyright Prateek Sachan {@link http://prateeksachan.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('../config.php');
-
 defined('MOODLE_INTERNAL') || die;
 
+require_once('../config.php');
 require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
 

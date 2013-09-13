@@ -641,9 +641,8 @@ function wiki_page_type_list($pagetype, $parentcontext, $currentcontext) {
 
 /**
  * Global Search API
- * @var $DB mysqli_native_moodle_database
- * @var $OUTPUT core_renderer
- * @var $PAGE moodle_wiki
+ * @package Global Search
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 function wiki_search_iterator($from = 0) {
     global $DB;
@@ -689,7 +688,7 @@ function wiki_search_get_documents($id) {
 }
 
 function wiki_search_files($id = 0) {
-    global $DB;
+    global $DB, $CFG;
 
     $wikifiles = $DB->get_records('files', array('component' => 'mod_wiki'), 'id', 'id, itemid, filepath, filename, filesize');
     foreach ($wikifiles as $wikifile) {
@@ -719,14 +718,11 @@ function wiki_search_files($id = 0) {
             $filename = urlencode($file->get_filename());
             $directlink = '/pluginfile.php/' . $context->id . '/mod_wiki/attachments/' . $wikifile->itemid . '/' . $filename;
             $modulelink = '/mod/wiki/view.php?id=' . $cm->id;
-
-            $curl = new curl();
-            $url = search_curl_url();
-            $url .= 'literal.id=' . 'wiki_' . $wikipage->id . '_file_' . $wikifile->id . '&literal.module=wiki&literal.type=3' .
+            $url = 'literal.id=' . 'wiki_' . $wikipage->id . '_file_' . $wikifile->id . '&literal.module=wiki&literal.type=3' .
                     '&literal.directlink=' . $directlink . '&literal.courseid=' . $wiki->course . '&literal.modulelink=' . $modulelink;
-            $params = array();
-            $params[$filename] = $file;
-            $curl->post($url, $params);
+
+            $index_file_function = $CFG->SEARCH_ENGINE . '_post_file';
+            $index_file_function($file, $url);
         }
     }
     if (!empty($wikifiles)) {

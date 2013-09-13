@@ -328,9 +328,8 @@ function url_dndupload_handle($uploadinfo) {
 
 /**
  * Global Search API
- * @var $DB mysqli_native_moodle_database
- * @var $OUTPUT core_renderer
- * @var $PAGE moodle_url
+ * @package Global Search
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 function url_search_iterator($from = 0) {
     global $DB;

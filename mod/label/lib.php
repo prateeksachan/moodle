@@ -333,10 +333,9 @@ function label_generate_resized_image(stored_file $file, $maxwidth, $maxheight) 
 }
 
 /**
- * Global Search functions
- * @var $DB mysqli_native_moodle_database
- * @var $OUTPUT core_renderer
- * @var $PAGE moodle_label
+ * Global Search API
+ * @package Global Search
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 function label_search_iterator($from = 0) {
     global $DB;

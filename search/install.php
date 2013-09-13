@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Global Search install readme file when PHP Solr extension is not installed.
+ * Global Search readme file
  *
- * @package   search
- * @copyright 
+ * @package   Global Search
+ * @copyright Prateek Sachan {@link http://prateeksachan.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

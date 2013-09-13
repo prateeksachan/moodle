@@ -18,22 +18,21 @@
  * Solr Wraper class
  * Listing down the exposed functions of SolrClient class to be used here in Global Search
  *
- * @package   search
+ * @package    Global Search
  * @subpackage solr
- * @copyright 
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  Prateek Sachan {@link http://prateeksachan.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class SolrWrapper {
+defined('MOODLE_INTERNAL') || die;
+
+class global_search_engine {
     private $client;
 
     public function __construct(SolrClient $object) {
         $this->client = $object;
     }
 
-    /**
-     * Exposed Functions of SolrClient Class
-     */
     public function ping() {
         return $this->client->ping();
     }
@@ -64,7 +63,7 @@ class SolrWrapper {
 
 }
 
-function solr_check_server(SolrWrapper $client) {
+function solr_check_server(global_search_engine $client) {
     try {
         $client->ping();
         return 1;

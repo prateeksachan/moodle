@@ -19,11 +19,8 @@
  *
  * @package    block
  * @subpackage globalsearch
- * @copyright  2011 Moodle
- * @author     
- *             
+ * @copyright  Prateek Sachan {@link http://prateeksachan.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
  */
 
 /**

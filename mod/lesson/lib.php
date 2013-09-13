@@ -1008,14 +1008,13 @@ function lesson_update_media_file($lessonid, $context, $draftitemid) {
 
 /**
  * Global Search API
- * @var $DB mysqli_native_moodle_database
- * @var $OUTPUT core_renderer
- * @var $PAGE moodle_lesson
+ * @package Global Search
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 function lesson_search_iterator($from = 0) {
     global $DB;
 
-    $sql = "SELECT id, timemodified AS modified FROM {lesson_pages} WHERE timemodified >= ? ORDER BY timemodified ASC";
+    $sql = "SELECT id, timemodified AS modified FROM {lesson_pages} WHERE timemodified > ? ORDER BY timemodified ASC";
 
     return $DB->get_recordset_sql($sql, array($from));
 }
@@ -1052,7 +1051,7 @@ function lesson_search_get_documents($id) {
 }
 
 function lesson_search_files($from = 0) {
-    global $DB;
+    global $DB, $CFG;
 
     $sql = "SELECT id, timemodified AS modified FROM {lesson} WHERE timemodified > ? ORDER BY timemodified ASC";
 
@@ -1077,15 +1076,12 @@ function lesson_search_files($from = 0) {
                 $filename = urlencode($file->get_filename());
                 $directlink = '/mod/lesson/mediafile.php?id=' . $context->id;
                 $modulelink = '/mod/lesson/view.php?id=' . $cm->id;
-
-                $curl = new curl();
-                $url = search_curl_url();
-                $url .= 'literal.id=' . 'lesson_' . $lesson->id . '_file_' . $file->get_id() .
+                $url = 'literal.id=' . 'lesson_' . $lesson->id . '_file_' . $file->get_id() .
                         '&literal.module=lesson&literal.type=3' . '&literal.directlink=' . $directlink .
                         '&literal.courseid=' . $lesson->course . '&literal.modulelink=' . $modulelink;
-                $params = array();
-                $params[$filename] = $file;
-                $curl->post($url, $params);
+
+                $index_file_function = $CFG->SEARCH_ENGINE . '_post_file';
+                $index_file_function($file, $url);
             }
         }
     }

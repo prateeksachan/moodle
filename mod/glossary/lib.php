@@ -3123,9 +3123,8 @@ function glossary_page_type_list($pagetype, $parentcontext, $currentcontext) {
 
 /**
  * Global Search API
- * @var $DB mysqli_native_moodle_database
- * @var $OUTPUT core_renderer
- * @var $PAGE moodle_glossary
+ * @package Global Search
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 function glossary_search_iterator($from = 0) {
     global $DB;
@@ -3136,7 +3135,7 @@ function glossary_search_iterator($from = 0) {
 }
 
 function glossary_search_get_documents($id) {
-    global $DB;
+    global $DB, $CFG;
 
     $docs = array();
     try {
@@ -3177,16 +3176,12 @@ function glossary_search_get_documents($id) {
         if (strpos($mime = $file->get_mimetype(), 'image') === false) {
             $filename = urlencode($file->get_filename());
             $directlink = '/pluginfile.php/' . $context->id . '/mod_glossary/attachment/' . $glossary->id . '/' . $filename;
-
-            $curl = new curl();
-            $url = search_curl_url();
-            $url .= 'literal.id=' . 'glossary_' . $id . '_file_' . $numfile . '&literal.module=glossary&literal.type=3' .
+            $url = 'literal.id=' . 'glossary_' . $id . '_file_' . $numfile . '&literal.module=glossary&literal.type=3' .
                     '&literal.directlink=' . $directlink . '&literal.courseid=' . $glossary->course .
                     '&literal.contextlink=' . $contextlink . '&literal.modulelink=' . $modulelink;
-            $params = array();
-            $params[$filename] = $file;
-            $curl->post($url, $params);
 
+            $index_file_function = $CFG->SEARCH_ENGINE . '_post_file';
+            $index_file_function($file, $url);
             $numfile++;
         }
     }
