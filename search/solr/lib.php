@@ -30,7 +30,7 @@ class global_search_engine {
     private $client;
 
     public function __construct(SolrClient $object) {
-        $this->client = $object;
+        return $this->client = $object;
     }
 
     public function ping() {
@@ -70,4 +70,9 @@ function solr_check_server(global_search_engine $client) {
     } catch (SolrClientException $ex) {
         return 0;
     }
+}
+
+function solr_installed() {
+    function_exists('solr_get_version') ? $x = 1 : $x = 0 ;
+    return $x;
 }

@@ -78,7 +78,10 @@ class block_globalsearch extends block_base {
     // Running the cron job for indexing.
     function cron() {
         global $CFG;
-        include($CFG->dirroot . '/search/cron.php');
+
+        if ($CFG->enableglobalsearch) {
+            include($CFG->dirroot . '/search/cron.php');
+        }
     }
 
 }
