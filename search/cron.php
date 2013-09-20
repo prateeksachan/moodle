@@ -28,9 +28,14 @@ require_once('../config.php');
 require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
 
-// Indexing database records for modules + rich documents of forum.
-search_index($client);
-// Indexing rich documents for lesson, wiki.
-search_index_files($client);
-// Optimize index at last.
-search_optimize_index($client);
+$search_engine_installed = $CFG->SEARCH_ENGINE . '_installed';
+$search_engine_check_server = $CFG->SEARCH_ENGINE . '_check_server';
+
+if ($search_engine_installed() and $search_engine_check_server($client)) {
+    // Indexing database records for modules + rich documents of forum.
+    search_index($client);
+    // Indexing rich documents for lesson, wiki.
+    search_index_files($client);
+    // Optimize index at last.
+    search_optimize_index($client);
+}

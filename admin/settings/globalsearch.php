@@ -7,35 +7,43 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
     // "solr" settingpage
 
     $temp = new admin_settingpage('searchengine', new lang_string('searchengine', 'admin'));
-    $is_solr_installed = false;
-    // Insert variable here for other search engine.
 
+    $solr_installed = false;
     // Add other search engine to be implemented (if) later.
+    // ${anothersearchengine}_installed = false;
+
     $options = array('solr' => 'Apache Solr');
     $temp->add(new admin_setting_configselect('SEARCH_ENGINE', new lang_string('choosesearchengine', 'admin'), new lang_string('choosesearchengine_desc', 'admin'), 'solr', $options));
 
     switch ($CFG->SEARCH_ENGINE) {
         case 'solr':
             if (function_exists('solr_get_version')) {
-                $is_solr_installed = true;
                 $version = solr_get_version();
-                $options = array('4.0'=>'4.x', '3.0'=>'3.x');
-                if ($version != '1.0.3-alpha') {
-                    array_shift($options);
-                }
-                $temp->add(new admin_setting_configselect('SOLR_VERSION', new lang_string('solrversion', 'admin'), new lang_string('solrversion_desc', 'admin', $version), ($version == '1.0.3-alpha' ? '4.0' : '3.0'), $options));
+                $solr_installed = true;
             }
             break;
+        /*
+        case '{anothersearchengine}':
+            if (check_for_another_search_engine) {
+                {anothersearchengine}_installed = true;
+            }
+            break;
+        */
         default:
             break;
     }
 
     $ADMIN->add('globalsearch', $temp);
 
-    if ($CFG->SEARCH_ENGINE == 'solr' and $is_solr_installed) {
+    if ($solr_installed) {
         $temp = new admin_settingpage('solrsettingpage', new lang_string('solrsetting', 'admin'));
 
         $hostname = '127.0.0.1';
+        $options = array('4.0'=>'4.x', '3.0'=>'3.x');
+        if ($version != '1.0.3-alpha') {
+            array_shift($options);
+        }
+        $temp->add(new admin_setting_configselect('SOLR_VERSION', new lang_string('solrversion', 'admin'), new lang_string('solrversion_desc', 'admin', $version), ($version == '1.0.3-alpha' ? '4.0' : '3.0'), $options));
         $temp->add(new admin_setting_configtext('SOLR_SERVER_HOSTNAME', new lang_string('solrserverhostname', 'admin'), new lang_string('solrserverhostname_desc', 'admin'), $hostname, PARAM_TEXT));
         $temp->add(new admin_setting_configcheckbox('SOLR_SECURE', new lang_string('solrsecuremode', 'admin'), new lang_string('solrsecuremode_desc', 'admin'), 0, 1, 0));
         $temp->add(new admin_setting_configtext('SOLR_SERVER_PORT', new lang_string('solrhttpconnectionport', 'admin'), new lang_string('solrhttpconnectionport_desc', 'admin'), (($CFG->SOLR_SECURE) ? 8443 : 8983), PARAM_INT));
@@ -52,7 +60,15 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
         $ADMIN->add('globalsearch', $temp);
     }
 
-    if ($is_solr_installed) { // Use OR with if other search engine implemented.
+    /*
+    if (${anothersearchengine}_installed) {
+        $temp = new admin_settingpage('{anothersearchengine}settingpage', new lang_string('{anothersearchengine}setting', 'admin'));
+        //settings follow
+
+        $ADMIN->add('globalsearch', $temp);     
+    */
+
+    if ($CFG->enableglobalsearch) {
         $temp = new admin_settingpage('activatemods', new lang_string('activatemods', 'admin'));
 
         $supported_mods = array('book', 'forum', 'glossary', 'label', 'lesson', 'page', 'resource', 'url', 'wiki'); // add a module here to make it gs_supported
@@ -63,7 +79,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
         $ADMIN->add('globalsearch', $temp);
     }
 
-    if ($is_solr_installed) { // Use OR with if other search engine implemented.
+    if ($CFG->enableglobalsearch) {
         $ADMIN->add('globalsearch', new admin_externalpage('statistics', new lang_string('statistics', 'admin'), "$CFG->wwwroot/search/admin.php"));
     }
 }

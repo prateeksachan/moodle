@@ -44,6 +44,13 @@ require_login();
 
 $mform = new search_form();
 $data = new stdClass();
+
+$search_engine_installed = $CFG->SEARCH_ENGINE . '_installed';
+if (!$search_engine_installed()) {
+    include($CFG->dirroot . '/search/install.php');
+    exit();
+}
+
 $search_function = $CFG->SEARCH_ENGINE . '_execute_query';
 
 if (!empty($search)) { // search executed from URL params
@@ -77,7 +84,7 @@ echo $OUTPUT->header();
 
 search_display_form($mform);
 
-if (!empty($results)) {
+if (!empty($results) and $CFG->enableglobalsearch) {
     if (is_array($results)) {
         $perpage = SEARCH_DISPLAY_RESULTS_PER_PAGE;
         echo 'Total accessible records: ' . count($results);
@@ -90,6 +97,8 @@ if (!empty($results)) {
     } else {
         echo $results;
     }
+} else if (!$CFG->enableglobalsearch) {
+    echo 'Global Search is disabled.';
 }
 
 echo $OUTPUT->footer();

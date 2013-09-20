@@ -37,7 +37,6 @@ global $DB;
 class search_admin_form extends moodleform {
 
     function definition() {
-
         $mform = & $this->_form;
         $checkboxarray = array();
         $checkboxarray[] =& $mform->createElement('checkbox', 'delete', '', get_string('delete', 'search'));
@@ -57,9 +56,7 @@ class search_admin_form extends moodleform {
 
         $this->add_action_buttons($cancel = false);
         $mform->setDefault('action', '');
-
     }
-
 }
 
 require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
@@ -109,12 +106,34 @@ foreach ($mods as $name => $mod) {
     $gstable->data[] = $row;
 }
 
+$search_engine_installed = $CFG->SEARCH_ENGINE . '_installed';
+if (!$search_engine_installed()) {
+    include($CFG->dirroot . '/search/install.php');
+    exit();
+}
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading('Last indexing statistics');
+
+if (!$CFG->enableglobalsearch) {
+    echo $OUTPUT->box_start();
+    echo 'Global Search is disabled';
+    echo $OUTPUT->box_end();
+    echo $OUTPUT->footer();
+    exit();
+}
+
 echo html_writer::table($gstable);
 echo $OUTPUT->container_start();
 echo $OUTPUT->box_start();
-echo $mform->display();
+
+$search_engine_check_server = $CFG->SEARCH_ENGINE . '_check_server';
+if(!$search_engine_check_server($client)) {
+    echo 'Solr Server is not running!';
+} else {
+    echo $mform->display();
+}
+
 echo $OUTPUT->box_end();
 echo $OUTPUT->container_end();
 echo $OUTPUT->footer();
