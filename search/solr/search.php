@@ -39,7 +39,7 @@ function solr_execute_query(global_search_engine $client, $data) {
     global $USER;
 
     if (!solr_check_server($client)) {
-        return 'Please start the Solr Jetty Server!';
+        return 'Solr Jetty Server is not running!';
     }
 
     // check cache through MUC
