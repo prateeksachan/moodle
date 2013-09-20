@@ -79,7 +79,5 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
         $ADMIN->add('globalsearch', $temp);
     }
 
-    if ($CFG->enableglobalsearch) {
-        $ADMIN->add('globalsearch', new admin_externalpage('statistics', new lang_string('statistics', 'admin'), "$CFG->wwwroot/search/admin.php"));
-    }
+    $ADMIN->add('globalsearch', new admin_externalpage('statistics', new lang_string('statistics', 'admin'), "$CFG->wwwroot/search/admin.php"));
 }
