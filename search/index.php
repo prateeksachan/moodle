@@ -98,7 +98,7 @@ if (!empty($results) and $CFG->enableglobalsearch) {
         echo $results;
     }
 } else if (!$CFG->enableglobalsearch) {
-    echo 'Global Search is disabled.';
+    echo 'Global Search has been disabled.';
 }
 
 echo $OUTPUT->footer();

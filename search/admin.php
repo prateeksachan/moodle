@@ -117,7 +117,7 @@ echo $OUTPUT->heading('Last indexing statistics');
 
 if (!$CFG->enableglobalsearch) {
     echo $OUTPUT->box_start();
-    echo 'Global Search is disabled';
+    echo 'Global Search has been disabled';
     echo $OUTPUT->box_end();
     echo $OUTPUT->footer();
     exit();
