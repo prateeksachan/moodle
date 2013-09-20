@@ -442,7 +442,7 @@ foreach ($pages as $page) {
 // Add Global Search
 $ADMIN->add('modules', new admin_category('globasearchplugin', new lang_string('globalsearch', 'admin')));
 $temp = new admin_settingpage('manageglobalsearch', new lang_string('globalsearchmanage', 'admin'));
-$temp->add(new admin_setting_configcheckbox('enableglobalsearch', new lang_string('enableglobalsearch', 'admin'), 
+$temp->add(new admin_setting_configcheckbox('enableglobalsearch', new lang_string('enableglobalsearch', 'admin'),
                                                                         new lang_string('enableglobalsearch_desc', 'admin'), 0, 1, 0));
 $ADMIN->add('globasearchplugin', $temp);
 

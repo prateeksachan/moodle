@@ -128,7 +128,7 @@ echo $OUTPUT->container_start();
 echo $OUTPUT->box_start();
 
 $search_engine_check_server = $CFG->SEARCH_ENGINE . '_check_server';
-if(!$search_engine_check_server($client)) {
+if (!$search_engine_check_server($client)) {
     echo 'Solr Server is not running!';
 } else {
     echo $mform->display();

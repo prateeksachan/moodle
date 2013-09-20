@@ -73,6 +73,6 @@ function solr_check_server(global_search_engine $client) {
 }
 
 function solr_installed() {
-    function_exists('solr_get_version') ? $x = 1 : $x = 0 ;
+    function_exists('solr_get_version') ? $x = 1 : $x = 0;
     return $x;
 }

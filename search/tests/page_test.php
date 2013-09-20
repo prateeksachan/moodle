@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 /**
  * PHPUnit globalsearch tests
  *
@@ -22,11 +22,11 @@
  * @copyright  Prateek Sachan {@link http://prateeksachan.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
+
 defined('MOODLE_INTERNAL') || die();
- 
- class globalsearch_page_testcase extends advanced_testcase {
-    public function test_generator() {
+
+class globalsearch_page_testcase extends advanced_testcase {
+    public function test_page_basic() {
         global $USER, $CFG, $DB;
         require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
         require_once($CFG->dirroot . '/search/lib.php');
@@ -55,7 +55,6 @@ defined('MOODLE_INTERNAL') || die();
         //check page1 creation
         $this->assertEquals(1, $DB->count_records_select('page', 'id = :page1',
                                                             array('page1' => $page1->id)));
-
 
         //enrol user1 in course1
         $enrol = enrol_get_plugin('manual');
