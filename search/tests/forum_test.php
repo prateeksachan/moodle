@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 /**
  * PHPUnit globalsearch tests
  *
@@ -22,10 +22,10 @@
  * @copyright  Prateek Sachan {@link http://prateeksachan.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
+
 defined('MOODLE_INTERNAL') || die();
- 
- class globalsearch_forum_testcase extends advanced_testcase {
+
+class globalsearch_forum_testcase extends advanced_testcase {
     public function test_forum_basic() {
         global $USER, $CFG, $DB;
         require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
@@ -73,7 +73,7 @@ defined('MOODLE_INTERNAL') || die();
                                                             array('forum1' => $forum1->id)));
 
         //check discussion1 creation
-        $this->assertEquals(1, $DB->count_records_select('forum_discussions', 'forum = :forum1', 
+        $this->assertEquals(1, $DB->count_records_select('forum_discussions', 'forum = :forum1',
                                                             array('forum1' => $forum1->id)));
         //check posts creation
         $this->assertEquals(2, $DB->count_records_select('forum_posts', 'discussion = :discussion1',
