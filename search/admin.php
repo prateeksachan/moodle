@@ -59,7 +59,7 @@ class search_admin_form extends moodleform {
     }
 }
 
-require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
+require_capability('moodle/site:config', context_system::instance());
 
 $search_engine_installed = $CFG->SEARCH_ENGINE . '_installed';
 if (!$search_engine_installed()) {
