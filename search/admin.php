@@ -61,6 +61,23 @@ class search_admin_form extends moodleform {
 
 require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
 
+$search_engine_installed = $CFG->SEARCH_ENGINE . '_installed';
+if (!$search_engine_installed()) {
+    include($CFG->dirroot . '/search/install.php');
+    exit();
+}
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading('Last indexing statistics');
+
+if (!$CFG->enableglobalsearch) {
+    echo $OUTPUT->box_start();
+    echo 'Global Search has been disabled';
+    echo $OUTPUT->box_end();
+    echo $OUTPUT->footer();
+    exit();
+}
+
 $mform = new search_admin_form();
 
 if ($data = $mform->get_data()) {
@@ -84,8 +101,7 @@ if ($data = $mform->get_data()) {
 $gstable = new html_table();
 $gstable->id = 'gs-control-panel';
 $gstable->head = array(
-    'Name', 'Newest document indexed', 'Last run <br /> (time, # docs, # records, # ignores)', 'Activated'
-);
+    'Name', 'Newest document indexed', 'Last run <br /> (time, # docs, # records, # ignores)');
 $gstable->colclasses = array(
     'displayname', 'lastrun', 'timetaken'
 );
@@ -101,26 +117,9 @@ foreach ($mods as $name => $mod) {
                                         $config[$name]->recordsprocessed . ' , ' .
                                         $config[$name]->docsignored);
     $modname = 'gs_support_' . $name;
-    $cactive = new html_table_cell(($CFG->$modname) ? 'Yes' : 'No');
-    $row = new html_table_row(array($cname, $clastrun, $ctimetaken, $cactive));
+    //$cactive = new html_table_cell(($CFG->$modname) ? 'Yes' : 'No');
+    $row = new html_table_row(array($cname, $clastrun, $ctimetaken));
     $gstable->data[] = $row;
-}
-
-$search_engine_installed = $CFG->SEARCH_ENGINE . '_installed';
-if (!$search_engine_installed()) {
-    include($CFG->dirroot . '/search/install.php');
-    exit();
-}
-
-echo $OUTPUT->header();
-echo $OUTPUT->heading('Last indexing statistics');
-
-if (!$CFG->enableglobalsearch) {
-    echo $OUTPUT->box_start();
-    echo 'Global Search has been disabled';
-    echo $OUTPUT->box_end();
-    echo $OUTPUT->footer();
-    exit();
 }
 
 echo html_writer::table($gstable);
