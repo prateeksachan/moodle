@@ -495,7 +495,6 @@ function book_search_access($id) {
         $context = context_module::instance($cm->id);
         require_capability('mod/book:read', $context);
     } catch (moodle_exception $ex) {
-        echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }
 

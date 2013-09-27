@@ -68,7 +68,7 @@ if (!$search_engine_installed()) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading('Last indexing statistics');
+echo $OUTPUT->heading(get_string('statistics_desc', 'admin'));
 
 if (!$CFG->enableglobalsearch) {
     echo $OUTPUT->box_start();

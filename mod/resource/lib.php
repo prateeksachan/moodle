@@ -558,7 +558,6 @@ function resource_search_access($id) {
         $context = context_module::instance($cm->id);
         require_capability('mod/resource:view', $context);
     } catch (moodle_exception $ex) {
-        echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }
 

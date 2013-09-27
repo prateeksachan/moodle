@@ -1014,7 +1014,11 @@ function lesson_update_media_file($lessonid, $context, $draftitemid) {
 function lesson_search_iterator($from = 0) {
     global $DB;
 
-    $sql = "SELECT id, timemodified AS modified FROM {lesson_pages} WHERE timemodified > ? ORDER BY timemodified ASC";
+    if ($from==0) {
+        $sql = "SELECT id, timecreated AS modified FROM {lesson_pages} WHERE timecreated > ? ORDER BY timecreated ASC";
+    } else {
+        $sql = "SELECT id, timemodified AS modified FROM {lesson_pages} WHERE timemodified > ? ORDER BY timemodified ASC";
+    }
 
     return $DB->get_recordset_sql($sql, array($from));
 }

@@ -746,7 +746,6 @@ function wiki_search_access($id) {
         $context = context_module::instance($cm->id);
         require_capability('mod/wiki:viewpage', $context);
     } catch (moodle_exception $ex) {
-        echo $ex; // debug.
         return SEARCH_ACCESS_DENIED;
     }
 
