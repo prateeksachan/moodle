@@ -527,7 +527,7 @@ function resource_search_get_documents($id) {
 
     if (strpos($mime = $mainfile->get_mimetype(), 'image') === false) {
         $filename = urlencode($mainfile->get_filename());
-        $directlink = '/pluginfile.php/' . $context->id . '/mod_resource/attachment/' . $resource->id . '/' . $filename;
+        $directlink = '/pluginfile.php/' . $context->id . '/mod_resource/content/' . $resource->id . '/' . $filename;
         $url = 'literal.id=' . 'resource_' . $id . '_file_1' . '&literal.module=resource&literal.type=3' .
                 '&literal.directlink=' . $directlink . '&literal.courseid=' . $resource->course .
                 '&literal.contextlink=' . $contextlink . '&literal.modulelink=' . $modulelink;
