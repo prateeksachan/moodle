@@ -73,8 +73,18 @@ function search_get_modules($requireconfig = true) {
  */
 function search_get_iterators($requireconfig = true) {
     global $CFG;
-    $mods = search_get_modules($requireconfig);
+
     $functions = array();
+
+    // Course
+    $functions['course'] = new stdClass();
+    $functions['course']->iterator = 'course_search_iterator';
+    $functions['course']->documents = 'course_search_get_documents';
+    $functions['course']->access = 'course_search_access';
+    $functions['course']->module = 'course';
+
+    // Modules
+    $mods = search_get_modules($requireconfig);
     foreach ($mods as $mod) {
         if (file_exists("$CFG->dirroot/mod/{$mod->name}/lib.php")) {
             include_once("$CFG->dirroot/mod/{$mod->name}/lib.php");
@@ -206,6 +216,7 @@ function search_reset_config($s = null) {
     } else {
         $get_mods = search_get_modules(false);
         $mods = array();
+        $mods[] = 'course';  // add course
         foreach ($get_mods as $mod) {
             $mods[] = $mod->name;
         }

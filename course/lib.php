@@ -3710,3 +3710,62 @@ function course_change_sortorder_after_course($courseorid, $moveaftercourseid) {
     cache_helper::purge_by_event('changesincourse');
     return true;
 }
+
+/*
+ * Global Search API
+ * @package Global Search
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+function course_search_iterator($from = 0) {
+    global $DB;
+
+    $sql = "SELECT id, timemodified AS modified
+        FROM {course}
+        WHERE timemodified > ? AND id != ?
+        ORDER BY timemodified ASC";
+
+    return $DB->get_recordset_sql($sql, array($from, SITEID));
+}
+
+function course_search_get_documents($id) {
+    global $DB;
+
+    $docs = array();
+    try {
+        $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+        $context = context_course::instance($course->id);
+    } catch (mdml_missing_record_exception $ex) {
+        return $docs;
+    }
+
+    // Declare a new Solr Document and insert fields into it from DB
+    $doc = new SolrInputDocument();
+    $doc->addField('type', SEARCH_TYPE_HTML);
+    $doc->addField('id', 'course_'.$course->id);
+    $doc->addField('modified', gmdate('Y-m-d\TH:i:s\Z', $course->timemodified));
+    $doc->addField('intro', strip_tags($course->summary));
+    $doc->addField('name', $course->fullname);
+    $doc->addField('courseid', $course->id);
+    $doc->addField('contextlink', '/course/view.php?id='.$course->id);
+    $doc->addField('modulelink', '/course/view.php?id='.$course->id);
+    $doc->addField('module', 'course');
+    $docs[] = $doc;
+
+    return $docs;
+}
+
+function course_search_access($id) {
+    global $DB;
+    try {
+        $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+    } catch (dml_missing_record_exception $ex) {
+        return SEARCH_ACCESS_DELETED;
+    }
+
+    $context = context_course::instance($course->id);
+    if (!is_enrolled($context) && !is_viewing($context)) {
+        return SEARCH_ACCESS_DENIED;
+    }
+
+    return SEARCH_ACCESS_GRANTED;
+}

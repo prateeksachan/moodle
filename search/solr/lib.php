@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot.'/course/lib.php');  // needed for course search
+
 class global_search_engine {
     private $client;
 

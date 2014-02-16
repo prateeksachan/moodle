@@ -71,7 +71,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
     if ($CFG->enableglobalsearch) {
         $temp = new admin_settingpage('activatemods', new lang_string('activatemods', 'admin'));
 
-        $supported_mods = array('book', 'forum', 'glossary', 'label', 'lesson', 'page', 'resource', 'url', 'wiki'); // add a module here to make it gs_supported
+        $supported_mods = array('course', 'book', 'forum', 'glossary', 'label', 'lesson', 'page', 'resource', 'url', 'wiki'); // add a module here to make it gs_supported
         foreach ($supported_mods as $mod) {
             $temp->add(new admin_setting_configcheckbox('gs_support_' . $mod, new lang_string('gs_support_mod', 'admin', ucfirst($mod)), new lang_string('gs_support_mod_desc', 'admin', ucfirst($mod)), 1, 1, 0));
         }

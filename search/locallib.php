@@ -48,6 +48,7 @@ class search_form extends moodleform {
         $mods = search_get_modules();
         $modules = array();
         $modules [] = "All modules";
+        $modules ['course'] = get_string('course');  // add course
         foreach ($mods as $mod) {
             $modules[$mod->name] = ucfirst($mod->name);
         }

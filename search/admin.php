@@ -46,6 +46,7 @@ class search_admin_form extends moodleform {
         $modcheckboxarray = array();
         $mods = search_get_modules();
         $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'all', '', 'Entire Index', array('group' => 1));
+        $modcheckboxarray[] =& $mform->createElement('advcheckbox', 'course', '', get_string('course'), array('group' => 2));  // add course
         foreach ($mods as $mod) {
             $modcheckboxarray[] =& $mform->createElement('advcheckbox', $mod->name, '', ucfirst($mod->name), array('group' => 2));
         }
