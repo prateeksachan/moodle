@@ -971,6 +971,7 @@ $string['sitesectionhelp'] = 'If selected, a topic section will be displayed on 
 $string['slasharguments'] = 'Use slash arguments';
 $string['smartpix'] = 'Smart pix search';
 $string['soaprecommended'] = 'Installing the optional soap extension is useful for web services and some add-ons.';
+$string['solrrecommended'] = 'The Solr PHP extension is required for the Global Search feature.';
 $string['sort_fullname'] = 'Course full name';
 $string['sort_idnumber'] = 'Course ID number';
 $string['sort_shortname'] = 'Course short name';
