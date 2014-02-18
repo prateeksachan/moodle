@@ -233,9 +233,6 @@ function solr_query_response(global_search_engine $client, $query_response) {
             }
         }
     }
-    if (empty($docs)) {
-        return 'No search results found. Try modifying your query.';
-    }
     // set cache through MUC
     $cache->set('results_' . $USER->id, serialize($docs));
     $cache->set('time_' . $USER->id, time());
