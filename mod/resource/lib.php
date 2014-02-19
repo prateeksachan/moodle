@@ -532,7 +532,7 @@ function resource_search_get_documents($id) {
                 '&literal.directlink=' . $directlink . '&literal.courseid=' . $resource->course .
                 '&literal.contextlink=' . $contextlink . '&literal.modulelink=' . $modulelink;
 
-        $index_file_function = $CFG->SEARCH_ENGINE . '_post_file';
+        $index_file_function = $CFG->search_engine . '_post_file';
         $index_file_function($mainfile, $url);
     }
 

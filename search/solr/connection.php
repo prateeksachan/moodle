@@ -25,29 +25,29 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/lib.php');
-require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/search.php');
+require_once($CFG->dirroot . '/search/' . $CFG->search_engine . '/lib.php');
+require_once($CFG->dirroot . '/search/' . $CFG->search_engine . '/search.php');
 
 if (function_exists('solr_get_version')) {
     // Solr connection options.
     $options = array(
-        'hostname' => $CFG->SOLR_SERVER_HOSTNAME,
-        'login'    => $CFG->SOLR_SERVER_USERNAME,
-        'password' => $CFG->SOLR_SERVER_PASSWORD,
-        'port'     => $CFG->SOLR_SERVER_PORT,
-        'issecure' => $CFG->SOLR_SECURE,
-        'ssl_cert' => $CFG->SOLR_SSL_CERT,
-        'ssl_cert_only' => $CFG->SOLR_SSL_CERT_ONLY,
-        'ssl_key' => $CFG->SOLR_SSL_KEY,
-        'ssl_password' => $CFG->SOLR_SSL_KEYPASSWORD,
-        'ssl_cainfo' => $CFG->SOLR_SSL_CAINFO,
-        'ssl_capath' => $CFG->SOLR_SSL_CAPATH
+        'hostname' => $CFG->solr_server_hostname,
+        'login'    => $CFG->solr_server_username,
+        'password' => $CFG->solr_server_password,
+        'port'     => $CFG->solr_server_port,
+        'issecure' => $CFG->solr_secure,
+        'ssl_cert' => $CFG->solr_ssl_cert,
+        'ssl_cert_only' => $CFG->solr_ssl_cert_only,
+        'ssl_key' => $CFG->solr_ssl_key,
+        'ssl_password' => $CFG->solr_ssl_keypassword,
+        'ssl_cainfo' => $CFG->solr_ssl_cainfo,
+        'ssl_capath' => $CFG->solr_ssl_capath
     );
 
     // If php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page.
     if (solr_get_version() == '1.0.3-alpha') {
-        if ($CFG->SOLR_VERSION == '4.0') {
-            $object = new SolrClient($options, $CFG->SOLR_VERSION);
+        if ($CFG->solr_version == '4.0') {
+            $object = new SolrClient($options, $CFG->solr_version);
         } else {
             $object = new SolrClient($options, '3.0');
         }

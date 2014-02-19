@@ -25,11 +25,11 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once('../config.php');
-require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
+require_once($CFG->dirroot . '/search/' . $CFG->search_engine . '/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
 
-$search_engine_installed = $CFG->SEARCH_ENGINE . '_installed';
-$search_engine_check_server = $CFG->SEARCH_ENGINE . '_check_server';
+$search_engine_installed = $CFG->search_engine . '_installed';
+$search_engine_check_server = $CFG->search_engine . '_check_server';
 
 if ($search_engine_installed() and $search_engine_check_server($client)) {
     // Indexing database records for modules + rich documents of forum.

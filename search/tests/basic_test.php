@@ -28,14 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 class globalsearch_basic_testcase extends advanced_testcase{
     public function test_basic() {
         global $USER, $CFG, $DB;
-        require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
+        require_once($CFG->dirroot . '/search/' . $CFG->search_engine . '/connection.php');
         require_once($CFG->dirroot . '/search/lib.php');
         require_once($CFG->dirroot . '/mod/forum/tests/generator/lib.php');
         require_once($CFG->dirroot . '/mod/forum/lib.php');
 
         $this->resetAfterTest(true);
-        $search_engine_installed = $CFG->SEARCH_ENGINE . '_installed';
-        $search_engine_check_server = $CFG->SEARCH_ENGINE . '_check_server';
+        $search_engine_installed = $CFG->search_engine . '_installed';
+        $search_engine_check_server = $CFG->search_engine . '_check_server';
 
         $this->assertEquals(1, $search_engine_installed());
         $this->assertEquals(1, $search_engine_check_server($client));

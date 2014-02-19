@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 class globalsearch_page_testcase extends advanced_testcase {
     public function test_page_basic() {
         global $USER, $CFG, $DB;
-        require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
+        require_once($CFG->dirroot . '/search/' . $CFG->search_engine . '/connection.php');
         require_once($CFG->dirroot . '/search/lib.php');
         require_once($CFG->dirroot . '/mod/page/lib.php');
 
@@ -36,7 +36,7 @@ class globalsearch_page_testcase extends advanced_testcase {
         $client->delete_by_query('*:*');
         $client->commit();
 
-        $search_function = $CFG->SEARCH_ENGINE . '_execute_query';
+        $search_function = $CFG->search_engine . '_execute_query';
 
         //create users
         $user1 = self::getDataGenerator()->create_user();
@@ -79,7 +79,7 @@ class globalsearch_page_testcase extends advanced_testcase {
         $query = new stdClass();
         $query->queryfield = "Moodle";
         $results = $search_function($client, $query);
-        is_array($results) ? $x=1 : $x=0;   //this is because in {SEARCH_ENGINE}_execute_query() function (defined in {SEARCH_ENGINE}/search.php), if the search is success
+        is_array($results) ? $x=1 : $x=0;   //this is because in {search_engine}_execute_query() function (defined in {search_engine}/search.php), if the search is success
                                             //then the results are returned as an array, otherwise the $results is a string denoting a message that
                                             //'no results were found'. (line #237 in solr/search.php)
         $this->assertEquals(1, $x); //because the search was a success

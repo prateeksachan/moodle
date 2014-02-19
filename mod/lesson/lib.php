@@ -1084,7 +1084,7 @@ function lesson_search_files($from = 0) {
                         '&literal.module=lesson&literal.type=3' . '&literal.directlink=' . $directlink .
                         '&literal.courseid=' . $lesson->course . '&literal.modulelink=' . $modulelink;
 
-                $index_file_function = $CFG->SEARCH_ENGINE . '_post_file';
+                $index_file_function = $CFG->search_engine . '_post_file';
                 $index_file_function($file, $url);
             }
         }

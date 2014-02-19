@@ -721,7 +721,7 @@ function wiki_search_files($id = 0) {
             $url = 'literal.id=' . 'wiki_' . $wikipage->id . '_file_' . $wikifile->id . '&literal.module=wiki&literal.type=3' .
                     '&literal.directlink=' . $directlink . '&literal.courseid=' . $wiki->course . '&literal.modulelink=' . $modulelink;
 
-            $index_file_function = $CFG->SEARCH_ENGINE . '_post_file';
+            $index_file_function = $CFG->search_engine . '_post_file';
             $index_file_function($file, $url);
         }
     }

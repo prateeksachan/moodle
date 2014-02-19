@@ -7551,7 +7551,7 @@ function forum_search_get_documents($id) {
                     '&literal.module=forum&literal.type=3' . '&literal.directlink=' . $directlink .
                     '&literal.courseid=' . $forum->course . '&literal.contextlink=' . $contextlink;
 
-            $index_file_function = $CFG->SEARCH_ENGINE . '_post_file';
+            $index_file_function = $CFG->search_engine . '_post_file';
             $index_file_function($file, $url);
             $numfile++;
         }

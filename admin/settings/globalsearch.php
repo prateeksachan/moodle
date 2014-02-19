@@ -13,10 +13,10 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
     // ${anothersearchengine}_installed = false;
 
     $options = array('solr' => 'Apache Solr');
-    $temp->add(new admin_setting_configselect('SEARCH_ENGINE', new lang_string('choosesearchengine', 'admin'), new lang_string('choosesearchengine_desc', 'admin'), 'solr', $options));
+    $temp->add(new admin_setting_configselect('search_engine', new lang_string('choosesearchengine', 'admin'), new lang_string('choosesearchengine_desc', 'admin'), 'solr', $options));
 
-    if (!empty($CFG->SEARCH_ENGINE)) {
-        switch ($CFG->SEARCH_ENGINE) {
+    if (!empty($CFG->search_engine)) {
+        switch ($CFG->search_engine) {
             case 'solr':
                 if (function_exists('solr_get_version')) {
                     $version = solr_get_version();
@@ -45,19 +45,19 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
         if ($version != '1.0.3-alpha') {
             array_shift($options);
         }
-        $temp->add(new admin_setting_configselect('SOLR_VERSION', new lang_string('solrversion', 'admin'), new lang_string('solrversion_desc', 'admin', $version), ($version == '1.0.3-alpha' ? '4.0' : '3.0'), $options));
-        $temp->add(new admin_setting_configtext('SOLR_SERVER_HOSTNAME', new lang_string('solrserverhostname', 'admin'), new lang_string('solrserverhostname_desc', 'admin'), $hostname, PARAM_TEXT));
-        $temp->add(new admin_setting_configcheckbox('SOLR_SECURE', new lang_string('solrsecuremode', 'admin'), new lang_string('solrsecuremode_desc', 'admin'), 0, 1, 0));
-        $temp->add(new admin_setting_configtext('SOLR_SERVER_PORT', new lang_string('solrhttpconnectionport', 'admin'), new lang_string('solrhttpconnectionport_desc', 'admin'), (!empty($CFG->SOLR_SECURE) ? 8443 : 8983), PARAM_INT));
-        $temp->add(new admin_setting_configtext('SOLR_SERVER_USERNAME', new lang_string('solrauthuser', 'admin'), new lang_string('solrauthuser_desc', 'admin'), '', PARAM_RAW));
-        $temp->add(new admin_setting_configtext('SOLR_SERVER_PASSWORD', new lang_string('solrauthpassword', 'admin'), new lang_string('solrauthpassword_desc', 'admin'), '', PARAM_RAW));
-        $temp->add(new admin_setting_configtext('SOLR_SERVER_TIMEOUT', new lang_string('solrhttpconnectiontimeout', 'admin'), new lang_string('solrhttpconnectiontimeout_desc', 'admin'), 30, PARAM_INT));
-        $temp->add(new admin_setting_configtext('SOLR_SSL_CERT', new lang_string('solrsslcert', 'admin'), new lang_string('solrsslcert_desc', 'admin'), '', PARAM_RAW));
-        $temp->add(new admin_setting_configtext('SOLR_SSL_CERT_ONLY', new lang_string('solrsslcertonly', 'admin'), new lang_string('solrsslcertonly_desc', 'admin'), '', PARAM_RAW));
-        $temp->add(new admin_setting_configtext('SOLR_SSL_KEY', new lang_string('solrsslkey', 'admin'), new lang_string('solrsslkey_desc', 'admin'), '', PARAM_RAW));
-        $temp->add(new admin_setting_configtext('SOLR_SSL_KEYPASSWORD', new lang_string('solrsslkeypassword', 'admin'), new lang_string('solrsslkeypassword_desc', 'admin'), '', PARAM_RAW));
-        $temp->add(new admin_setting_configtext('SOLR_SSL_CAINFO', new lang_string('solrsslcainfo', 'admin'), new lang_string('solrsslcainfo_desc', 'admin'), '', PARAM_RAW));
-        $temp->add(new admin_setting_configtext('SOLR_SSL_CAPATH', new lang_string('solrsslcapath', 'admin'), new lang_string('solrsslcapath_desc', 'admin'), '', PARAM_RAW));
+        $temp->add(new admin_setting_configselect('solr_version', new lang_string('solrversion', 'admin'), new lang_string('solrversion_desc', 'admin', $version), ($version == '1.0.3-alpha' ? '4.0' : '3.0'), $options));
+        $temp->add(new admin_setting_configtext('solr_server_hostname', new lang_string('solrserverhostname', 'admin'), new lang_string('solrserverhostname_desc', 'admin'), $hostname, PARAM_TEXT));
+        $temp->add(new admin_setting_configcheckbox('solr_secure', new lang_string('solrsecuremode', 'admin'), new lang_string('solrsecuremode_desc', 'admin'), 0, 1, 0));
+        $temp->add(new admin_setting_configtext('solr_server_port', new lang_string('solrhttpconnectionport', 'admin'), new lang_string('solrhttpconnectionport_desc', 'admin'), (!empty($CFG->solr_secure) ? 8443 : 8983), PARAM_INT));
+        $temp->add(new admin_setting_configtext('solr_server_username', new lang_string('solrauthuser', 'admin'), new lang_string('solrauthuser_desc', 'admin'), '', PARAM_RAW));
+        $temp->add(new admin_setting_configtext('solr_server_password', new lang_string('solrauthpassword', 'admin'), new lang_string('solrauthpassword_desc', 'admin'), '', PARAM_RAW));
+        $temp->add(new admin_setting_configtext('solr_server_timeout', new lang_string('solrhttpconnectiontimeout', 'admin'), new lang_string('solrhttpconnectiontimeout_desc', 'admin'), 30, PARAM_INT));
+        $temp->add(new admin_setting_configtext('solr_ssl_cert', new lang_string('solrsslcert', 'admin'), new lang_string('solrsslcert_desc', 'admin'), '', PARAM_RAW));
+        $temp->add(new admin_setting_configtext('solr_ssl_cert_only', new lang_string('solrsslcertonly', 'admin'), new lang_string('solrsslcertonly_desc', 'admin'), '', PARAM_RAW));
+        $temp->add(new admin_setting_configtext('solr_ssl_key', new lang_string('solrsslkey', 'admin'), new lang_string('solrsslkey_desc', 'admin'), '', PARAM_RAW));
+        $temp->add(new admin_setting_configtext('solr_ssl_keypassword', new lang_string('solrsslkeypassword', 'admin'), new lang_string('solrsslkeypassword_desc', 'admin'), '', PARAM_RAW));
+        $temp->add(new admin_setting_configtext('solr_ssl_cainfo', new lang_string('solrsslcainfo', 'admin'), new lang_string('solrsslcainfo_desc', 'admin'), '', PARAM_RAW));
+        $temp->add(new admin_setting_configtext('solr_ssl_capath', new lang_string('solrsslcapath', 'admin'), new lang_string('solrsslcapath_desc', 'admin'), '', PARAM_RAW));
 
         $ADMIN->add('globalsearch', $temp);
     }

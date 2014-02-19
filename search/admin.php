@@ -25,7 +25,7 @@
 require_once('../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/formslib.php');
-require_once($CFG->dirroot . '/search/' . $CFG->SEARCH_ENGINE . '/connection.php');
+require_once($CFG->dirroot . '/search/' . $CFG->search_engine . '/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
 
 admin_externalpage_setup('statistics');
@@ -62,7 +62,7 @@ class search_admin_form extends moodleform {
 
 require_capability('moodle/site:config', context_system::instance());
 
-$search_engine_installed = $CFG->SEARCH_ENGINE . '_installed';
+$search_engine_installed = $CFG->search_engine . '_installed';
 if (!$search_engine_installed()) {
     include($CFG->dirroot . '/search/install.php');
     exit();
@@ -127,7 +127,7 @@ echo html_writer::table($gstable);
 echo $OUTPUT->container_start();
 echo $OUTPUT->box_start();
 
-$search_engine_check_server = $CFG->SEARCH_ENGINE . '_check_server';
+$search_engine_check_server = $CFG->search_engine . '_check_server';
 if (!$search_engine_check_server($client)) {
     echo 'Solr Server is not running!';
 } else {

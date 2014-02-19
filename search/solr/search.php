@@ -250,7 +250,7 @@ function solr_post_file($file, $posturl) {
     global $CFG;
     $filename = urlencode($file->get_filename());
     $curl = new curl();
-    $url = $CFG->SOLR_SERVER_HOSTNAME . ':' . $CFG->SOLR_SERVER_PORT . '/solr/update/extract?';
+    $url = $CFG->solr_server_hostname . ':' . $CFG->solr_server_port . '/solr/update/extract?';
     $url .= $posturl;
     $params = array();
     $params[$filename] = $file;
