@@ -307,8 +307,8 @@ function search_get_config_file($mod) {
     }
 }
 
-/** 
- * Displaying search results 
+/**
+ * Displaying search results
  * @param stdClass object $result containing a single search response to be displayed
  */
 function search_display_results($result) {
@@ -404,7 +404,7 @@ function search_display_results($result) {
     $OUTPUT->box_end();
 }
 
-/** 
+/**
  * Searches the user table for userid
  * @param string name of user
  * @return string $url of the user's profile

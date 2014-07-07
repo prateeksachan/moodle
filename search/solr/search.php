@@ -132,7 +132,7 @@ function solr_prepare_filter(global_search_engine $client, $data) {
 }
 
 /**
- * Sets fields to be returned in the result. 
+ * Sets fields to be returned in the result.
  * @param SolrQuery $query object.
  */
 function solr_add_fields($query) {
@@ -145,7 +145,7 @@ function solr_add_fields($query) {
 }
 
 /**
- * Finds the key common to both highlighing and docs array returned from response. 
+ * Finds the key common to both highlighing and docs array returned from response.
  * @param object $response containing results.
  */
 function solr_add_highlight_content($response) {
@@ -158,7 +158,7 @@ function solr_add_highlight_content($response) {
 }
 
 /**
- * Adds the highlighting array values to docs array values. 
+ * Adds the highlighting array values to docs array values.
  * @param object $doc containing the results.
  * @param object $highlighteddoc containing the highlighted results values.
  */
@@ -187,7 +187,7 @@ function solr_merge_highlight_field_values($doc, $highlighteddoc) {
 }
 
 /**
- * Filters the response on Moodle side. 
+ * Filters the response on Moodle side.
  * @param global_search_engine $client object.
  * @param object $query_response containing the response return from solr server.
  * @return object $results containing final results to be displayed.
@@ -239,7 +239,7 @@ function solr_query_response(global_search_engine $client, $query_response) {
     return $docs;
 }
 
-/** 
+/**
  * Builds the cURL object's url for indexing Rich Documents
  * @return string $url
  */

@@ -10,7 +10,7 @@ You can download the official latest versions from [http://pecl.php.net/package/
 
 Installing the downloaded PHP Solr extension
 --------------------------------------------
-For using Global Search, users will have to install the PHP Solr PECL extension on server. Users will have the option of configuring Solr version in  Global Search. 
+For using Global Search, users will have to install the PHP Solr PECL extension on server. Users will have the option of configuring Solr version in  Global Search.
 Following is the procedure for installing the downloaded extension in UNIX:
 
 There are two dependencies of the extension:
@@ -63,8 +63,8 @@ After installing the php-pecl-solr extension, users will have to download the re
 
 unzip it and keep it in an external directory of Moodle.
 
-Users will have to replace `solconfig.xml` and `schema.xml` inside the downloaded directory `/example/solr/conf` with the ones that Global Search will provide in `/search/solr/conf/` directory. 
+Users will have to replace `solconfig.xml` and `schema.xml` inside the downloaded directory `/example/solr/conf` with the ones that Global Search will provide in `/search/solr/conf/` directory.
 
-Once the files have been copied and replaced, users will have to start the java jetty server `start.jar` located in downloaded `/example/` directory by executing `java -jar start.jar`. 
+Once the files have been copied and replaced, users will have to start the java jetty server `start.jar` located in downloaded `/example/` directory by executing `java -jar start.jar`.
 
 For the production setup you may prefer to [run solr on tomcat 6 or 7](http://jmuras.com/blog/2012/setup-solr-4-tomcat-ubuntu-server-12-04-lts) and Ubuntu server.
