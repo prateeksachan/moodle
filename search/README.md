@@ -4,15 +4,9 @@ Looks like you donot have php-pecl-solr extension installed. You may follow the 
 
 Downloading PHP Solr extension
 ------------------------------
-* Downloading extension for Apache Solr 4.x
+Please use PECL Solr Extension 1.x for Solr Server 3.x, or use PECL Solr 2.x for Solr Server 4.0+
 
-    Apache Solr 4.x requires installation of php solr extension version `1.0.3-alpha`. You will be ready to install the PECL extension for Solr by cloning the following repository for `Solr 4.x`. (Please Note: Currently, the official `php-pecl-solr` is not compatible with `Solr 4.x`. The following repository provides a small fix to make it compatible with `Solr 4.x` and will go to the official release).
-
-    `git clone https://github.com/lukaszkujawa/php-pecl-solr.git`
-
-* Downloading extension for Apache Solr 3.x
-
-    Apache Solr 3.x requires installation of php solr extension version `<=1.0.2`. You can download the official latest versions from [http://pecl.php.net/package/solr](http://pecl.php.net/package/solr). Extract the contents into a directory.
+You can download the official latest versions from [http://pecl.php.net/package/solr](http://pecl.php.net/package/solr)
 
 Installing the downloaded PHP Solr extension
 --------------------------------------------
@@ -64,8 +58,8 @@ Setting up Global Search after installing php-solr extension
 
 After installing the php-pecl-solr extension, users will have to download the required [Apache Solr](http://lucene.apache.org/solr/) release:
 
-* version 4.x for solr-php extension `1.0.3-alpha`, OR 
-* version 3.x for solr-php extension version `<=1.0.2`
+* version 4.x for solr-php extension version `2.x.x`, OR
+* version 3.x for solr-php extension version `1.x.x`
 
 unzip it and keep it in an external directory of Moodle.
 

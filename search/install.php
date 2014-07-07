@@ -34,7 +34,7 @@ require_login();
 
 echo $OUTPUT->header();
 echo $OUTPUT->box_start();
-$info = file_get_contents($CFG->dirroot . '/search/readme.md');
+$info = file_get_contents($CFG->dirroot . '/search/README.md');
 echo markdown_to_html($info);
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();

@@ -31,28 +31,19 @@ require_once($CFG->dirroot . '/search/' . $CFG->search_engine . '/search.php');
 if (function_exists('solr_get_version')) {
     // Solr connection options.
     $options = array(
-        'hostname' => $CFG->solr_server_hostname,
-        'login'    => $CFG->solr_server_username,
-        'password' => $CFG->solr_server_password,
-        'port'     => $CFG->solr_server_port,
-        'issecure' => $CFG->solr_secure,
-        'ssl_cert' => $CFG->solr_ssl_cert,
-        'ssl_cert_only' => $CFG->solr_ssl_cert_only,
-        'ssl_key' => $CFG->solr_ssl_key,
-        'ssl_password' => $CFG->solr_ssl_keypassword,
-        'ssl_cainfo' => $CFG->solr_ssl_cainfo,
-        'ssl_capath' => $CFG->solr_ssl_capath
+        'hostname' => !empty($CFG->solr_server_hostname) ? $CFG->solr_server_hostname : '',
+        'login'    => !empty($CFG->solr_server_username) ? $CFG->solr_server_username : '',
+        'password' => !empty($CFG->solr_server_password) ? $CFG->solr_server_password : '',
+        'port'     => !empty($CFG->solr_server_port) ? $CFG->solr_server_port : '',
+        'issecure' => !empty($CFG->solr_secure) ? $CFG->solr_secure : '',
+        'ssl_cert' => !empty($CFG->solr_ssl_cert) ? $CFG->solr_ssl_cert : '',
+        'ssl_cert_only' => !empty($CFG->solr_ssl_cert_only) ? $CFG->solr_ssl_cert_only : '',
+        'ssl_key' => !empty($CFG->solr_ssl_key) ? $CFG->solr_ssl_key : '',
+        'ssl_password' => !empty($CFG->solr_ssl_keypassword) ? $CFG->solr_ssl_keypassword : '',
+        'ssl_cainfo' => !empty($CFG->solr_ssl_cainfo) ? $CFG->solr_ssl_cainfo : '',
+        'ssl_capath' => !empty($CFG->solr_ssl_capath) ? $CFG->solr_ssl_capath : ''
     );
 
-    // If php solr extension 1.0.3-alpha installed, one may choose 3.x or 4.x solr from admin settings page.
-    if (solr_get_version() == '1.0.3-alpha') {
-        if ($CFG->solr_version == '4.0') {
-            $object = new SolrClient($options, $CFG->solr_version);
-        } else {
-            $object = new SolrClient($options, '3.0');
-        }
-    } else { // No choice if php solr extension <=1.0.2 is installed.
-        $object = new SolrClient($options);
-    }
+    $object = new SolrClient($options);
     $client = new global_search_engine($object);
 }

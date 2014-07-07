@@ -45,7 +45,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
         if ($version != '1.0.3-alpha') {
             array_shift($options);
         }
-        $temp->add(new admin_setting_configselect('solr_version', new lang_string('solrversion', 'admin'), new lang_string('solrversion_desc', 'admin', $version), ($version == '1.0.3-alpha' ? '4.0' : '3.0'), $options));
+        $temp->add(new admin_setting_configselect('solr_version', new lang_string('solrversion', 'admin'), new lang_string('solrversion_desc', 'admin', $version), (substr($version, 0, 2) == '2.' ? '4.0' : '3.0'), $options));
         $temp->add(new admin_setting_configtext('solr_server_hostname', new lang_string('solrserverhostname', 'admin'), new lang_string('solrserverhostname_desc', 'admin'), $hostname, PARAM_TEXT));
         $temp->add(new admin_setting_configcheckbox('solr_secure', new lang_string('solrsecuremode', 'admin'), new lang_string('solrsecuremode_desc', 'admin'), 0, 1, 0));
         $temp->add(new admin_setting_configtext('solr_server_port', new lang_string('solrhttpconnectionport', 'admin'), new lang_string('solrhttpconnectionport_desc', 'admin'), (!empty($CFG->solr_secure) ? 8443 : 8983), PARAM_INT));
