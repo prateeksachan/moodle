@@ -24,7 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once('../config.php');
 require_once($CFG->dirroot . '/search/' . $CFG->search_engine . '/connection.php');
 require_once($CFG->dirroot . '/search/lib.php');
 
