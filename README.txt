@@ -15,7 +15,7 @@ a few minutes:
    you through creating a config.php file and then
    setting up Moodle, creating an admin account etc.
 
-4) Set up a cron task to call the file admin/cron.php
+4) Set up a cron task to call the file admin/cli/cron.php
    every five minutes or so.
 
 
