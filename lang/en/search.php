@@ -68,7 +68,6 @@ $string['ittook'] = 'It took';
 $string['matchingfile'] = 'Matched from file <span class="filename">{$a}</span>';
 $string['matchingfiles'] = 'Matched from files:';
 $string['next'] = 'Next';
-$string['noindexmessage'] = 'Admin: There appears to be no search index. Please';
 $string['noresults'] = 'No results';
 $string['notitle'] = 'No title';
 $string['normalsearch'] = 'Normal search';
